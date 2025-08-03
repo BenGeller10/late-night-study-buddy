@@ -18,7 +18,7 @@ interface TutorCardProps {
   onSwipeRight: () => void;
   onSwipeLeft: () => void;
   onChat: () => void;
-  onBook: (tutor: any) => void;
+  onBook: () => void;
   onViewProfile: () => void;
 }
 
@@ -45,13 +45,13 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
   };
 
   return (
-    <div className={`relative w-full h-full transition-all duration-300 ${
+    <div className={`relative w-full max-w-sm mx-auto transition-all duration-300 ${
       isAnimating === 'right' ? 'animate-swipe-right' : 
       isAnimating === 'left' ? 'animate-swipe-left' : 'animate-fade-in-up'
     }`}>
-      <div className="glass-card rounded-3xl overflow-hidden shadow-glow h-full flex flex-col transition-all duration-300">
+      <div className="glass-card rounded-3xl overflow-hidden shadow-card hover:shadow-glow transition-all duration-300">
         {/* Profile Image */}
-        <div className="relative flex-1 bg-gradient-card overflow-hidden">
+        <div className="relative aspect-[4/3] bg-gradient-card overflow-hidden">
           {!imageLoaded && (
             <div className="absolute inset-0 skeleton" />
           )}
@@ -78,7 +78,7 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
         </div>
 
         {/* Profile Info */}
-        <div className="p-6 space-y-3 bg-background/95 backdrop-blur-sm">
+        <div className="p-6 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-2xl font-bold">{tutor.name}</h3>
             <div className="text-right">
@@ -131,48 +131,46 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
           {/* Action Buttons */}
           <div className="flex gap-3 pt-2">
             <Button
-              variant="secondary"
+              variant="ghost"
               size="lg"
-              className="flex-1 btn-haptic font-medium bg-gradient-accent text-accent-foreground hover:shadow-glow"
+              className="flex-1 btn-smooth"
               onClick={onChat}
             >
-              💬 Let's Chat!
+              💬 Chat
             </Button>
             <Button
               variant="campus"
               size="lg"
-              className="flex-1 btn-haptic font-medium"
-              onClick={() => onBook(tutor)}
+              className="flex-1 btn-smooth"
+              onClick={onBook}
             >
-              📅 Book Sesh
+              📅 Book
             </Button>
           </div>
         </div>
 
       </div>
 
-      {/* Floating Swipe Controls */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-6 z-10">
+      {/* Swipe Controls */}
+      <div className="flex justify-center gap-6 mt-6">
         <Button
           variant="outline"
           size="icon"
-          className="w-14 h-14 rounded-full border-2 glass-card btn-haptic hover:border-destructive hover:text-destructive hover:shadow-lg"
+          className="w-14 h-14 rounded-full border-2 btn-smooth hover:border-destructive hover:text-destructive"
           onClick={() => handleSwipe('left')}
           disabled={isAnimating !== null}
-          aria-label="Pass"
         >
-          <span className="text-xl">❌</span>
+          <span className="text-xl">👎</span>
         </Button>
         
         <Button
           variant="campus"
           size="icon"
-          className="w-14 h-14 rounded-full btn-haptic hover:scale-110 shadow-glow"
+          className="w-14 h-14 rounded-full btn-smooth hover:scale-110"
           onClick={() => handleSwipe('right')}
           disabled={isAnimating !== null}
-          aria-label="Like!"
         >
-          <span className="text-xl">💜</span>
+          <span className="text-xl">👍</span>
         </Button>
       </div>
     </div>

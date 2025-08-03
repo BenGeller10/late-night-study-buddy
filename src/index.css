@@ -6,63 +6,61 @@
 
 @layer base {
   :root {
-    /* Campus Connect Purple Cosmic Theme */
-    --background: 263 45% 7%; /* Deep cosmic purple #0A0B14 */
-    --foreground: 280 15% 95%;
+    /* Campus Connect Brand Colors - Dark Mode First */
+    --background: 220 27% 8%;
+    --foreground: 210 20% 95%;
 
-    --card: 263 35% 12%; /* Rich purple card background */
-    --card-foreground: 280 15% 92%;
+    --card: 220 25% 12%;
+    --card-foreground: 210 20% 95%;
 
-    --popover: 263 40% 10%;
-    --popover-foreground: 280 15% 90%;
+    --popover: 220 25% 12%;
+    --popover-foreground: 210 20% 95%;
 
-    /* Vibrant Purple Primary - Magical & Energetic */
-    --primary: 270 95% 68%; /* Vibrant purple #A855F7 */
-    --primary-foreground: 280 15% 98%;
-    --primary-glow: 280 100% 85%;
+    /* Campus Purple - The main brand vibe */
+    --primary: 260 85% 65%;
+    --primary-foreground: 210 20% 95%;
+    --primary-glow: 260 85% 75%;
 
-    /* Refined Purple Secondary */
-    --secondary: 263 30% 22%;
-    --secondary-foreground: 280 15% 88%;
+    /* Subtle grays for cards and surfaces */
+    --secondary: 220 20% 18%;
+    --secondary-foreground: 210 15% 85%;
 
-    --muted: 263 25% 18%;
-    --muted-foreground: 260 12% 65%;
+    --muted: 220 15% 16%;
+    --muted-foreground: 210 10% 65%;
 
-    /* Bright Magenta Accent - Cosmic Energy */
-    --accent: 300 85% 75%; /* Bright magenta #E879F9 */
-    --accent-foreground: 263 45% 7%;
+    /* Campus accent - vibrant for CTAs and highlights */
+    --accent: 280 90% 70%;
+    --accent-foreground: 210 20% 95%;
 
-    /* Enhanced Status Colors */
-    --success: 150 80% 55%;
-    --success-foreground: 280 15% 98%;
+    /* Success green for confirmations */
+    --success: 145 85% 55%;
+    --success-foreground: 210 20% 95%;
 
+    /* Warning for important alerts */
     --warning: 45 95% 65%;
-    --warning-foreground: 263 45% 7%;
+    --warning-foreground: 220 27% 8%;
 
-    --destructive: 0 84% 65%;
-    --destructive-foreground: 280 15% 98%;
+    --destructive: 0 85% 65%;
+    --destructive-foreground: 210 20% 95%;
 
-    --border: 263 30% 25%;
-    --input: 263 25% 18%;
-    --ring: 270 95% 68%;
+    --border: 220 20% 22%;
+    --input: 220 20% 18%;
+    --ring: 260 85% 65%;
 
-    --radius: 1rem; /* More rounded corners for modern feel */
+    --radius: 0.75rem;
 
-    /* Enhanced Gradients - Purple cosmic magic */
+    /* Gradients for that premium feel */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
-    --gradient-card: linear-gradient(135deg, hsl(var(--card)), hsl(263 35% 16%));
-    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(320 100% 80%));
+    --gradient-card: linear-gradient(135deg, hsl(var(--card)), hsl(220 25% 14%));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(280 90% 80%));
 
-    /* Premium Shadows with Purple Glow */
-    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.5);
-    --shadow-card: 0 8px 32px -8px hsl(263 45% 4% / 0.6);
-    --shadow-lg: 0 20px 30px -8px hsl(263 45% 4% / 0.5), 0 10px 15px -5px hsl(270 95% 68% / 0.2);
+    /* Shadows with campus purple glow */
+    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.3);
+    --shadow-card: 0 10px 30px -5px hsl(220 27% 4% / 0.4);
     
-    /* Refined Transitions */
-    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    --transition-elastic: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /* Smooth transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 
   /* Light mode for those rare daylight study sessions */
@@ -113,11 +111,8 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', 'system-ui', -apple-system, sans-serif;
+    @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
 
   /* Custom scrollbars for dark theme */
@@ -200,36 +195,21 @@
   animation: float 3s ease-in-out infinite;
 }
 
-/* Enhanced Interactive Button System */
+/* Interactive Button Enhancements */
 .btn-campus {
-  @apply bg-gradient-primary text-white;
+  @apply bg-primary hover:bg-primary/90 text-primary-foreground;
   @apply transition-all duration-200 hover:scale-105 active:scale-95;
-  @apply shadow-lg hover:shadow-glow rounded-xl;
-  @apply font-medium tracking-wide;
+  @apply shadow-lg hover:shadow-xl;
 }
 
 .btn-smooth {
   @apply transition-all duration-200 hover:scale-105 active:scale-95;
-  @apply hover:shadow-lg active:shadow-md;
-  @apply transform-gpu; /* Hardware acceleration */
 }
 
-.btn-haptic {
-  @apply transition-all duration-150 ease-out;
-  @apply hover:scale-105 active:scale-95;
-  @apply active:duration-75; /* Faster feedback on tap */
-}
-
-/* Enhanced Glass Card Effect */
+/* Glass Card Effect */
 .glass-card {
-  @apply bg-card/90 backdrop-blur-xl border border-border/40;
-  @apply shadow-card hover:shadow-lg transition-all duration-300;
-  @apply rounded-2xl; /* More rounded for modern feel */
-}
-
-.glass-card-glow {
-  @apply glass-card hover:shadow-glow;
-  @apply hover:bg-card/95; /* Slight opacity change on hover */
+  @apply bg-background/80 backdrop-blur-lg border border-border/30;
+  @apply shadow-lg hover:shadow-xl transition-all duration-300;
 }
 
 /* Success States */
@@ -362,13 +342,9 @@
     animation: shimmer 2s infinite;
   }
 
-  /* Enhanced page transitions */
+  /* Smooth page transitions */
   .page-transition {
-    animation: fade-in-up 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
-
-  .page-transition-fast {
-    animation: fade-in-up 0.2s ease-out;
+    animation: fade-in-up 0.3s ease-out;
   }
 
   /* Interactive elements */

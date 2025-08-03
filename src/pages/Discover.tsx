@@ -1,21 +1,12 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { HelpCircle } from "lucide-react";
+import { HelpCircle, User } from "lucide-react";
 import EnhancedSwipeView from "@/components/discovery/EnhancedSwipeView";
 import PageTransition from "@/components/layout/PageTransition";
 import { soundEffects } from "@/lib/sounds";
-import BookingModal from "@/components/booking/BookingModal";
-import BookingConfirmationModal from "@/components/booking/BookingConfirmationModal";
-import BookingSuccessModal from "@/components/booking/BookingSuccessModal";
 
 const Discover = () => {
   const navigate = useNavigate();
-  const [selectedTutor, setSelectedTutor] = useState<any>(null);
-  const [showBookingModal, setShowBookingModal] = useState(false);
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [bookingDetails, setBookingDetails] = useState<any>(null);
 
   const handleTutorMatch = (tutorId: string) => {
     console.log('Matched with tutor:', tutorId);
@@ -28,54 +19,45 @@ const Discover = () => {
     navigate(`/chat/${tutorId}`);
   };
 
-  const handleBook = (tutor: any) => {
-    console.log('Booking session with tutor:', tutor.id);
-    // Add mock venmo handle if not present
-    const tutorWithVenmo = {
-      ...tutor,
-      venmoHandle: tutor.venmoHandle || tutor.name.toLowerCase().replace(' ', '-')
-    };
-    setSelectedTutor(tutorWithVenmo);
-    setShowBookingModal(true);
+  const handleBook = (tutorId: string) => {
+    console.log('Booking session with tutor:', tutorId);
+    // Handle booking logic - could open booking modal or navigate to booking page
   };
 
   const handleViewProfile = (tutorId: string) => {
     navigate(`/tutor/${tutorId}`);
   };
 
-  const handleBookingConfirm = (details: any) => {
-    setBookingDetails(details);
-    setShowBookingModal(false);
-    setShowConfirmationModal(true);
-  };
-
-  const handlePaymentSuccess = () => {
-    setShowConfirmationModal(false);
-    setShowSuccessModal(true);
-  };
-
-  const handleStartChat = () => {
-    setShowSuccessModal(false);
-    navigate(`/chat/${selectedTutor?.id}`);
-  };
-
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-cosmic flex flex-col pb-20"> {/* Added bottom padding for navigation */}
+      <div className="min-h-screen bg-background pb-20"> {/* Added bottom padding for navigation */}
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-background/90 backdrop-blur-xl border-b border-border/30">
-        <div className="p-6 text-center">
-          <h1 className="text-2xl font-bold text-primary mb-2">
-            Ready to find your study squad? ✨
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Swipe right to connect • Left to keep looking
-          </p>
+      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/20">
+        <div className="p-4 flex items-center justify-between">
+          <div className="text-center flex-1">
+            <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              Find Your Study Buddy ✨
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Swipe to discover amazing tutors
+            </p>
+          </div>
+          
+          {/* Profile Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/profile')}
+            className="shrink-0 hover:scale-105 transition-all"
+            aria-label="Profile"
+          >
+            <User className="h-5 w-5" />
+          </Button>
         </div>
       </div>
 
-      {/* Full-Screen Swipe Interface */}
-      <div className="flex-1 flex items-center justify-center px-4 py-2">
+      {/* Main Swipe Interface */}
+      <div className="p-4">
         <EnhancedSwipeView
           onTutorMatch={handleTutorMatch}
           onChat={handleChat}
@@ -90,39 +72,12 @@ const Discover = () => {
           soundEffects.playMessage();
           navigate('/support');
         }}
-        variant="campus"
-        className="fixed bottom-24 left-4 z-50 h-14 w-14 rounded-full shadow-glow hover:shadow-lg transition-all hover:scale-110 active:scale-95"
+        className="fixed bottom-24 left-4 z-50 h-14 w-14 rounded-full shadow-lg bg-gradient-primary hover:bg-gradient-primary/90 text-white transition-all hover:scale-110 active:scale-95"
         size="icon"
-        aria-label="Need help? We got you! 💬"
+        aria-label="Get Support"
       >
         <HelpCircle className="h-6 w-6" />
       </Button>
-
-      {/* Booking Modals */}
-      {selectedTutor && (
-        <>
-          <BookingModal
-            isOpen={showBookingModal}
-            onClose={() => setShowBookingModal(false)}
-            tutor={selectedTutor}
-            onConfirm={handleBookingConfirm}
-          />
-
-          <BookingConfirmationModal
-            isOpen={showConfirmationModal}
-            onClose={() => setShowConfirmationModal(false)}
-            bookingDetails={bookingDetails}
-            onSuccess={handlePaymentSuccess}
-          />
-
-          <BookingSuccessModal
-            isOpen={showSuccessModal}
-            onClose={() => setShowSuccessModal(false)}
-            tutorName={selectedTutor.name}
-            onStartChat={handleStartChat}
-          />
-        </>
-      )}
       </div>
     </PageTransition>
   );

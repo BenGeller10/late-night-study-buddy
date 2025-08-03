@@ -1,13 +1,9 @@
-import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, MessageCircle, Calendar, Star, Clock, Award, Users } from "lucide-react";
 import PageTransition from "@/components/layout/PageTransition";
-import BookingModal from "@/components/booking/BookingModal";
-import BookingConfirmationModal from "@/components/booking/BookingConfirmationModal";
-import BookingSuccessModal from "@/components/booking/BookingSuccessModal";
 
 // Mock data - same as SwipeView for consistency
 const mockTutors = [
@@ -32,7 +28,7 @@ const mockTutors = [
     name: "Marcus Williams",
     profilePicture: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
     classes: ["CS 101", "CS 150", "MATH 120"],
-    tutorStyle: "Think of me as a Campus Connect tutor who already took the class. No pressure. 🤝",
+    tutorStyle: "Think of me as a study buddy who already took the class. No pressure. 🤝",
     hourlyRate: 0,
     isFree: true,
     rating: 4.7,
@@ -65,10 +61,6 @@ const mockTutors = [
 const TutorProfile = () => {
   const { tutorId } = useParams();
   const navigate = useNavigate();
-  const [showBookingModal, setShowBookingModal] = useState(false);
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [bookingDetails, setBookingDetails] = useState<any>(null);
   
   const tutor = mockTutors.find(t => t.id === tutorId);
 
@@ -92,23 +84,8 @@ const TutorProfile = () => {
   };
 
   const handleBook = () => {
-    setShowBookingModal(true);
-  };
-
-  const handleBookingConfirm = (details: any) => {
-    setBookingDetails(details);
-    setShowBookingModal(false);
-    setShowConfirmationModal(true);
-  };
-
-  const handlePaymentSuccess = () => {
-    setShowConfirmationModal(false);
-    setShowSuccessModal(true);
-  };
-
-  const handleStartChat = () => {
-    setShowSuccessModal(false);
-    navigate(`/chat/${tutor?.id}`);
+    console.log('Booking session with tutor:', tutor.id);
+    // Handle booking logic
   };
 
   return (
@@ -271,35 +248,6 @@ const TutorProfile = () => {
               Book Session
             </Button>
           </div>
-
-          {/* Booking Modals */}
-          {tutor && (
-            <>
-              <BookingModal
-                isOpen={showBookingModal}
-                onClose={() => setShowBookingModal(false)}
-                tutor={{
-                  ...tutor,
-                  venmoHandle: tutor.name.toLowerCase().replace(' ', '-')
-                }}
-                onConfirm={handleBookingConfirm}
-              />
-
-              <BookingConfirmationModal
-                isOpen={showConfirmationModal}
-                onClose={() => setShowConfirmationModal(false)}
-                bookingDetails={bookingDetails}
-                onSuccess={handlePaymentSuccess}
-              />
-
-              <BookingSuccessModal
-                isOpen={showSuccessModal}
-                onClose={() => setShowSuccessModal(false)}
-                tutorName={tutor.name}
-                onStartChat={handleStartChat}
-              />
-            </>
-          )}
         </div>
       </div>
     </PageTransition>

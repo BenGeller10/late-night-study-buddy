@@ -134,7 +134,6 @@ export type Database = {
           major: string | null
           updated_at: string
           user_id: string
-          venmo_handle: string | null
           year: number | null
         }
         Insert: {
@@ -148,7 +147,6 @@ export type Database = {
           major?: string | null
           updated_at?: string
           user_id: string
-          venmo_handle?: string | null
           year?: number | null
         }
         Update: {
@@ -162,7 +160,6 @@ export type Database = {
           major?: string | null
           updated_at?: string
           user_id?: string
-          venmo_handle?: string | null
           year?: number | null
         }
         Relationships: []
@@ -204,10 +201,6 @@ export type Database = {
           created_at: string
           duration_minutes: number | null
           id: string
-          location: string | null
-          notes: string | null
-          payment_method: string | null
-          payment_status: string | null
           scheduled_at: string | null
           status: string
           student_id: string
@@ -222,10 +215,6 @@ export type Database = {
           created_at?: string
           duration_minutes?: number | null
           id?: string
-          location?: string | null
-          notes?: string | null
-          payment_method?: string | null
-          payment_status?: string | null
           scheduled_at?: string | null
           status?: string
           student_id: string
@@ -240,10 +229,6 @@ export type Database = {
           created_at?: string
           duration_minutes?: number | null
           id?: string
-          location?: string | null
-          notes?: string | null
-          payment_method?: string | null
-          payment_status?: string | null
           scheduled_at?: string | null
           status?: string
           student_id?: string

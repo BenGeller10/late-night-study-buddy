@@ -32,7 +32,7 @@ const BottomNavigation = () => {
     {
       to: "/support",
       icon: HelpCircle,
-      label: "Support",
+      label: "Get Help",
       activeColor: "text-green-500"
     }
   ];
