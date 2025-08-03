@@ -45,13 +45,13 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
   };
 
   return (
-    <div className={`relative w-full max-w-sm mx-auto transition-all duration-300 ${
+    <div className={`relative w-full h-full transition-all duration-300 ${
       isAnimating === 'right' ? 'animate-swipe-right' : 
       isAnimating === 'left' ? 'animate-swipe-left' : 'animate-fade-in-up'
     }`}>
-      <div className="glass-card rounded-3xl overflow-hidden shadow-card hover:shadow-glow transition-all duration-300">
+      <div className="glass-card rounded-3xl overflow-hidden shadow-glow h-full flex flex-col transition-all duration-300">
         {/* Profile Image */}
-        <div className="relative aspect-[4/3] bg-gradient-card overflow-hidden">
+        <div className="relative flex-1 bg-gradient-card overflow-hidden">
           {!imageLoaded && (
             <div className="absolute inset-0 skeleton" />
           )}
@@ -78,7 +78,7 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
         </div>
 
         {/* Profile Info */}
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-3 bg-background/95 backdrop-blur-sm">
           <div className="flex items-center justify-between">
             <h3 className="text-2xl font-bold">{tutor.name}</h3>
             <div className="text-right">
@@ -151,28 +151,28 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
 
       </div>
 
-      {/* Swipe Controls */}
-      <div className="flex justify-center gap-8 mt-8">
+      {/* Floating Swipe Controls */}
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-6 z-10">
         <Button
           variant="outline"
           size="icon"
-          className="w-16 h-16 rounded-full border-2 btn-haptic hover:border-destructive hover:text-destructive hover:shadow-lg"
+          className="w-14 h-14 rounded-full border-2 glass-card btn-haptic hover:border-destructive hover:text-destructive hover:shadow-lg"
           onClick={() => handleSwipe('left')}
           disabled={isAnimating !== null}
-          aria-label="Nah, keep looking"
+          aria-label="Pass"
         >
-          <span className="text-2xl">👎</span>
+          <span className="text-xl">❌</span>
         </Button>
         
         <Button
           variant="campus"
           size="icon"
-          className="w-16 h-16 rounded-full btn-haptic hover:scale-110 shadow-glow"
+          className="w-14 h-14 rounded-full btn-haptic hover:scale-110 shadow-glow"
           onClick={() => handleSwipe('right')}
           disabled={isAnimating !== null}
-          aria-label="I'm interested!"
+          aria-label="Like!"
         >
-          <span className="text-2xl">💖</span>
+          <span className="text-xl">💜</span>
         </Button>
       </div>
     </div>

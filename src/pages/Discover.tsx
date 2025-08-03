@@ -61,7 +61,7 @@ const Discover = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background pb-20"> {/* Added bottom padding for navigation */}
+      <div className="min-h-screen bg-gradient-cosmic flex flex-col pb-20"> {/* Added bottom padding for navigation */}
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/90 backdrop-blur-xl border-b border-border/30">
         <div className="p-6 text-center">
@@ -74,8 +74,8 @@ const Discover = () => {
         </div>
       </div>
 
-      {/* Main Swipe Interface */}
-      <div className="p-4">
+      {/* Full-Screen Swipe Interface */}
+      <div className="flex-1 flex items-center justify-center px-4 py-2">
         <EnhancedSwipeView
           onTutorMatch={handleTutorMatch}
           onChat={handleChat}
