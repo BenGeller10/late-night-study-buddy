@@ -34,12 +34,6 @@ const BottomNavigation = () => {
       icon: User,
       label: "Profile",
       activeColor: "text-purple-500"
-    },
-    {
-      to: "/support",
-      icon: HelpCircle,
-      label: "Get Help",
-      activeColor: "text-green-500"
     }
   ];
 

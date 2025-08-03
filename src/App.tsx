@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import BottomNavigation from "@/components/layout/BottomNavigation";
+import FloatingActionButton from "@/components/layout/FloatingActionButton";
 import Index from "./pages/Index";
 import Discover from "./pages/Discover";
 import TutorsList from "./pages/TutorsList";
@@ -36,6 +37,9 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          
+          {/* Floating Action Button - Top Right */}
+          <FloatingActionButton />
           
           {/* Bottom Navigation - Persistent across all pages */}
           <BottomNavigation />
