@@ -5,9 +5,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { Settings, Star, BookOpen, Users } from "lucide-react";
+import { useState } from "react";
 
 const Profile = () => {
+  const [isTutor, setIsTutor] = useState(true);
+  
   // Mock user data - would come from auth/database in real app
   const user = {
     name: "Alex Chen",
@@ -77,6 +82,23 @@ const Profile = () => {
           <Button variant="ghost" size="sm">
             <Settings className="w-4 h-4" />
           </Button>
+        </div>
+        
+        {/* Role Toggle */}
+        <div className="px-4 pb-4">
+          <div className="flex items-center justify-center gap-3 p-3 bg-card/50 rounded-lg border border-border/50">
+            <Label htmlFor="role-toggle" className={`text-sm font-medium ${!isTutor ? 'text-primary' : 'text-muted-foreground'}`}>
+              📚 Student
+            </Label>
+            <Switch
+              id="role-toggle"
+              checked={isTutor}
+              onCheckedChange={setIsTutor}
+            />
+            <Label htmlFor="role-toggle" className={`text-sm font-medium ${isTutor ? 'text-primary' : 'text-muted-foreground'}`}>
+              🧠 Tutor
+            </Label>
+          </div>
         </div>
       </div>
 
