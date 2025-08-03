@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { HelpCircle } from "lucide-react";
-import SwipeView from "@/components/discovery/SwipeView";
+import EnhancedSwipeView from "@/components/discovery/EnhancedSwipeView";
 import PageTransition from "@/components/layout/PageTransition";
+import { soundEffects } from "@/lib/sounds";
 
 const Discover = () => {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ const Discover = () => {
 
       {/* Main Swipe Interface */}
       <div className="p-4">
-        <SwipeView
+        <EnhancedSwipeView
           onTutorMatch={handleTutorMatch}
           onChat={handleChat}
           onBook={handleBook}
@@ -54,8 +55,11 @@ const Discover = () => {
 
       {/* Floating Support Button */}
       <Button
-        onClick={() => navigate('/support')}
-        className="fixed bottom-24 left-4 z-50 h-14 w-14 rounded-full shadow-lg bg-gradient-primary hover:bg-gradient-primary/90 text-white"
+        onClick={() => {
+          soundEffects.playMessage();
+          navigate('/support');
+        }}
+        className="fixed bottom-24 left-4 z-50 h-14 w-14 rounded-full shadow-lg bg-gradient-primary hover:bg-gradient-primary/90 text-white transition-all hover:scale-110 active:scale-95"
         size="icon"
         aria-label="Get Support"
       >
