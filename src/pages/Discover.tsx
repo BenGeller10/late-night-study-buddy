@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { HelpCircle, Search, X } from "lucide-react";
+import { HelpCircle, Search, X, User } from "lucide-react";
 import SwipeView from "@/components/discovery/SwipeView";
 import PageTransition from "@/components/layout/PageTransition";
 
@@ -43,14 +43,27 @@ const Discover = () => {
       <div className="min-h-screen bg-background pb-20"> {/* Added bottom padding for navigation */}
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/20">
-        <div className="p-4 text-center space-y-4">
-          <div>
-            <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              Discover Tutors ✨
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Swipe to find your perfect study buddy
-            </p>
+        <div className="p-4 space-y-4">
+          {/* Top bar with title and profile */}
+          <div className="flex items-center justify-between">
+            <div className="text-center flex-1">
+              <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                Discover Tutors ✨
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Swipe to find your perfect study buddy
+              </p>
+            </div>
+            
+            {/* Profile Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/profile')}
+              className="btn-smooth hover:bg-muted/50"
+            >
+              <User className="h-6 w-6" />
+            </Button>
           </div>
           
           {/* Search Bar */}
