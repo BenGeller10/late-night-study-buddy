@@ -214,7 +214,13 @@ const SwipeView = ({
             <p className="text-muted-foreground">
               Check back later for new tutors or adjust your filters
             </p>
-            <Button onClick={() => setCurrentIndex(0)} className="mt-4">
+            <Button 
+              onClick={() => {
+                setCurrentIndex(0);
+                fetchTutors(); // Refresh the tutors list
+              }} 
+              className="mt-4"
+            >
               Start Over
             </Button>
           </Card>}
