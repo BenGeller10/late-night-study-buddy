@@ -253,7 +253,7 @@ const Support = () => {
         </div>
 
         {/* Input Area */}
-        <div className="fixed bottom-4 left-0 right-0 bg-background/80 backdrop-blur-lg border-t border-border/20 p-4">
+        <div className="fixed bottom-4 left-0 right-0 bg-background backdrop-blur-lg border-t border-border/20 p-4">
           <div className="max-w-4xl mx-auto">
             <div className="flex gap-2">
               <Input
