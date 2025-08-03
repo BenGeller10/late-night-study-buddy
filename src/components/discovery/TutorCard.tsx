@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Eye, Star } from "lucide-react";
 
 interface TutorCardProps {
   tutor: {
@@ -25,6 +27,10 @@ interface TutorCardProps {
 const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewProfile }: TutorCardProps) => {
   const [isAnimating, setIsAnimating] = useState<'left' | 'right' | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
 
   const handleSwipe = (direction: 'left' | 'right') => {
     setIsAnimating(direction);
@@ -73,9 +79,85 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
               <Eye className="w-3 h-3 mr-1" />
               Profile
             </Button>
-            <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm animate-fade-in-up">
-              ⭐ {tutor.rating} ({tutor.totalSessions})
-            </Badge>
+            <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
+              <DialogTrigger asChild>
+                <Badge 
+                  variant="secondary" 
+                  className="bg-background/80 backdrop-blur-sm animate-fade-in-up cursor-pointer hover:bg-background/90 transition-colors"
+                >
+                  ⭐ {tutor.rating} ({tutor.totalSessions})
+                </Badge>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Leave a Review for {tutor.name}</DialogTitle>
+                </DialogHeader>
+                
+                <div className="space-y-6 py-4">
+                  {/* Star Rating */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Rating</label>
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`w-8 h-8 cursor-pointer transition-colors ${
+                            star <= (hoverRating || reviewRating)
+                              ? 'fill-yellow-400 text-yellow-400'
+                              : 'text-muted-foreground hover:text-yellow-400'
+                          }`}
+                          onClick={() => setReviewRating(star)}
+                          onMouseEnter={() => setHoverRating(star)}
+                          onMouseLeave={() => setHoverRating(0)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Review Text */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Review</label>
+                    <Textarea
+                      placeholder="Share your experience with this tutor..."
+                      value={reviewText}
+                      onChange={(e) => setReviewText(e.target.value)}
+                      className="min-h-24"
+                    />
+                  </div>
+                  
+                  {/* Action Buttons */}
+                  <div className="flex gap-3 pt-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setReviewDialogOpen(false);
+                        setReviewRating(0);
+                        setReviewText("");
+                        setHoverRating(0);
+                      }}
+                      className="flex-1"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="campus"
+                      onClick={() => {
+                        // Handle review submission here
+                        console.log('Review submitted:', { rating: reviewRating, text: reviewText });
+                        setReviewDialogOpen(false);
+                        setReviewRating(0);
+                        setReviewText("");
+                        setHoverRating(0);
+                      }}
+                      disabled={reviewRating === 0}
+                      className="flex-1"
+                    >
+                      Submit Review
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
           {tutor.isFree && (
             <div className="absolute top-4 left-4">
