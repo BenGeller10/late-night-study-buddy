@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Search, MapPin, Filter, Sparkles } from "lucide-react";
 import TutorCard from "./TutorCard";
+import { TutorCardSkeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useSearchAnalytics } from "@/hooks/useGameification";
 import { soundEffects } from "@/lib/sounds";
@@ -183,9 +184,16 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile }: SwipeViewPro
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        <div className="h-12 bg-muted rounded-lg animate-pulse" />
-        <div className="h-96 bg-muted rounded-2xl animate-pulse" />
+      <div className="space-y-6 animate-fade-in">
+        <Card className="p-4 glass-card">
+          <div className="space-y-4">
+            <div className="h-10 bg-muted rounded-lg skeleton" />
+            <div className="h-8 bg-muted rounded-lg skeleton w-1/2" />
+          </div>
+        </Card>
+        <div className="flex justify-center">
+          <TutorCardSkeleton />
+        </div>
       </div>
     );
   }
@@ -199,11 +207,11 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile }: SwipeViewPro
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Search subjects (e.g., Calculus, Chemistry)..."
+                placeholder="What do you need help with? 🤔"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                className="pl-10"
+                className="pl-10 bg-background/50 backdrop-blur-sm"
               />
             </div>
             <Button onClick={handleSearch} size="icon" variant="outline">
@@ -223,9 +231,9 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile }: SwipeViewPro
               <option value="North Campus">North Campus</option>
               <option value="Downtown">Downtown</option>
             </select>
-            <Badge variant="secondary" className="ml-auto">
+            <Badge variant="secondary" className="ml-auto bg-primary/10 text-primary border-primary/20">
               <Sparkles className="w-3 h-3 mr-1" />
-              {tutors.length - currentIndex} tutors left
+              {tutors.length - currentIndex} matches waiting ✨
             </Badge>
           </div>
         </div>
@@ -254,15 +262,37 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile }: SwipeViewPro
             onViewProfile={() => onViewProfile(currentTutor.user_id)}
           />
         ) : (
-          <Card className="p-8 text-center space-y-4 max-w-sm">
-            <div className="text-6xl">🎉</div>
-            <h3 className="text-xl font-bold">You've seen everyone!</h3>
-            <p className="text-muted-foreground">
-              Check back later for new tutors or adjust your filters
-            </p>
-            <Button onClick={() => setCurrentIndex(0)} className="mt-4">
-              Start Over
-            </Button>
+          <Card className="glass-card-glow p-8 text-center space-y-6 max-w-sm mx-auto">
+            <div className="text-7xl animate-float">🔥</div>
+            <div className="space-y-2">
+              <h3 className="text-2xl font-bold bg-gradient-hero bg-clip-text text-transparent">
+                You're all caught up!
+              </h3>
+              <p className="text-muted-foreground">
+                No more tutors right now, but don't worry! More awesome study buddies join every day ✨
+              </p>
+            </div>
+            <div className="space-y-3">
+              <Button 
+                onClick={() => setCurrentIndex(0)} 
+                variant="campus"
+                className="w-full"
+              >
+                🔄 Let's Go Again!
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="w-full"
+                onClick={() => {
+                  setSearchQuery("");
+                  setSelectedCampus("");
+                  setCurrentIndex(0);
+                }}
+              >
+                Clear Filters
+              </Button>
+            </div>
           </Card>
         )}
       </div>

@@ -32,15 +32,15 @@ const Discover = () => {
     <PageTransition>
       <div className="min-h-screen bg-background pb-20"> {/* Added bottom padding for navigation */}
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/20">
-          <div className="text-center">
-            <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              Campus Connect Discovery 🎓
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Your perfect tutor match is just a swipe away
-            </p>
-          </div>
+      <div className="sticky top-0 z-10 bg-background/90 backdrop-blur-xl border-b border-border/30">
+        <div className="p-6 text-center">
+          <h1 className="text-2xl font-bold bg-gradient-hero bg-clip-text text-transparent mb-2">
+            Ready to find your study squad? ✨
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Swipe right to connect • Left to keep looking
+          </p>
+        </div>
       </div>
 
       {/* Main Swipe Interface */}
@@ -59,9 +59,10 @@ const Discover = () => {
           soundEffects.playMessage();
           navigate('/support');
         }}
-        className="fixed bottom-24 left-4 z-50 h-14 w-14 rounded-full shadow-lg bg-gradient-primary hover:bg-gradient-primary/90 text-white transition-all hover:scale-110 active:scale-95"
+        variant="campus"
+        className="fixed bottom-24 left-4 z-50 h-14 w-14 rounded-full shadow-glow hover:shadow-lg transition-all hover:scale-110 active:scale-95"
         size="icon"
-        aria-label="Get Support"
+        aria-label="Need help? We got you! 💬"
       >
         <HelpCircle className="h-6 w-6" />
       </Button>

@@ -131,20 +131,20 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
           {/* Action Buttons */}
           <div className="flex gap-3 pt-2">
             <Button
-              variant="ghost"
+              variant="secondary"
               size="lg"
-              className="flex-1 btn-smooth"
+              className="flex-1 btn-haptic font-medium bg-gradient-accent text-accent-foreground hover:shadow-glow"
               onClick={onChat}
             >
-              💬 Chat
+              💬 Let's Chat!
             </Button>
             <Button
               variant="campus"
               size="lg"
-              className="flex-1 btn-smooth"
+              className="flex-1 btn-haptic font-medium"
               onClick={onBook}
             >
-              📅 Book
+              📅 Book Sesh
             </Button>
           </div>
         </div>
@@ -152,25 +152,27 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
       </div>
 
       {/* Swipe Controls */}
-      <div className="flex justify-center gap-6 mt-6">
+      <div className="flex justify-center gap-8 mt-8">
         <Button
           variant="outline"
           size="icon"
-          className="w-14 h-14 rounded-full border-2 btn-smooth hover:border-destructive hover:text-destructive"
+          className="w-16 h-16 rounded-full border-2 btn-haptic hover:border-destructive hover:text-destructive hover:shadow-lg"
           onClick={() => handleSwipe('left')}
           disabled={isAnimating !== null}
+          aria-label="Nah, keep looking"
         >
-          <span className="text-xl">👎</span>
+          <span className="text-2xl">👎</span>
         </Button>
         
         <Button
           variant="campus"
           size="icon"
-          className="w-14 h-14 rounded-full btn-smooth hover:scale-110"
+          className="w-16 h-16 rounded-full btn-haptic hover:scale-110 shadow-glow"
           onClick={() => handleSwipe('right')}
           disabled={isAnimating !== null}
+          aria-label="I'm interested!"
         >
-          <span className="text-xl">👍</span>
+          <span className="text-2xl">💖</span>
         </Button>
       </div>
     </div>

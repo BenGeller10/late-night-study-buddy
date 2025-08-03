@@ -6,61 +6,63 @@
 
 @layer base {
   :root {
-    /* Campus Connect Brand Colors - Dark Mode First */
-    --background: 220 27% 8%;
-    --foreground: 210 20% 95%;
+    /* Campus Connect Modern Dark Theme - Deep Gray-Blue Base */
+    --background: 224 47% 11%; /* Deep gray-blue #1A202C */
+    --foreground: 210 40% 98%;
 
-    --card: 220 25% 12%;
-    --card-foreground: 210 20% 95%;
+    --card: 224 47% 14%; /* Slightly lighter than background */
+    --card-foreground: 210 40% 98%;
 
-    --popover: 220 25% 12%;
-    --popover-foreground: 210 20% 95%;
+    --popover: 224 47% 14%;
+    --popover-foreground: 210 40% 98%;
 
-    /* Campus Purple - The main brand vibe */
-    --primary: 260 85% 65%;
-    --primary-foreground: 210 20% 95%;
-    --primary-glow: 260 85% 75%;
+    /* Vibrant Indigo Primary - Modern & Energetic */
+    --primary: 239 84% 67%; /* Vibrant indigo #6366F1 */
+    --primary-foreground: 210 40% 98%;
+    --primary-glow: 239 84% 75%;
 
-    /* Subtle grays for cards and surfaces */
-    --secondary: 220 20% 18%;
-    --secondary-foreground: 210 15% 85%;
+    /* Refined Secondary Grays */
+    --secondary: 224 47% 20%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 220 15% 16%;
-    --muted-foreground: 210 10% 65%;
+    --muted: 224 47% 18%;
+    --muted-foreground: 215 20% 65%;
 
-    /* Campus accent - vibrant for CTAs and highlights */
-    --accent: 280 90% 70%;
-    --accent-foreground: 210 20% 95%;
+    /* Punchy Cyan Accent - Social Media Vibe */
+    --accent: 189 94% 57%; /* Punchy cyan #22D3EE */
+    --accent-foreground: 224 47% 11%;
 
-    /* Success green for confirmations */
-    --success: 145 85% 55%;
-    --success-foreground: 210 20% 95%;
+    /* Enhanced Status Colors */
+    --success: 142 86% 59%;
+    --success-foreground: 210 40% 98%;
 
-    /* Warning for important alerts */
-    --warning: 45 95% 65%;
-    --warning-foreground: 220 27% 8%;
+    --warning: 38 92% 62%;
+    --warning-foreground: 224 47% 11%;
 
-    --destructive: 0 85% 65%;
-    --destructive-foreground: 210 20% 95%;
+    --destructive: 0 84% 65%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 220 20% 22%;
-    --input: 220 20% 18%;
-    --ring: 260 85% 65%;
+    --border: 224 47% 22%;
+    --input: 224 47% 18%;
+    --ring: 239 84% 67%;
 
-    --radius: 0.75rem;
+    --radius: 1rem; /* More rounded corners for modern feel */
 
-    /* Gradients for that premium feel */
+    /* Enhanced Gradients - Multi-color & Dynamic */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-card: linear-gradient(135deg, hsl(var(--card)), hsl(220 25% 14%));
-    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(280 90% 80%));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    --gradient-card: linear-gradient(135deg, hsl(var(--card)), hsl(224 47% 16%));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(189 94% 65%));
 
-    /* Shadows with campus purple glow */
-    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.3);
-    --shadow-card: 0 10px 30px -5px hsl(220 27% 4% / 0.4);
+    /* Premium Shadows with Modern Glow */
+    --shadow-glow: 0 0 30px hsl(var(--primary) / 0.4);
+    --shadow-card: 0 8px 25px -5px hsl(224 47% 6% / 0.5);
+    --shadow-lg: 0 20px 25px -5px hsl(224 47% 6% / 0.4), 0 10px 10px -5px hsl(224 47% 6% / 0.3);
     
-    /* Smooth transitions */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    /* Refined Transitions */
+    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-elastic: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
   /* Light mode for those rare daylight study sessions */
@@ -111,8 +113,11 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', 'system-ui', -apple-system, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   /* Custom scrollbars for dark theme */
@@ -195,21 +200,36 @@
   animation: float 3s ease-in-out infinite;
 }
 
-/* Interactive Button Enhancements */
+/* Enhanced Interactive Button System */
 .btn-campus {
-  @apply bg-gradient-primary hover:bg-gradient-primary hover:opacity-90 text-white;
+  @apply bg-gradient-primary hover:bg-gradient-hero text-white;
   @apply transition-all duration-200 hover:scale-105 active:scale-95;
-  @apply shadow-lg hover:shadow-xl;
+  @apply shadow-lg hover:shadow-glow rounded-xl;
+  @apply font-medium tracking-wide;
 }
 
 .btn-smooth {
   @apply transition-all duration-200 hover:scale-105 active:scale-95;
+  @apply hover:shadow-lg active:shadow-md;
+  @apply transform-gpu; /* Hardware acceleration */
 }
 
-/* Glass Card Effect */
+.btn-haptic {
+  @apply transition-all duration-150 ease-out;
+  @apply hover:scale-105 active:scale-95;
+  @apply active:duration-75; /* Faster feedback on tap */
+}
+
+/* Enhanced Glass Card Effect */
 .glass-card {
-  @apply bg-background/80 backdrop-blur-lg border border-border/30;
-  @apply shadow-lg hover:shadow-xl transition-all duration-300;
+  @apply bg-card/90 backdrop-blur-xl border border-border/40;
+  @apply shadow-card hover:shadow-lg transition-all duration-300;
+  @apply rounded-2xl; /* More rounded for modern feel */
+}
+
+.glass-card-glow {
+  @apply glass-card hover:shadow-glow;
+  @apply hover:bg-card/95; /* Slight opacity change on hover */
 }
 
 /* Success States */
@@ -342,9 +362,13 @@
     animation: shimmer 2s infinite;
   }
 
-  /* Smooth page transitions */
+  /* Enhanced page transitions */
   .page-transition {
-    animation: fade-in-up 0.3s ease-out;
+    animation: fade-in-up 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .page-transition-fast {
+    animation: fade-in-up 0.2s ease-out;
   }
 
   /* Interactive elements */
