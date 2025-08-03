@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Settings, Star, BookOpen, Users } from "lucide-react";
+import { Settings, Star, BookOpen, Users, DollarSign, Clock, Calendar, Target, TrendingUp, Award, Search, MessageCircle } from "lucide-react";
 import { useState } from "react";
 
 const Profile = () => {
@@ -20,10 +20,16 @@ const Profile = () => {
     avatar: "/placeholder.svg",
     major: "Computer Science",
     year: "Junior",
-    role: "Student & Tutor",
-    rating: 4.8,
-    totalSessions: 24,
-    studentsHelped: 12
+    // Student stats
+    sessionsAttended: 18,
+    subjectsStudied: 4,
+    hoursLearned: 45,
+    // Tutor stats
+    sessionsTaught: 24,
+    studentsHelped: 12,
+    hoursTeaching: 68,
+    earnings: 1420,
+    rating: 4.8
   };
 
   const userBadges = [
@@ -129,74 +135,221 @@ const Profile = () => {
                     🎓 {user.year}
                   </Badge>
                   <Badge variant="secondary" className="text-xs">
-                    {user.role}
+                    {isTutor ? 'Tutor' : 'Student'}
                   </Badge>
                 </div>
               </div>
             </div>
             
-            {/* Stats Row */}
-            <div className="grid grid-cols-3 gap-4 mt-6 pt-4 border-t border-border/50">
-              <div className="text-center">
-                <div className="text-lg font-bold text-primary">{user.totalSessions}</div>
-                <div className="text-xs text-muted-foreground">Sessions</div>
-              </div>
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-1">
-                  <Star className="w-3 h-3 fill-current text-yellow-500" />
-                  <span className="text-lg font-bold">{user.rating}</span>
+            {isTutor ? (
+              /* Tutor Stats */
+              <div className="grid grid-cols-4 gap-4 mt-6 pt-4 border-t border-border/50">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-primary">{user.sessionsTaught}</div>
+                  <div className="text-xs text-muted-foreground">Sessions</div>
                 </div>
-                <div className="text-xs text-muted-foreground">Rating</div>
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-1">
+                    <Star className="w-3 h-3 fill-current text-yellow-500" />
+                    <span className="text-lg font-bold">{user.rating}</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground">Rating</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-accent">{user.studentsHelped}</div>
+                  <div className="text-xs text-muted-foreground">Students</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-green-500">${user.earnings}</div>
+                  <div className="text-xs text-muted-foreground">Earned</div>
+                </div>
               </div>
-              <div className="text-center">
-                <div className="text-lg font-bold text-accent">{user.studentsHelped}</div>
-                <div className="text-xs text-muted-foreground">Helped</div>
+            ) : (
+              /* Student Stats */
+              <div className="grid grid-cols-3 gap-4 mt-6 pt-4 border-t border-border/50">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-primary">{user.sessionsAttended}</div>
+                  <div className="text-xs text-muted-foreground">Sessions</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-accent">{user.subjectsStudied}</div>
+                  <div className="text-xs text-muted-foreground">Subjects</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-blue-500">{user.hoursLearned}h</div>
+                  <div className="text-xs text-muted-foreground">Learned</div>
+                </div>
               </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {isTutor ? (
+          /* TUTOR INTERFACE */
+          <>
+            {/* Teaching Overview */}
+            <Card className="glass-card border-purple-200 dark:border-purple-800">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-purple-700 dark:text-purple-300">
+                  <Award className="w-5 h-5" />
+                  Teaching Overview
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Clock className="w-4 h-4 text-muted-foreground" />
+                      <span>Hours Teaching: <strong>{user.hoursTeaching}</strong></span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <TrendingUp className="w-4 h-4 text-muted-foreground" />
+                      <span>This Month: <strong>12 sessions</strong></span>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Target className="w-4 h-4 text-muted-foreground" />
+                      <span>Success Rate: <strong>94%</strong></span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <MessageCircle className="w-4 h-4 text-muted-foreground" />
+                      <span>Response Time: <strong>5 min</strong></span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Tutor Actions */}
+            <div className="grid grid-cols-2 gap-4">
+              <Button variant="outline" className="h-16 flex-col gap-2 border-purple-200 hover:border-purple-300">
+                <Calendar className="w-5 h-5 text-purple-600" />
+                <span className="text-sm">Set Availability</span>
+              </Button>
+              <Button variant="outline" className="h-16 flex-col gap-2 border-green-200 hover:border-green-300">
+                <DollarSign className="w-5 h-5 text-green-600" />
+                <span className="text-sm">Earnings</span>
+              </Button>
+              <Button variant="outline" className="h-16 flex-col gap-2 border-blue-200 hover:border-blue-300">
+                <BookOpen className="w-5 h-5 text-blue-600" />
+                <span className="text-sm">My Subjects</span>
+              </Button>
+              <Button variant="outline" className="h-16 flex-col gap-2 border-orange-200 hover:border-orange-300">
+                <Users className="w-5 h-5 text-orange-600" />
+                <span className="text-sm">Students</span>
+              </Button>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Study Streak */}
-        <StudyStreak />
-        
-        {/* Achievements */}
-        <Card className="glass-card">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <span className="text-lg">🏆</span>
-              Your Achievements
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <BadgeDisplay 
-              badges={userBadges}
-              showDescription={true}
-              size="md"
-              maxDisplay={6}
-            />
-          </CardContent>
-        </Card>
+            {/* Tutor Achievements */}
+            <Card className="glass-card border-yellow-200 dark:border-yellow-800">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-yellow-700 dark:text-yellow-300">
+                  <span className="text-lg">🏆</span>
+                  Teaching Achievements
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <BadgeDisplay 
+                  badges={userBadges}
+                  showDescription={true}
+                  size="md"
+                  maxDisplay={6}
+                />
+              </CardContent>
+            </Card>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-2 gap-4">
-          <Button variant="outline" className="h-16 flex-col gap-2">
-            <BookOpen className="w-5 h-5" />
-            <span className="text-sm">My Classes</span>
-          </Button>
-          <Button variant="outline" className="h-16 flex-col gap-2">
-            <Users className="w-5 h-5" />
-            <span className="text-sm">Study Groups</span>
-          </Button>
-        </div>
+            {/* Tutor Coming Soon */}
+            <div className="text-center space-y-2 py-8">
+              <span className="text-4xl">👨‍🏫</span>
+              <h3 className="text-lg font-semibold">Tutor Dashboard Expanding!</h3>
+              <p className="text-muted-foreground text-sm">
+                Student feedback, advanced scheduling, and payment tracking
+              </p>
+            </div>
+          </>
+        ) : (
+          /* STUDENT INTERFACE */
+          <>
+            {/* Study Progress */}
+            <StudyStreak />
 
-        {/* Coming Soon */}
-        <div className="text-center space-y-2 py-8">
-          <span className="text-4xl">🚧</span>
-          <h3 className="text-lg font-semibold">More Features Coming Soon!</h3>
-          <p className="text-muted-foreground text-sm">
-            Detailed analytics, custom themes, and advanced settings
-          </p>
-        </div>
+            {/* Learning Path */}
+            <Card className="glass-card border-blue-200 dark:border-blue-800">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+                  <Target className="w-5 h-5" />
+                  Learning Progress
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Calculus II</span>
+                    <span className="text-xs text-muted-foreground">85% complete</span>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-2">
+                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: '85%' }}></div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Organic Chemistry</span>
+                    <span className="text-xs text-muted-foreground">62% complete</span>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-2">
+                    <div className="bg-green-500 h-2 rounded-full" style={{ width: '62%' }}></div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Student Actions */}
+            <div className="grid grid-cols-2 gap-4">
+              <Button variant="outline" className="h-16 flex-col gap-2 border-blue-200 hover:border-blue-300">
+                <Search className="w-5 h-5 text-blue-600" />
+                <span className="text-sm">Find Tutors</span>
+              </Button>
+              <Button variant="outline" className="h-16 flex-col gap-2 border-green-200 hover:border-green-300">
+                <Calendar className="w-5 h-5 text-green-600" />
+                <span className="text-sm">My Sessions</span>
+              </Button>
+              <Button variant="outline" className="h-16 flex-col gap-2 border-purple-200 hover:border-purple-300">
+                <BookOpen className="w-5 h-5 text-purple-600" />
+                <span className="text-sm">Study Materials</span>
+              </Button>
+              <Button variant="outline" className="h-16 flex-col gap-2 border-orange-200 hover:border-orange-300">
+                <Users className="w-5 h-5 text-orange-600" />
+                <span className="text-sm">Study Groups</span>
+              </Button>
+            </div>
+
+            {/* Student Achievements */}
+            <Card className="glass-card border-green-200 dark:border-green-800">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-green-700 dark:text-green-300">
+                  <span className="text-lg">🎯</span>
+                  Learning Achievements
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <BadgeDisplay 
+                  badges={userBadges.filter(badge => ['Help Hero', 'Top-Rated'].includes(badge.name))}
+                  showDescription={true}
+                  size="md"
+                  maxDisplay={4}
+                />
+              </CardContent>
+            </Card>
+
+            {/* Student Coming Soon */}
+            <div className="text-center space-y-2 py-8">
+              <span className="text-4xl">🎓</span>
+              <h3 className="text-lg font-semibold">Student Hub Growing!</h3>
+              <p className="text-muted-foreground text-sm">
+                Study plans, grade tracking, and personalized recommendations
+              </p>
+            </div>
+          </>
+        )}
       </div>
       </div>
     </PageTransition>
