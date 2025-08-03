@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Send, Bot, User, Loader2 } from "lucide-react";
+import { Send, Bot, User, Loader2, ExternalLink } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import PageTransition from "@/components/layout/PageTransition";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,6 +24,7 @@ const Support = () => {
   const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Add welcome message
@@ -108,6 +110,62 @@ const Support = () => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  const renderMessageContent = (content: string) => {
+    // Define patterns for clickable actions
+    const actionPatterns = [
+      { pattern: /\*\*Check Tutor Profiles\*\*/g, text: "Check Tutor Profiles", route: "/discover" },
+      { pattern: /\*\*Find Tutors\*\*/g, text: "Find Tutors", route: "/discover" },
+      { pattern: /\*\*Browse Tutors\*\*/g, text: "Browse Tutors", route: "/discover" },
+      { pattern: /\*\*View Profile\*\*/g, text: "View Profile", route: "/profile" },
+      { pattern: /\*\*Chat with Tutors\*\*/g, text: "Chat with Tutors", route: "/chat" },
+      { pattern: /\*\*Check Messages\*\*/g, text: "Check Messages", route: "/chat" },
+      { pattern: /\*\*Hot Topics\*\*/g, text: "Hot Topics", route: "/trends" },
+      { pattern: /\*\*Trending Topics\*\*/g, text: "Trending Topics", route: "/trends" }
+    ];
+
+    let processedContent = content;
+    const buttons: Array<{ text: string; route: string; id: string }> = [];
+
+    // Replace patterns with placeholders and collect button info
+    actionPatterns.forEach((action, index) => {
+      if (action.pattern.test(content)) {
+        const buttonId = `button_${index}_${Date.now()}`;
+        processedContent = processedContent.replace(action.pattern, `[BUTTON:${buttonId}]`);
+        buttons.push({ text: action.text, route: action.route, id: buttonId });
+      }
+    });
+
+    // Split content by button placeholders
+    const parts = processedContent.split(/(\[BUTTON:[^\]]+\])/);
+    
+    return (
+      <div className="space-y-2">
+        {parts.map((part, index) => {
+          const buttonMatch = part.match(/\[BUTTON:([^\]]+)\]/);
+          if (buttonMatch) {
+            const button = buttons.find(b => b.id === buttonMatch[1]);
+            if (button) {
+              return (
+                <Button
+                  key={index}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate(button.route)}
+                  className="inline-flex items-center gap-2 mr-2 mb-1"
+                >
+                  {button.text}
+                  <ExternalLink className="h-3 w-3" />
+                </Button>
+              );
+            }
+          }
+          return part ? <span key={index} className="whitespace-pre-wrap">{part}</span> : null;
+        })}
+      </div>
+    );
+  };
+
+
   return (
     <PageTransition>
       <div className="min-h-screen bg-background pb-20">
@@ -156,7 +214,9 @@ const Support = () => {
                     ? 'bg-muted/50' 
                     : 'bg-primary text-primary-foreground'
                 }`}>
-                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  {message.isAI ? renderMessageContent(message.content) : (
+                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  )}
                 </Card>
                 <span className="text-xs text-muted-foreground mt-1">
                   {formatTime(message.timestamp)}
