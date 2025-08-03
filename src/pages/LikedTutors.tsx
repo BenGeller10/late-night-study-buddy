@@ -129,6 +129,10 @@ const LikedTutors = () => {
   // Filter tutors based on liked IDs
   const likedTutors = mockTutors.filter(tutor => likedTutorIds.includes(tutor.id));
 
+  const handleViewProfile = (tutorId: string) => {
+    navigate(`/tutor/${tutorId}`);
+  };
+
   const handleChat = (tutorId: string) => {
     navigate(`/chat/${tutorId}`);
   };
@@ -202,11 +206,17 @@ const LikedTutors = () => {
                   <img
                     src={tutor.profilePicture}
                     alt={tutor.name}
-                    className="w-16 h-16 rounded-full object-cover"
+                    className="w-16 h-16 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-primary transition-all btn-smooth"
+                    onClick={() => handleViewProfile(tutor.id)}
                   />
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg">{tutor.name}</CardTitle>
+                      <CardTitle 
+                        className="text-lg cursor-pointer hover:text-primary transition-colors story-link"
+                        onClick={() => handleViewProfile(tutor.id)}
+                      >
+                        {tutor.name}
+                      </CardTitle>
                       {tutor.isFree ? (
                         <Badge className="bg-success text-success-foreground">Free</Badge>
                       ) : (
