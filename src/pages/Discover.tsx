@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { HelpCircle } from "lucide-react";
 import SwipeView from "@/components/discovery/SwipeView";
 import PageTransition from "@/components/layout/PageTransition";
 
@@ -30,13 +32,26 @@ const Discover = () => {
       <div className="min-h-screen bg-background pb-20"> {/* Added bottom padding for navigation */}
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/20">
-        <div className="p-4">
-          <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-            Discover Tutors ✨
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Swipe to find your perfect study buddy
-          </p>
+        <div className="p-4 relative">
+          {/* Support Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/support')}
+            className="absolute left-4 top-1/2 -translate-y-1/2"
+            aria-label="Get Support"
+          >
+            <HelpCircle className="h-5 w-5" />
+          </Button>
+          
+          <div className="text-center">
+            <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              Discover Tutors ✨
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Swipe to find your perfect study buddy
+            </p>
+          </div>
         </div>
       </div>
 
