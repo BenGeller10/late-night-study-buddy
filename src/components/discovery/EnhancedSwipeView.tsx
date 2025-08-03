@@ -191,77 +191,33 @@ const SwipeView = ({
         <div className="h-96 bg-muted rounded-2xl animate-pulse" />
       </div>;
   }
-  return <div className="w-full max-w-sm mx-auto space-y-4 animate-fade-in">
-      {/* Top Bar with Filters */}
-      <div className="flex items-center justify-between">
-        <Badge variant="secondary" className="glass-card">
-          <Sparkles className="w-3 h-3 mr-1" />
-          {tutors.length - currentIndex} left
-        </Badge>
-        <div className="flex gap-2">
-          <Button size="sm" variant="outline" className="glass-card">
-            <Filter className="w-4 h-4" />
-          </Button>
-          <Button size="sm" variant="outline" className="glass-card">
-            <Search className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
+  return <div className="space-y-6 animate-fade-in">
+      {/* Search and Filters */}
+      
 
-      {/* Card Stack Container - Tinder/Hinge Style */}
-      <div className="relative w-full h-[70vh] flex items-center justify-center">
-        {/* Background Cards for Stack Effect */}
-        {tutors.slice(currentIndex + 1, currentIndex + 3).map((tutor, index) => (
-          <div
-            key={tutor.id}
-            className={`absolute inset-0 transition-all duration-300`}
-            style={{
-              transform: `scale(${0.95 - index * 0.05}) translateY(${index * 8}px)`,
-              zIndex: 10 - index,
-              opacity: 0.7 - index * 0.3
-            }}
-          >
-            <div className="w-full h-full bg-gradient-card rounded-3xl border border-border/30" />
-          </div>
-        ))}
-        
-        {/* Current Card */}
-        {currentTutor ? (
-          <div className="absolute inset-0 z-20">
-            <TutorCard 
-              key={currentTutor.id} 
-              tutor={{
-                id: currentTutor.id,
-                name: currentTutor.display_name,
-                profilePicture: currentTutor.avatar_url || "/placeholder.svg",
-                classes: currentSubjects.map(s => s.code),
-                tutorStyle: currentTutor.bio || "Passionate tutor ready to help!",
-                hourlyRate: currentSubjects.length > 0 ? currentSubjects[0].hourly_rate || 25 : 25,
-                isFree: Math.random() > 0.7,
-                rating: currentTutor.rating || 4.5,
-                totalSessions: currentTutor.total_sessions || 0
-              }} 
-              onSwipeLeft={handleSwipeLeft} 
-              onSwipeRight={handleSwipeRight} 
-              onChat={() => handleChat(currentTutor.user_id)} 
-              onBook={() => handleBook(currentTutor.user_id)} 
-              onViewProfile={() => onViewProfile(currentTutor.user_id)} 
-            />
-          </div>
-        ) : (
-          <div className="absolute inset-0 z-20 flex items-center justify-center">
-            <Card className="p-8 text-center space-y-4 glass-card max-w-sm">
-              <div className="text-6xl">🎉</div>
-              <h3 className="text-xl font-bold">You've seen everyone!</h3>
-              <p className="text-muted-foreground">
-                Check back later for new tutors or adjust your filters
-              </p>
-              <Button onClick={() => setCurrentIndex(0)} variant="campus" className="mt-4">
-                Start Over
-              </Button>
-            </Card>
-          </div>
-        )}
+      {/* Tutor Cards */}
+      <div className="relative min-h-[600px] flex items-center justify-center">
+        {currentTutor ? <TutorCard key={currentTutor.id} tutor={{
+        id: currentTutor.id,
+        name: currentTutor.display_name,
+        profilePicture: currentTutor.avatar_url || "/placeholder.svg",
+        classes: currentSubjects.map(s => s.code),
+        tutorStyle: currentTutor.bio || "Passionate tutor ready to help!",
+        hourlyRate: currentSubjects.length > 0 ? currentSubjects[0].hourly_rate || 25 : 25,
+        isFree: Math.random() > 0.7,
+        // Random free sessions
+        rating: currentTutor.rating || 4.5,
+        totalSessions: currentTutor.total_sessions || 0
+      }} onSwipeLeft={handleSwipeLeft} onSwipeRight={handleSwipeRight} onChat={() => handleChat(currentTutor.user_id)} onBook={() => handleBook(currentTutor.user_id)} onViewProfile={() => onViewProfile(currentTutor.user_id)} /> : <Card className="p-8 text-center space-y-4 max-w-sm">
+            <div className="text-6xl">🎉</div>
+            <h3 className="text-xl font-bold">You've seen everyone!</h3>
+            <p className="text-muted-foreground">
+              Check back later for new tutors or adjust your filters
+            </p>
+            <Button onClick={() => setCurrentIndex(0)} className="mt-4">
+              Start Over
+            </Button>
+          </Card>}
       </div>
     </div>;
 };
