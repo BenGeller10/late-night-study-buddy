@@ -122,11 +122,11 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onSeeMoreForClass }: SwipeVie
       setSavedTutors(prev => [...prev, currentTutor.id]);
       onTutorMatch(currentTutor.id);
       
-      // Add delay for smooth transition
+      // Instant transition to next tutor like dating apps
       setTimeout(() => {
         nextTutor();
         setIsTransitioning(false);
-      }, 300);
+      }, 250);
     }
   };
 
@@ -135,11 +135,11 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onSeeMoreForClass }: SwipeVie
       setIsTransitioning(true);
       setSkippedTutors(prev => [...prev, currentTutor.id]);
       
-      // Add delay for smooth transition, but don't fully disappear
+      // Instant transition to next tutor like dating apps
       setTimeout(() => {
         nextTutor();
         setIsTransitioning(false);
-      }, 300);
+      }, 250);
     }
   };
 

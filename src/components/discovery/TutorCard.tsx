@@ -33,12 +33,14 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onSeeMore
       navigator.vibrate(50);
     }
     
+    // Immediately call the swipe handler for instant response
     setTimeout(() => {
       if (direction === 'right') {
         onSwipeRight();
       } else {
         onSwipeLeft();
       }
+      setIsAnimating(null);
     }, 300);
   };
 
