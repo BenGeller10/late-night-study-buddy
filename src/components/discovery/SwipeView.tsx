@@ -91,9 +91,10 @@ interface SwipeViewProps {
   onBook: (tutorId: string) => void;
   onViewProfile: (tutorId: string) => void;
   onViewLikedTutors: (likedTutorIds: string[]) => void;
+  searchQuery?: string;
 }
 
-const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile, onViewLikedTutors }: SwipeViewProps) => {
+const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile, onViewLikedTutors, searchQuery = "" }: SwipeViewProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [savedTutors, setSavedTutors] = useState<string[]>([]);
   const [skippedTutors, setSkippedTutors] = useState<string[]>([]);
@@ -108,15 +109,31 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile, onViewLikedTut
     return () => clearTimeout(timer);
   }, []);
 
-  const currentTutor = mockTutors[currentIndex];
+  // Filter tutors based on search query
+  const filteredTutors = searchQuery 
+    ? mockTutors.filter(tutor => 
+        tutor.classes.some(className => 
+          className.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      )
+    : mockTutors;
+
+  const currentTutor = filteredTutors[currentIndex];
 
   // Get other tutors for the same classes as current tutor
   const getMoreTutorsForClasses = (classes: string[]) => {
-    return mockTutors.filter(tutor => 
+    return filteredTutors.filter(tutor => 
       tutor.id !== currentTutor?.id && 
       tutor.classes.some(tutorClass => classes.includes(tutorClass))
     );
   };
+
+  // Reset to beginning when search query changes
+  useEffect(() => {
+    setCurrentIndex(0);
+    setSavedTutors([]);
+    setSkippedTutors([]);
+  }, [searchQuery]);
 
   const handleSwipeRight = () => {
     if (currentTutor && !isTransitioning) {
@@ -147,7 +164,7 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile, onViewLikedTut
 
 
   const nextTutor = () => {
-    if (currentIndex < mockTutors.length - 1) {
+    if (currentIndex < filteredTutors.length - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
       // End of tutors - show completion message
@@ -177,11 +194,18 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile, onViewLikedTut
       <div className="flex-1 flex items-center justify-center text-center p-6">
         <div className="space-y-6">
           <span className="text-6xl">🎉</span>
-          <h3 className="text-xl font-semibold">You've seen all available tutors!</h3>
+          <h3 className="text-xl font-semibold">
+            {searchQuery 
+              ? `You've seen all tutors for "${searchQuery}"!` 
+              : "You've seen all available tutors!"
+            }
+          </h3>
           <p className="text-muted-foreground">
             {savedTutors.length > 0 
               ? `You liked ${savedTutors.length} tutor${savedTutors.length > 1 ? 's' : ''}. Ready to view their full profiles?`
-              : "No tutors caught your eye? Try again later or search for specific classes."
+              : searchQuery 
+                ? "No tutors caught your eye? Try a different search or clear the search to see all tutors."
+                : "No tutors caught your eye? Try again later or search for specific classes."
             }
           </p>
           {savedTutors.length > 0 && (
@@ -213,9 +237,16 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile, onViewLikedTut
     return (
       <div className="flex-1 flex items-center justify-center text-center p-6">
         <div className="space-y-4">
-          <span className="text-6xl">🎉</span>
-          <h3 className="text-xl font-semibold">You've seen all available tutors!</h3>
-          <p className="text-muted-foreground">Check back later for new tutors or try searching for specific classes.</p>
+          <span className="text-6xl">🔍</span>
+          <h3 className="text-xl font-semibold">
+            {searchQuery ? `No tutors found for "${searchQuery}"` : "No tutors available"}
+          </h3>
+          <p className="text-muted-foreground">
+            {searchQuery 
+              ? "Try searching for a different course or clear the search to see all tutors."
+              : "Check back later for new tutors or try searching for specific classes."
+            }
+          </p>
         </div>
       </div>
     );
@@ -238,7 +269,7 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile, onViewLikedTut
       
       {/* Progress Indicator */}
       <div className="flex gap-2 mt-6">
-        {mockTutors.map((_, index) => (
+        {filteredTutors.map((_, index) => (
           <div
             key={index}
             className={`w-2 h-2 rounded-full transition-colors ${
@@ -250,6 +281,11 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile, onViewLikedTut
 
       {/* Stats */}
       <div className="mt-4 text-center space-y-1">
+        {searchQuery && (
+          <div className="text-xs text-muted-foreground">
+            📚 {filteredTutors.length} tutor{filteredTutors.length !== 1 ? 's' : ''} found for "{searchQuery}"
+          </div>
+        )}
         {savedTutors.length > 0 && (
           <div className="text-sm text-muted-foreground">
             💾 Saved {savedTutors.length} tutor{savedTutors.length > 1 ? 's' : ''}
