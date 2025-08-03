@@ -137,7 +137,7 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onSeeMore
             <Button
               variant="campus"
               size="lg"
-              className="flex-1 btn-smooth animate-pulse-glow"
+              className="flex-1 btn-smooth"
               onClick={onBook}
             >
               📅 Book
@@ -145,15 +145,6 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onSeeMore
           </div>
         </div>
 
-        {/* Swipe Indicators */}
-        <div className="absolute inset-x-4 bottom-20 flex justify-between pointer-events-none">
-          <div className="w-12 h-12 rounded-full bg-destructive/20 flex items-center justify-center">
-            <span className="text-2xl">👎</span>
-          </div>
-          <div className="w-12 h-12 rounded-full bg-success/20 flex items-center justify-center">
-            <span className="text-2xl">👍</span>
-          </div>
-        </div>
       </div>
 
       {/* Swipe Controls */}

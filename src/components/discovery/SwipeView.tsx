@@ -135,7 +135,7 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onSeeMoreForClass }: SwipeVie
       setIsTransitioning(true);
       setSkippedTutors(prev => [...prev, currentTutor.id]);
       
-      // Add delay for smooth transition
+      // Add delay for smooth transition, but don't fully disappear
       setTimeout(() => {
         nextTutor();
         setIsTransitioning(false);
