@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import WelcomeScreen from "./onboarding/WelcomeScreen";
 import RoleSelection from "./onboarding/RoleSelection";
 import SwipeView from "./discovery/SwipeView";
@@ -13,6 +13,11 @@ const CampusConnectApp = () => {
   const [userEmail, setUserEmail] = useState<string>('');
   const [userRole, setUserRole] = useState<UserRole>(null);
   const [currentView, setCurrentView] = useState<'swipe' | 'search' | 'chat' | 'profile'>('swipe');
+
+  // Set dark mode on component mount for campus vibes
+  useEffect(() => {
+    document.documentElement.classList.add('dark');
+  }, []);
 
   const handleEmailVerification = (email: string) => {
     setUserEmail(email);

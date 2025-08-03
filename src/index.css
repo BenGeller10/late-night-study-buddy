@@ -115,11 +115,6 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  /* Default to dark mode - campus vibes */
-  html {
-    @apply dark;
-  }
-
   /* Custom scrollbars for dark theme */
   ::-webkit-scrollbar {
     width: 8px;
