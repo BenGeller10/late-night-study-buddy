@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CampusConnectApp from "@/components/CampusConnectApp";
-import BottomNavigation from "@/components/layout/BottomNavigation";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -16,12 +15,7 @@ const Index = () => {
     }
   }, [navigate]);
 
-  return (
-    <div>
-      <CampusConnectApp />
-      <BottomNavigation />
-    </div>
-  );
+  return <CampusConnectApp />;
 };
 
 export default Index;

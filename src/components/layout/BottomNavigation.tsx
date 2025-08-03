@@ -5,6 +5,11 @@ import { cn } from "@/lib/utils";
 const BottomNavigation = () => {
   const location = useLocation();
   
+  // Don't show bottom nav on onboarding pages (index route)
+  if (location.pathname === "/") {
+    return null;
+  }
+
   const navItems = [
     {
       to: "/discover",

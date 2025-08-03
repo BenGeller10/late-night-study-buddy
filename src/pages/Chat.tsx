@@ -1,6 +1,6 @@
 const Chat = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20"> {/* Added bottom padding for navigation */}
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/20">
         <div className="p-4">
