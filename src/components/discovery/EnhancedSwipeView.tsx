@@ -174,9 +174,9 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile }: SwipeViewPro
     onChat(tutorId);
   };
 
-  const handleBook = (tutorId: string) => {
+  const handleBook = (tutor: any) => {
     soundEffects.playSuccess();
-    onBook(tutorId);
+    onBook?.(tutor);
   };
 
   const currentTutor = tutors[currentIndex];
@@ -258,7 +258,17 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile }: SwipeViewPro
             onSwipeLeft={handleSwipeLeft}
             onSwipeRight={handleSwipeRight}
             onChat={() => handleChat(currentTutor.user_id)}
-            onBook={() => handleBook(currentTutor.user_id)}
+            onBook={() => handleBook({
+              id: currentTutor.id,
+              name: currentTutor.display_name,
+              profilePicture: currentTutor.avatar_url || "/placeholder.svg",
+              classes: currentSubjects.map(s => s.code),
+              tutorStyle: currentTutor.bio || "Passionate tutor ready to help!",
+              hourlyRate: currentSubjects.length > 0 ? (currentSubjects[0].hourly_rate || 25) : 25,
+              isFree: Math.random() > 0.7,
+              rating: currentTutor.rating || 4.5,
+              totalSessions: currentTutor.total_sessions || 0
+            })}
             onViewProfile={() => onViewProfile(currentTutor.user_id)}
           />
         ) : (

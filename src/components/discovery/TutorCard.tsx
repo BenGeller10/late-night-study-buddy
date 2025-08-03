@@ -18,7 +18,7 @@ interface TutorCardProps {
   onSwipeRight: () => void;
   onSwipeLeft: () => void;
   onChat: () => void;
-  onBook: () => void;
+  onBook: (tutor: any) => void;
   onViewProfile: () => void;
 }
 
@@ -142,7 +142,7 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
               variant="campus"
               size="lg"
               className="flex-1 btn-haptic font-medium"
-              onClick={onBook}
+              onClick={() => onBook(tutor)}
             >
               📅 Book Sesh
             </Button>

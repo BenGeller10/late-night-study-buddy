@@ -202,7 +202,7 @@
 
 /* Enhanced Interactive Button System */
 .btn-campus {
-  @apply bg-gradient-primary hover:bg-gradient-hero text-white;
+  @apply bg-gradient-primary text-white;
   @apply transition-all duration-200 hover:scale-105 active:scale-95;
   @apply shadow-lg hover:shadow-glow rounded-xl;
   @apply font-medium tracking-wide;

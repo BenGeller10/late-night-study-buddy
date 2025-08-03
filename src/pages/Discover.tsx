@@ -1,12 +1,21 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { HelpCircle } from "lucide-react";
 import EnhancedSwipeView from "@/components/discovery/EnhancedSwipeView";
 import PageTransition from "@/components/layout/PageTransition";
 import { soundEffects } from "@/lib/sounds";
+import BookingModal from "@/components/booking/BookingModal";
+import BookingConfirmationModal from "@/components/booking/BookingConfirmationModal";
+import BookingSuccessModal from "@/components/booking/BookingSuccessModal";
 
 const Discover = () => {
   const navigate = useNavigate();
+  const [selectedTutor, setSelectedTutor] = useState<any>(null);
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [bookingDetails, setBookingDetails] = useState<any>(null);
 
   const handleTutorMatch = (tutorId: string) => {
     console.log('Matched with tutor:', tutorId);
@@ -19,13 +28,35 @@ const Discover = () => {
     navigate(`/chat/${tutorId}`);
   };
 
-  const handleBook = (tutorId: string) => {
-    console.log('Booking session with tutor:', tutorId);
-    // Handle booking logic - could open booking modal or navigate to booking page
+  const handleBook = (tutor: any) => {
+    console.log('Booking session with tutor:', tutor.id);
+    // Add mock venmo handle if not present
+    const tutorWithVenmo = {
+      ...tutor,
+      venmoHandle: tutor.venmoHandle || tutor.name.toLowerCase().replace(' ', '-')
+    };
+    setSelectedTutor(tutorWithVenmo);
+    setShowBookingModal(true);
   };
 
   const handleViewProfile = (tutorId: string) => {
     navigate(`/tutor/${tutorId}`);
+  };
+
+  const handleBookingConfirm = (details: any) => {
+    setBookingDetails(details);
+    setShowBookingModal(false);
+    setShowConfirmationModal(true);
+  };
+
+  const handlePaymentSuccess = () => {
+    setShowConfirmationModal(false);
+    setShowSuccessModal(true);
+  };
+
+  const handleStartChat = () => {
+    setShowSuccessModal(false);
+    navigate(`/chat/${selectedTutor?.id}`);
   };
 
   return (
@@ -66,6 +97,32 @@ const Discover = () => {
       >
         <HelpCircle className="h-6 w-6" />
       </Button>
+
+      {/* Booking Modals */}
+      {selectedTutor && (
+        <>
+          <BookingModal
+            isOpen={showBookingModal}
+            onClose={() => setShowBookingModal(false)}
+            tutor={selectedTutor}
+            onConfirm={handleBookingConfirm}
+          />
+
+          <BookingConfirmationModal
+            isOpen={showConfirmationModal}
+            onClose={() => setShowConfirmationModal(false)}
+            bookingDetails={bookingDetails}
+            onSuccess={handlePaymentSuccess}
+          />
+
+          <BookingSuccessModal
+            isOpen={showSuccessModal}
+            onClose={() => setShowSuccessModal(false)}
+            tutorName={selectedTutor.name}
+            onStartChat={handleStartChat}
+          />
+        </>
+      )}
       </div>
     </PageTransition>
   );
