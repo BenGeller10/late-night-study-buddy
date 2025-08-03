@@ -112,6 +112,7 @@ const SwipeView = ({
       
       setTutors(tutorList);
       setTutorSubjects(subjectsMap);
+      console.log('Loaded tutors from database:', tutorList.length, tutorList);
     } catch (error) {
       console.error('Error fetching tutors:', error);
       // Fallback to mock data
