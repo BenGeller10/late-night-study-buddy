@@ -38,7 +38,7 @@ const BottomNavigation = () => {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-t border-border/20">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-t border-border/30">
       <div className="flex justify-around items-center py-2 px-4 max-w-lg mx-auto">
         {navItems.map(({ to, icon: Icon, label, activeColor }) => {
           const isActive = location.pathname === to;
@@ -49,19 +49,19 @@ const BottomNavigation = () => {
               to={to}
               className={cn(
                 "flex flex-col items-center gap-1 p-2 rounded-xl transition-all duration-200",
-                "hover:bg-muted/50 active:scale-95",
-                isActive && "bg-muted/30"
+                "hover:bg-muted/50 active:scale-95 interactive",
+                isActive && "bg-muted/30 scale-105"
               )}
             >
               <Icon 
                 className={cn(
-                  "w-6 h-6 transition-colors",
-                  isActive ? activeColor : "text-muted-foreground"
+                  "w-6 h-6 transition-all duration-200",
+                  isActive ? `${activeColor} scale-110` : "text-muted-foreground"
                 )}
               />
               <span 
                 className={cn(
-                  "text-xs font-medium transition-colors",
+                  "text-xs font-medium transition-colors duration-200",
                   isActive ? "text-foreground" : "text-muted-foreground"
                 )}
               >

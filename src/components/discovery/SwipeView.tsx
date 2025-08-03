@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TutorCard from "./TutorCard";
+import { TutorCardSkeleton } from "@/components/ui/skeleton";
 
 // Mock data for demo - expanded with more tutors for same classes
 const mockTutors = [
@@ -94,6 +95,16 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onSeeMoreForClass }: SwipeVie
   const [currentIndex, setCurrentIndex] = useState(0);
   const [savedTutors, setSavedTutors] = useState<string[]>([]);
   const [skippedTutors, setSkippedTutors] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Simulate loading initial data
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const currentTutor = mockTutors[currentIndex];
 
@@ -106,18 +117,30 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onSeeMoreForClass }: SwipeVie
   };
 
   const handleSwipeRight = () => {
-    if (currentTutor) {
+    if (currentTutor && !isTransitioning) {
+      setIsTransitioning(true);
       setSavedTutors(prev => [...prev, currentTutor.id]);
       onTutorMatch(currentTutor.id);
+      
+      // Add delay for smooth transition
+      setTimeout(() => {
+        nextTutor();
+        setIsTransitioning(false);
+      }, 300);
     }
-    nextTutor();
   };
 
   const handleSwipeLeft = () => {
-    if (currentTutor) {
+    if (currentTutor && !isTransitioning) {
+      setIsTransitioning(true);
       setSkippedTutors(prev => [...prev, currentTutor.id]);
+      
+      // Add delay for smooth transition
+      setTimeout(() => {
+        nextTutor();
+        setIsTransitioning(false);
+      }, 300);
     }
-    nextTutor();
   };
 
   const handleSeeMoreForClass = (className: string) => {
@@ -149,6 +172,22 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onSeeMoreForClass }: SwipeVie
       setCurrentIndex(0);
     }
   };
+
+  // Show loading skeleton initially
+  if (isLoading) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-6">
+        <div className="w-full max-w-sm">
+          <TutorCardSkeleton />
+        </div>
+        <div className="flex gap-2 mt-6">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="w-2 h-2 rounded-full bg-muted animate-pulse" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   if (!currentTutor) {
     return (

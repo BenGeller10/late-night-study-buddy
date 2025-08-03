@@ -1,4 +1,5 @@
 import SwipeView from "@/components/discovery/SwipeView";
+import PageTransition from "@/components/layout/PageTransition";
 
 const Discover = () => {
   const handleTutorMatch = (tutorId: string) => {
@@ -17,7 +18,8 @@ const Discover = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20"> {/* Added bottom padding for navigation */}
+    <PageTransition>
+      <div className="min-h-screen bg-background pb-20"> {/* Added bottom padding for navigation */}
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/20">
         <div className="p-4">
@@ -38,7 +40,8 @@ const Discover = () => {
           onBook={handleBook}
         />
       </div>
-    </div>
+      </div>
+    </PageTransition>
   );
 };
 
