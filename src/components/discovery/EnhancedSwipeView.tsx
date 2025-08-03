@@ -6,11 +6,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Search, MapPin, Filter, Sparkles } from "lucide-react";
 import TutorCard from "./TutorCard";
-import { TutorCardSkeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useSearchAnalytics } from "@/hooks/useGameification";
 import { soundEffects } from "@/lib/sounds";
-
 interface Tutor {
   id: string;
   user_id: string;
@@ -23,40 +21,41 @@ interface Tutor {
   rating?: number;
   total_sessions?: number;
 }
-
 interface Subject {
   id: string;
   name: string;
   code: string;
   hourly_rate?: number;
 }
-
 interface SwipeViewProps {
   onTutorMatch: (tutorId: string) => void;
   onChat: (tutorId: string) => void;
   onBook: (tutorId: string) => void;
   onViewProfile: (tutorId: string) => void;
 }
-
-const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile }: SwipeViewProps) => {
+const SwipeView = ({
+  onTutorMatch,
+  onChat,
+  onBook,
+  onViewProfile
+}: SwipeViewProps) => {
   const [tutors, setTutors] = useState<Tutor[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCampus, setSelectedCampus] = useState<string>("");
-  const [tutorSubjects, setTutorSubjects] = useState<{ [tutorId: string]: Subject[] }>({});
-  
-  const { trackSearch } = useSearchAnalytics();
-
+  const [tutorSubjects, setTutorSubjects] = useState<{
+    [tutorId: string]: Subject[];
+  }>({});
+  const {
+    trackSearch
+  } = useSearchAnalytics();
   useEffect(() => {
     fetchTutors();
   }, [selectedCampus]);
-
   const fetchTutors = async () => {
     try {
-      let query = supabase
-        .from('profiles')
-        .select(`
+      let query = supabase.from('profiles').select(`
           *,
           tutor_subjects (
             hourly_rate,
@@ -66,20 +65,21 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile }: SwipeViewPro
               code
             )
           )
-        `)
-        .eq('is_tutor', true);
-
+        `).eq('is_tutor', true);
       if (selectedCampus) {
         query = query.eq('campus', selectedCampus);
       }
-
-      const { data, error } = await query.limit(20);
+      const {
+        data,
+        error
+      } = await query.limit(20);
       if (error) throw error;
 
       // Process tutor subjects
       const tutorList: Tutor[] = [];
-      const subjectsMap: { [tutorId: string]: Subject[] } = {};
-
+      const subjectsMap: {
+        [tutorId: string]: Subject[];
+      } = {};
       data?.forEach(tutor => {
         tutorList.push({
           id: tutor.id,
@@ -90,10 +90,10 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile }: SwipeViewPro
           major: tutor.major,
           year: tutor.year,
           campus: tutor.campus,
-          rating: Math.random() * 1.5 + 3.5, // Mock rating for now
+          rating: Math.random() * 1.5 + 3.5,
+          // Mock rating for now
           total_sessions: Math.floor(Math.random() * 50) + 5 // Mock sessions
         });
-
         subjectsMap[tutor.user_id] = tutor.tutor_subjects?.map((ts: any) => ({
           id: ts.subjects.id,
           name: ts.subjects.name,
@@ -101,51 +101,60 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile }: SwipeViewPro
           hourly_rate: ts.hourly_rate
         })) || [];
       });
-
       setTutors(tutorList);
       setTutorSubjects(subjectsMap);
     } catch (error) {
       console.error('Error fetching tutors:', error);
       // Fallback to mock data
-      setTutors([
-        {
-          id: '1',
-          user_id: 'mock-1',
-          display_name: 'Alex Chen',
-          bio: 'CS major who loves helping with algorithms and data structures! Let\'s code together! 💻',
-          major: 'Computer Science',
-          year: 3,
-          campus: 'Main Campus',
-          rating: 4.8,
-          total_sessions: 42
-        },
-        {
-          id: '2', 
-          user_id: 'mock-2',
-          display_name: 'Sarah Martinez',
-          bio: 'Math tutor with a passion for making calculus fun and understandable! 📊',
-          major: 'Mathematics',
-          year: 4,
-          campus: 'Main Campus',
-          rating: 4.9,
-          total_sessions: 38
-        }
-      ]);
+      setTutors([{
+        id: '1',
+        user_id: 'mock-1',
+        display_name: 'Alex Chen',
+        bio: 'CS major who loves helping with algorithms and data structures! Let\'s code together! 💻',
+        major: 'Computer Science',
+        year: 3,
+        campus: 'Main Campus',
+        rating: 4.8,
+        total_sessions: 42
+      }, {
+        id: '2',
+        user_id: 'mock-2',
+        display_name: 'Sarah Martinez',
+        bio: 'Math tutor with a passion for making calculus fun and understandable! 📊',
+        major: 'Mathematics',
+        year: 4,
+        campus: 'Main Campus',
+        rating: 4.9,
+        total_sessions: 38
+      }]);
       setTutorSubjects({
-        'mock-1': [
-          { id: '1', name: 'Computer Science I', code: 'CS 1410', hourly_rate: 30 },
-          { id: '2', name: 'Computer Science II', code: 'CS 2420', hourly_rate: 35 }
-        ],
-        'mock-2': [
-          { id: '3', name: 'Calculus I', code: 'MATH 1410', hourly_rate: 25 },
-          { id: '4', name: 'Calculus II', code: 'MATH 1420', hourly_rate: 30 }
-        ]
+        'mock-1': [{
+          id: '1',
+          name: 'Computer Science I',
+          code: 'CS 1410',
+          hourly_rate: 30
+        }, {
+          id: '2',
+          name: 'Computer Science II',
+          code: 'CS 2420',
+          hourly_rate: 35
+        }],
+        'mock-2': [{
+          id: '3',
+          name: 'Calculus I',
+          code: 'MATH 1410',
+          hourly_rate: 25
+        }, {
+          id: '4',
+          name: 'Calculus II',
+          code: 'MATH 1420',
+          hourly_rate: 30
+        }]
       });
     } finally {
       setLoading(false);
     }
   };
-
   const handleSearch = async () => {
     if (searchQuery.trim()) {
       await trackSearch(searchQuery, selectedCampus);
@@ -153,7 +162,6 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile }: SwipeViewPro
       setCurrentIndex(0);
     }
   };
-
   const handleSwipeRight = () => {
     soundEffects.playSwipeRight();
     const currentTutor = tutors[currentIndex];
@@ -163,56 +171,34 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile }: SwipeViewPro
     }
     setCurrentIndex(prev => prev + 1);
   };
-
   const handleSwipeLeft = () => {
     soundEffects.playSwipeLeft();
     setCurrentIndex(prev => prev + 1);
   };
-
   const handleChat = (tutorId: string) => {
     soundEffects.playMessage();
     onChat(tutorId);
   };
-
-  const handleBook = (tutor: any) => {
+  const handleBook = (tutorId: string) => {
     soundEffects.playSuccess();
-    onBook?.(tutor);
+    onBook(tutorId);
   };
-
   const currentTutor = tutors[currentIndex];
   const currentSubjects = currentTutor ? tutorSubjects[currentTutor.user_id] || [] : [];
-
   if (loading) {
-    return (
-      <div className="space-y-6 animate-fade-in">
-        <Card className="p-4 glass-card">
-          <div className="space-y-4">
-            <div className="h-10 bg-muted rounded-lg skeleton" />
-            <div className="h-8 bg-muted rounded-lg skeleton w-1/2" />
-          </div>
-        </Card>
-        <div className="flex justify-center">
-          <TutorCardSkeleton />
-        </div>
-      </div>
-    );
+    return <div className="space-y-4">
+        <div className="h-12 bg-muted rounded-lg animate-pulse" />
+        <div className="h-96 bg-muted rounded-2xl animate-pulse" />
+      </div>;
   }
-
-  return (
-    <div className="space-y-6 animate-fade-in">
+  return <div className="space-y-6 animate-fade-in">
       {/* Search and Filters */}
       <Card className="p-4 glass-card">
         <div className="space-y-4">
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="What do you need help with? 🤔"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                className="pl-10 bg-background/50 backdrop-blur-sm"
-              />
+              <Input placeholder="Search subjects (e.g., Calculus, Chemistry)..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onKeyPress={e => e.key === 'Enter' && handleSearch()} className="pl-10" />
             </div>
             <Button onClick={handleSearch} size="icon" variant="outline">
               <Search className="w-4 h-4" />
@@ -221,19 +207,15 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile }: SwipeViewPro
           
           <div className="flex items-center gap-2">
             <MapPin className="w-4 h-4 text-muted-foreground" />
-            <select
-              value={selectedCampus}
-              onChange={(e) => setSelectedCampus(e.target.value)}
-              className="text-sm bg-background border border-border rounded px-2 py-1"
-            >
+            <select value={selectedCampus} onChange={e => setSelectedCampus(e.target.value)} className="text-sm bg-background border border-border rounded px-2 py-1">
               <option value="">All Campuses</option>
-              <option value="Main Campus">Main Campus</option>
+              
               <option value="North Campus">North Campus</option>
               <option value="Downtown">Downtown</option>
             </select>
-            <Badge variant="secondary" className="ml-auto bg-primary/10 text-primary border-primary/20">
+            <Badge variant="secondary" className="ml-auto">
               <Sparkles className="w-3 h-3 mr-1" />
-              {tutors.length - currentIndex} matches waiting ✨
+              {tutors.length - currentIndex} tutors left
             </Badge>
           </div>
         </div>
@@ -241,73 +223,28 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile }: SwipeViewPro
 
       {/* Tutor Cards */}
       <div className="relative min-h-[600px] flex items-center justify-center">
-        {currentTutor ? (
-          <TutorCard
-            key={currentTutor.id}
-            tutor={{
-              id: currentTutor.id,
-              name: currentTutor.display_name,
-              profilePicture: currentTutor.avatar_url || "/placeholder.svg",
-              classes: currentSubjects.map(s => s.code),
-              tutorStyle: currentTutor.bio || "Passionate tutor ready to help!",
-              hourlyRate: currentSubjects.length > 0 ? (currentSubjects[0].hourly_rate || 25) : 25,
-              isFree: Math.random() > 0.7, // Random free sessions
-              rating: currentTutor.rating || 4.5,
-              totalSessions: currentTutor.total_sessions || 0
-            }}
-            onSwipeLeft={handleSwipeLeft}
-            onSwipeRight={handleSwipeRight}
-            onChat={() => handleChat(currentTutor.user_id)}
-            onBook={() => handleBook({
-              id: currentTutor.id,
-              name: currentTutor.display_name,
-              profilePicture: currentTutor.avatar_url || "/placeholder.svg",
-              classes: currentSubjects.map(s => s.code),
-              tutorStyle: currentTutor.bio || "Passionate tutor ready to help!",
-              hourlyRate: currentSubjects.length > 0 ? (currentSubjects[0].hourly_rate || 25) : 25,
-              isFree: Math.random() > 0.7,
-              rating: currentTutor.rating || 4.5,
-              totalSessions: currentTutor.total_sessions || 0
-            })}
-            onViewProfile={() => onViewProfile(currentTutor.user_id)}
-          />
-        ) : (
-          <Card className="glass-card-glow p-8 text-center space-y-6 max-w-sm mx-auto">
-            <div className="text-7xl animate-float">🔥</div>
-            <div className="space-y-2">
-              <h3 className="text-2xl font-bold bg-gradient-hero bg-clip-text text-transparent">
-                You're all caught up!
-              </h3>
-              <p className="text-muted-foreground">
-                No more tutors right now, but don't worry! More awesome study buddies join every day ✨
-              </p>
-            </div>
-            <div className="space-y-3">
-              <Button 
-                onClick={() => setCurrentIndex(0)} 
-                variant="campus"
-                className="w-full"
-              >
-                🔄 Let's Go Again!
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="w-full"
-                onClick={() => {
-                  setSearchQuery("");
-                  setSelectedCampus("");
-                  setCurrentIndex(0);
-                }}
-              >
-                Clear Filters
-              </Button>
-            </div>
-          </Card>
-        )}
+        {currentTutor ? <TutorCard key={currentTutor.id} tutor={{
+        id: currentTutor.id,
+        name: currentTutor.display_name,
+        profilePicture: currentTutor.avatar_url || "/placeholder.svg",
+        classes: currentSubjects.map(s => s.code),
+        tutorStyle: currentTutor.bio || "Passionate tutor ready to help!",
+        hourlyRate: currentSubjects.length > 0 ? currentSubjects[0].hourly_rate || 25 : 25,
+        isFree: Math.random() > 0.7,
+        // Random free sessions
+        rating: currentTutor.rating || 4.5,
+        totalSessions: currentTutor.total_sessions || 0
+      }} onSwipeLeft={handleSwipeLeft} onSwipeRight={handleSwipeRight} onChat={() => handleChat(currentTutor.user_id)} onBook={() => handleBook(currentTutor.user_id)} onViewProfile={() => onViewProfile(currentTutor.user_id)} /> : <Card className="p-8 text-center space-y-4 max-w-sm">
+            <div className="text-6xl">🎉</div>
+            <h3 className="text-xl font-bold">You've seen everyone!</h3>
+            <p className="text-muted-foreground">
+              Check back later for new tutors or adjust your filters
+            </p>
+            <Button onClick={() => setCurrentIndex(0)} className="mt-4">
+              Start Over
+            </Button>
+          </Card>}
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default SwipeView;
