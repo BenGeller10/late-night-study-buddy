@@ -27,6 +27,10 @@ const Discover = () => {
     navigate(`/tutor/${tutorId}`);
   };
 
+  const handleViewLikedTutors = (likedTutorIds: string[]) => {
+    navigate('/liked-tutors', { state: { likedTutorIds } });
+  };
+
   return (
     <PageTransition>
       <div className="min-h-screen bg-background pb-20"> {/* Added bottom padding for navigation */}
@@ -49,6 +53,7 @@ const Discover = () => {
           onChat={handleChat}
           onBook={handleBook}
           onViewProfile={handleViewProfile}
+          onViewLikedTutors={handleViewLikedTutors}
         />
       </div>
 

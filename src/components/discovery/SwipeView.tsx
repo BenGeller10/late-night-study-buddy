@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import TutorCard from "./TutorCard";
 import { TutorCardSkeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 
 // Mock data for demo - expanded with more tutors for same classes
 const mockTutors = [
@@ -89,9 +90,10 @@ interface SwipeViewProps {
   onChat: (tutorId: string) => void;
   onBook: (tutorId: string) => void;
   onViewProfile: (tutorId: string) => void;
+  onViewLikedTutors: (likedTutorIds: string[]) => void;
 }
 
-const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile }: SwipeViewProps) => {
+const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile, onViewLikedTutors }: SwipeViewProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [savedTutors, setSavedTutors] = useState<string[]>([]);
   const [skippedTutors, setSkippedTutors] = useState<string[]>([]);
@@ -148,8 +150,8 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile }: SwipeViewPro
     if (currentIndex < mockTutors.length - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
-      // Reset to beginning or show "no more tutors" message
-      setCurrentIndex(0);
+      // End of tutors - show completion message
+      setCurrentIndex(-1); // Use -1 to indicate end state
     }
   };
 
@@ -164,6 +166,44 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile }: SwipeViewPro
           {[1, 2, 3].map((i) => (
             <div key={i} className="w-2 h-2 rounded-full bg-muted animate-pulse" />
           ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Show completion screen when all tutors are viewed
+  if (currentIndex === -1) {
+    return (
+      <div className="flex-1 flex items-center justify-center text-center p-6">
+        <div className="space-y-6">
+          <span className="text-6xl">🎉</span>
+          <h3 className="text-xl font-semibold">You've seen all available tutors!</h3>
+          <p className="text-muted-foreground">
+            {savedTutors.length > 0 
+              ? `You liked ${savedTutors.length} tutor${savedTutors.length > 1 ? 's' : ''}. Ready to view their full profiles?`
+              : "No tutors caught your eye? Try again later or search for specific classes."
+            }
+          </p>
+          {savedTutors.length > 0 && (
+            <Button
+              onClick={() => onViewLikedTutors(savedTutors)}
+              className="btn-smooth"
+              size="lg"
+            >
+              View Liked Tutors ({savedTutors.length})
+            </Button>
+          )}
+          <Button
+            onClick={() => {
+              setCurrentIndex(0);
+              setSavedTutors([]);
+              setSkippedTutors([]);
+            }}
+            variant="outline"
+            className="btn-smooth"
+          >
+            Start Over
+          </Button>
         </div>
       </div>
     );
