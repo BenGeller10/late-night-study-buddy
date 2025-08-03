@@ -4,6 +4,10 @@ import RoleSelection from "./onboarding/RoleSelection";
 import SwipeView from "./discovery/SwipeView";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import HotTopicsFeed from "./gamification/HotTopicsFeed";
+import WeeklyLeaderboard from "./gamification/WeeklyLeaderboard";
+import StudyStreak from "./gamification/StudyStreak";
+import BadgeDisplay from "./gamification/BadgeDisplay";
 
 type AppState = 'welcome' | 'role-selection' | 'main-app';
 type UserRole = 'student' | 'tutor' | null;
@@ -120,11 +124,20 @@ const CampusConnectApp = () => {
       {/* Main Content */}
       <div className="flex-1">
         {currentView === 'swipe' && (
-          <SwipeView
-            onTutorMatch={handleTutorMatch}
-            onChat={handleChat}
-            onBook={handleBook}
-          />
+          <div className="space-y-4 px-4">
+            {/* Gamification Dashboard */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <HotTopicsFeed />
+              <WeeklyLeaderboard />
+            </div>
+            
+            {/* Main Swipe Interface */}
+            <SwipeView
+              onTutorMatch={handleTutorMatch}
+              onChat={handleChat}
+              onBook={handleBook}
+            />
+          </div>
         )}
         
         {currentView === 'search' && (
@@ -152,12 +165,56 @@ const CampusConnectApp = () => {
         )}
 
         {currentView === 'profile' && (
-          <div className="flex-1 flex items-center justify-center p-6">
-            <div className="text-center space-y-4">
-              <span className="text-6xl">👤</span>
-              <h3 className="text-xl font-semibold">Profile Coming Soon!</h3>
-              <p className="text-muted-foreground">
-                Manage your campus persona and settings
+          <div className="space-y-4 p-4">
+            {/* Study Streak Widget */}
+            <StudyStreak />
+            
+            {/* User Badges */}
+            <div className="glass-card p-4 rounded-2xl">
+              <h3 className="font-semibold mb-3 flex items-center gap-2">
+                <span className="text-lg">🏆</span>
+                Your Achievements
+              </h3>
+              <BadgeDisplay 
+                badges={[
+                  {
+                    id: '1',
+                    name: 'Help Hero',
+                    description: 'Completed 10 free tutoring sessions',
+                    emoji: '👑',
+                    type: 'achievement',
+                    rarity: 'epic',
+                    earned_at: '2024-01-15'
+                  },
+                  {
+                    id: '2',
+                    name: 'Course Master',
+                    description: 'Helped 5 students pass finals in CALC 251',
+                    emoji: '🏆',
+                    type: 'achievement',
+                    rarity: 'legendary',
+                    earned_at: '2024-01-20'
+                  },
+                  {
+                    id: '3',
+                    name: 'Top-Rated',
+                    description: 'Received 5-star reviews from 10 different students',
+                    emoji: '⭐',
+                    type: 'rating',
+                    rarity: 'rare',
+                    earned_at: '2024-01-10'
+                  }
+                ]}
+                showDescription={true}
+                size="md"
+              />
+            </div>
+            
+            <div className="text-center space-y-2 py-8">
+              <span className="text-4xl">🚧</span>
+              <h3 className="text-lg font-semibold">More Profile Features Coming Soon!</h3>
+              <p className="text-muted-foreground text-sm">
+                Settings, stats, and more customization options
               </p>
             </div>
           </div>
