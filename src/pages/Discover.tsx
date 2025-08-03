@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { HelpCircle } from "lucide-react";
+import { HelpCircle, User } from "lucide-react";
 import EnhancedSwipeView from "@/components/discovery/EnhancedSwipeView";
 import PageTransition from "@/components/layout/PageTransition";
 import { soundEffects } from "@/lib/sounds";
@@ -33,7 +33,8 @@ const Discover = () => {
       <div className="min-h-screen bg-background pb-20"> {/* Added bottom padding for navigation */}
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/20">
-          <div className="text-center">
+        <div className="p-4 flex items-center justify-between">
+          <div className="text-center flex-1">
             <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
               Find Your Study Buddy ✨
             </h1>
@@ -41,6 +42,18 @@ const Discover = () => {
               Swipe to discover amazing tutors
             </p>
           </div>
+          
+          {/* Profile Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/profile')}
+            className="shrink-0 hover:scale-105 transition-all"
+            aria-label="Profile"
+          >
+            <User className="h-5 w-5" />
+          </Button>
+        </div>
       </div>
 
       {/* Main Swipe Interface */}
