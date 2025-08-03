@@ -197,7 +197,7 @@
 
 /* Interactive Button Enhancements */
 .btn-campus {
-  @apply bg-primary hover:bg-primary/90 text-primary-foreground;
+  @apply bg-gradient-primary hover:bg-gradient-primary/90 text-white;
   @apply transition-all duration-200 hover:scale-105 active:scale-95;
   @apply shadow-lg hover:shadow-xl;
 }
