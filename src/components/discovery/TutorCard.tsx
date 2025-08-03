@@ -63,7 +63,16 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
             }`}
             onLoad={() => setImageLoaded(true)}
           />
-          <div className="absolute top-4 right-4">
+          <div className="absolute top-4 right-4 flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="btn-smooth text-xs bg-background/80 backdrop-blur-sm"
+              onClick={onViewProfile}
+            >
+              <Eye className="w-3 h-3 mr-1" />
+              Profile
+            </Button>
             <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm animate-fade-in-up">
               ⭐ {tutor.rating} ({tutor.totalSessions})
             </Badge>
@@ -90,18 +99,7 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
             </div>
           </div>
 
-          {/* View Profile Button */}
-          <div className="flex justify-center">
-            <Button
-              variant="outline"
-              size="sm"
-              className="btn-smooth text-xs"
-              onClick={onViewProfile}
-            >
-              <Eye className="w-3 h-3 mr-1" />
-              View Full Profile
-            </Button>
-          </div>
+          {/* View Profile Button - Moved to top right */}
 
           {/* Classes */}
           <div className="space-y-2">
