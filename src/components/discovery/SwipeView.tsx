@@ -1,7 +1,7 @@
 import { useState } from "react";
 import TutorCard from "./TutorCard";
 
-// Mock data for demo
+// Mock data for demo - expanded with more tutors for same classes
 const mockTutors = [
   {
     id: "1",
@@ -35,6 +35,51 @@ const mockTutors = [
     isFree: false,
     rating: 5.0,
     totalSessions: 31
+  },
+  // Additional tutors for same classes
+  {
+    id: "4",
+    name: "Alex Kim",
+    profilePicture: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=400&h=400&fit=crop&crop=face",
+    classes: ["ECON 203", "ECON 101", "STAT 200"],
+    tutorStyle: "Economics doesn't have to be boring! I use real-world examples to make it click. 📊🌍",
+    hourlyRate: 20,
+    isFree: false,
+    rating: 4.8,
+    totalSessions: 35
+  },
+  {
+    id: "5",
+    name: "Jordan Parker",
+    profilePicture: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop&crop=face",
+    classes: ["CS 101", "CS 150", "CS 200"],
+    tutorStyle: "Coding is like solving puzzles. I'll help you see the patterns and logic. 🧩💻",
+    hourlyRate: 0,
+    isFree: true,
+    rating: 4.6,
+    totalSessions: 18
+  },
+  {
+    id: "6",
+    name: "Maya Patel",
+    profilePicture: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face",
+    classes: ["CHEM 201", "CHEM 101", "CHEM 301"],
+    tutorStyle: "Chemistry is everywhere! I make it relatable with everyday examples. ⚗️✨",
+    hourlyRate: 28,
+    isFree: false,
+    rating: 4.9,
+    totalSessions: 42
+  },
+  {
+    id: "7",
+    name: "David Chen",
+    profilePicture: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=400&fit=crop&crop=face",
+    classes: ["ECON 203", "ECON 301", "MATH 115"],
+    tutorStyle: "Got an econ final coming up? I've helped 20+ students ace theirs. Let's do this! 🎯📈",
+    hourlyRate: 35,
+    isFree: false,
+    rating: 5.0,
+    totalSessions: 56
   }
 ];
 
@@ -42,13 +87,23 @@ interface SwipeViewProps {
   onTutorMatch: (tutorId: string) => void;
   onChat: (tutorId: string) => void;
   onBook: (tutorId: string) => void;
+  onSeeMoreForClass?: (className: string) => void;
 }
 
-const SwipeView = ({ onTutorMatch, onChat, onBook }: SwipeViewProps) => {
+const SwipeView = ({ onTutorMatch, onChat, onBook, onSeeMoreForClass }: SwipeViewProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [savedTutors, setSavedTutors] = useState<string[]>([]);
+  const [skippedTutors, setSkippedTutors] = useState<string[]>([]);
 
   const currentTutor = mockTutors[currentIndex];
+
+  // Get other tutors for the same classes as current tutor
+  const getMoreTutorsForClasses = (classes: string[]) => {
+    return mockTutors.filter(tutor => 
+      tutor.id !== currentTutor?.id && 
+      tutor.classes.some(tutorClass => classes.includes(tutorClass))
+    );
+  };
 
   const handleSwipeRight = () => {
     if (currentTutor) {
@@ -59,7 +114,31 @@ const SwipeView = ({ onTutorMatch, onChat, onBook }: SwipeViewProps) => {
   };
 
   const handleSwipeLeft = () => {
+    if (currentTutor) {
+      setSkippedTutors(prev => [...prev, currentTutor.id]);
+    }
     nextTutor();
+  };
+
+  const handleSeeMoreForClass = (className: string) => {
+    // Filter tutors who teach this specific class and haven't been shown yet
+    const availableTutors = mockTutors.filter(tutor => 
+      tutor.classes.includes(className) && 
+      !savedTutors.includes(tutor.id) && 
+      !skippedTutors.includes(tutor.id) &&
+      tutor.id !== currentTutor?.id
+    );
+    
+    if (availableTutors.length > 0) {
+      // Find the index of the first available tutor for this class
+      const nextTutorIndex = mockTutors.findIndex(tutor => tutor.id === availableTutors[0].id);
+      if (nextTutorIndex !== -1) {
+        setCurrentIndex(nextTutorIndex);
+      }
+    } else {
+      // Call parent callback if provided
+      onSeeMoreForClass?.(className);
+    }
   };
 
   const nextTutor = () => {
@@ -83,6 +162,8 @@ const SwipeView = ({ onTutorMatch, onChat, onBook }: SwipeViewProps) => {
     );
   }
 
+  const moreTutorsForClasses = getMoreTutorsForClasses(currentTutor.classes);
+
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-sm">
@@ -92,6 +173,8 @@ const SwipeView = ({ onTutorMatch, onChat, onBook }: SwipeViewProps) => {
           onSwipeLeft={handleSwipeLeft}
           onChat={() => onChat(currentTutor.id)}
           onBook={() => onBook(currentTutor.id)}
+          onSeeMoreForClass={handleSeeMoreForClass}
+          moreTutorsAvailable={moreTutorsForClasses.length}
         />
       </div>
       
@@ -107,14 +190,19 @@ const SwipeView = ({ onTutorMatch, onChat, onBook }: SwipeViewProps) => {
         ))}
       </div>
 
-      {/* Saved Count */}
-      {savedTutors.length > 0 && (
-        <div className="mt-4 text-center">
+      {/* Stats */}
+      <div className="mt-4 text-center space-y-1">
+        {savedTutors.length > 0 && (
           <div className="text-sm text-muted-foreground">
             💾 Saved {savedTutors.length} tutor{savedTutors.length > 1 ? 's' : ''}
           </div>
-        </div>
-      )}
+        )}
+        {moreTutorsForClasses.length > 0 && (
+          <div className="text-xs text-muted-foreground">
+            +{moreTutorsForClasses.length} more tutors available for these classes
+          </div>
+        )}
+      </div>
     </div>
   );
 };

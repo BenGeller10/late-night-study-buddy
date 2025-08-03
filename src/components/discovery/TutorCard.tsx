@@ -18,9 +18,11 @@ interface TutorCardProps {
   onSwipeLeft: () => void;
   onChat: () => void;
   onBook: () => void;
+  onSeeMoreForClass?: (className: string) => void;
+  moreTutorsAvailable?: number;
 }
 
-const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook }: TutorCardProps) => {
+const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onSeeMoreForClass, moreTutorsAvailable = 0 }: TutorCardProps) => {
   const [isAnimating, setIsAnimating] = useState<'left' | 'right' | null>(null);
 
   const handleSwipe = (direction: 'left' | 'right') => {
@@ -75,16 +77,33 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook }: TutorCa
           </div>
 
           {/* Classes */}
-          <div className="flex flex-wrap gap-2">
-            {tutor.classes.slice(0, 3).map((className, index) => (
-              <Badge key={index} variant="outline" className="text-xs">
-                {className}
-              </Badge>
-            ))}
-            {tutor.classes.length > 3 && (
-              <Badge variant="outline" className="text-xs">
-                +{tutor.classes.length - 3} more
-              </Badge>
+          <div className="space-y-2">
+            <div className="flex flex-wrap gap-2">
+              {tutor.classes.slice(0, 3).map((className, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  size="sm"
+                  className="text-xs h-7 px-2"
+                  onClick={() => onSeeMoreForClass?.(className)}
+                >
+                  {className}
+                  {moreTutorsAvailable > 0 && (
+                    <span className="ml-1 text-primary">+</span>
+                  )}
+                </Button>
+              ))}
+              {tutor.classes.length > 3 && (
+                <Badge variant="outline" className="text-xs">
+                  +{tutor.classes.length - 3} more
+                </Badge>
+              )}
+            </div>
+            
+            {moreTutorsAvailable > 0 && onSeeMoreForClass && (
+              <p className="text-xs text-muted-foreground">
+                💡 Tap a class to see {moreTutorsAvailable} more tutor{moreTutorsAvailable > 1 ? 's' : ''}
+              </p>
             )}
           </div>
 
@@ -135,6 +154,18 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook }: TutorCa
         >
           <span className="text-xl">👎</span>
         </Button>
+        
+        {/* See More Button (when not interested) */}
+        {moreTutorsAvailable > 0 && onSeeMoreForClass && (
+          <Button
+            variant="secondary"
+            className="px-6 h-14 rounded-full text-sm"
+            onClick={() => onSeeMoreForClass(tutor.classes[0])}
+          >
+            See More for<br />{tutor.classes[0]}
+          </Button>
+        )}
+        
         <Button
           variant="campus"
           size="icon"
