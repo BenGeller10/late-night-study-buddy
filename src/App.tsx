@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import TopNavigation from "@/components/layout/TopNavigation";
 import BottomNavigation from "@/components/layout/BottomNavigation";
 import FloatingActionButton from "@/components/layout/FloatingActionButton";
 import Index from "./pages/Index";
@@ -42,7 +43,8 @@ const App = () => (
           <FloatingActionButton />
           
           {/* Bottom Navigation - Persistent across all pages */}
-          <BottomNavigation />
+        <TopNavigation />
+        <BottomNavigation />
         </div>
       </BrowserRouter>
     </TooltipProvider>
