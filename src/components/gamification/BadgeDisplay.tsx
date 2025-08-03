@@ -1,65 +1,26 @@
-import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
 
-interface BadgeInfo {
+interface BadgeData {
   id: string;
   name: string;
   description: string;
-  icon: string;
+  emoji: string;
+  type: 'achievement' | 'streak' | 'rating' | 'special';
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
   earned_at?: string;
 }
 
 interface BadgeDisplayProps {
-  userId: string;
-  limit?: number;
-  showAll?: boolean;
+  badges: BadgeData[];
+  maxDisplay?: number;
   size?: 'sm' | 'md' | 'lg';
+  showDescription?: boolean;
 }
 
-const BadgeDisplay = ({ userId, limit = 3, showAll = false, size = 'md' }: BadgeDisplayProps) => {
-  const [badges, setBadges] = useState<BadgeInfo[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchUserBadges();
-  }, [userId]);
-
-  const fetchUserBadges = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('user_badges')
-        .select(`
-          earned_at,
-          badges (
-            id,
-            name,
-            description,
-            icon
-          )
-        `)
-        .eq('user_id', userId)
-        .order('earned_at', { ascending: false });
-
-      if (error) throw error;
-
-      const badgeList = data?.map(item => ({
-        id: item.badges.id,
-        name: item.badges.name,
-        description: item.badges.description,
-        icon: item.badges.icon,
-        earned_at: item.earned_at
-      })) || [];
-
-      setBadges(showAll ? badgeList : badgeList.slice(0, limit));
-    } catch (error) {
-      console.error('Error fetching badges:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+const BadgeDisplay = ({ badges, maxDisplay = 3, size = 'md', showDescription = false }: BadgeDisplayProps) => {
+  const displayBadges = badges.slice(0, maxDisplay);
+  const remainingCount = badges.length - maxDisplay;
 
   const getSizeClasses = () => {
     switch (size) {
@@ -69,64 +30,57 @@ const BadgeDisplay = ({ userId, limit = 3, showAll = false, size = 'md' }: Badge
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex gap-2">
-        {[...Array(3)].map((_, i) => (
-          <div key={i} className="w-10 h-10 bg-muted rounded-full animate-pulse" />
-        ))}
-      </div>
-    );
-  }
+  const getRarityVariant = (rarity: string) => {
+    switch (rarity) {
+      case 'legendary': return 'default';
+      case 'epic': return 'secondary';
+      case 'rare': return 'outline';
+      default: return 'secondary';
+    }
+  };
 
   if (badges.length === 0) {
     return (
-      <div className="text-center py-4">
-        <p className="text-sm text-muted-foreground">No badges earned yet!</p>
-        <p className="text-xs text-muted-foreground">Complete sessions to earn badges 🎯</p>
-      </div>
-    );
-  }
-
-  if (showAll) {
-    return (
-      <div className="grid grid-cols-2 gap-3">
-        {badges.map((badge) => (
-          <Card key={badge.id} className="p-4 text-center hover:bg-muted/50 transition-colors animate-fade-in">
-            <div className="text-3xl mb-2">{badge.icon}</div>
-            <h4 className="font-semibold text-sm">{badge.name}</h4>
-            <p className="text-xs text-muted-foreground mt-1">{badge.description}</p>
-            {badge.earned_at && (
-              <p className="text-xs text-primary mt-2">
-                Earned {new Date(badge.earned_at).toLocaleDateString()}
-              </p>
-            )}
-          </Card>
-        ))}
+      <div className="text-muted-foreground text-sm">
+        No badges earned yet
       </div>
     );
   }
 
   return (
-    <div className="flex items-center gap-2">
-      {badges.map((badge) => (
-        <Badge 
-          key={badge.id} 
-          variant="secondary" 
-          className={cn(
-            getSizeClasses(),
-            "animate-fade-in cursor-pointer transition-all hover:scale-105",
-            "bg-gradient-primary/10 text-primary border-primary/20 hover:bg-gradient-primary/20"
+    <div className="flex flex-wrap gap-2 items-center">
+      {displayBadges.map((badge) => (
+        <div key={badge.id} className="relative group">
+          <Badge 
+            variant={getRarityVariant(badge.rarity)}
+            className={cn(
+              getSizeClasses(),
+              "animate-bounce-in cursor-pointer transition-all hover:scale-105",
+              badge.rarity === 'legendary' && "bg-gradient-primary border-primary/50",
+              badge.rarity === 'epic' && "border-accent/50 bg-accent/10"
+            )}
+          >
+            <span className="mr-1">{badge.emoji}</span>
+            {badge.name}
+          </Badge>
+          
+          {showDescription && (
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-popover border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 w-48 text-sm">
+              <p className="font-medium">{badge.name}</p>
+              <p className="text-muted-foreground text-xs mt-1">{badge.description}</p>
+              {badge.earned_at && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  Earned {new Date(badge.earned_at).toLocaleDateString()}
+                </p>
+              )}
+            </div>
           )}
-          title={`${badge.name}: ${badge.description}`}
-        >
-          <span className="text-sm mr-1">{badge.icon}</span>
-          <span className="hidden sm:inline">{badge.name}</span>
-        </Badge>
+        </div>
       ))}
-      {badges.length >= limit && !showAll && (
+      
+      {remainingCount > 0 && (
         <Badge variant="outline" className={cn(getSizeClasses(), "text-muted-foreground")}>
-          +{badges.length - limit} more
+          +{remainingCount} more
         </Badge>
       )}
     </div>

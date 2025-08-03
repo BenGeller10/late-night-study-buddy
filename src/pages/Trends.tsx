@@ -22,7 +22,7 @@ const Trends = () => {
       {/* Content */}
       <div className="p-4 space-y-6">
         {/* User's Personal Stats */}
-        <StudyStreak userId="mock-user-id" compact />
+        <StudyStreak />
         
         {/* Campus Trends Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -14,25 +14,31 @@ const BottomNavigation = () => {
     {
       to: "/discover",
       icon: Heart,
-      label: "Find Tutors",
+      label: "Discover",
       activeColor: "text-pink-500"
     },
     {
       to: "/trends", 
       icon: TrendingUp,
-      label: "Hot Topics",
+      label: "Trends",
       activeColor: "text-orange-500"
     },
     {
       to: "/chat",
       icon: MessageCircle,
-      label: "Messages",
+      label: "Chat",
       activeColor: "text-blue-500"
+    },
+    {
+      to: "/profile",
+      icon: User,
+      label: "Profile",
+      activeColor: "text-purple-500"
     },
     {
       to: "/support",
       icon: HelpCircle,
-      label: "Get Help",
+      label: "Support",
       activeColor: "text-green-500"
     }
   ];

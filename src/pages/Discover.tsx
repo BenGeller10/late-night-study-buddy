@@ -1,9 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { HelpCircle, User } from "lucide-react";
-import EnhancedSwipeView from "@/components/discovery/EnhancedSwipeView";
+import { HelpCircle } from "lucide-react";
+import SwipeView from "@/components/discovery/SwipeView";
 import PageTransition from "@/components/layout/PageTransition";
-import { soundEffects } from "@/lib/sounds";
 
 const Discover = () => {
   const navigate = useNavigate();
@@ -33,32 +32,19 @@ const Discover = () => {
       <div className="min-h-screen bg-background pb-20"> {/* Added bottom padding for navigation */}
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/20">
-        <div className="p-4 flex items-center justify-between">
-          <div className="text-center flex-1">
-            <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              Find Your Study Buddy ✨
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Swipe to discover amazing tutors
-            </p>
-          </div>
-          
-          {/* Profile Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate('/profile')}
-            className="shrink-0 hover:scale-105 transition-all"
-            aria-label="Profile"
-          >
-            <User className="h-5 w-5" />
-          </Button>
+        <div className="p-4 text-center">
+          <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+            Discover Tutors ✨
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Swipe to find your perfect study buddy
+          </p>
         </div>
       </div>
 
       {/* Main Swipe Interface */}
       <div className="p-4">
-        <EnhancedSwipeView
+        <SwipeView
           onTutorMatch={handleTutorMatch}
           onChat={handleChat}
           onBook={handleBook}
@@ -68,11 +54,8 @@ const Discover = () => {
 
       {/* Floating Support Button */}
       <Button
-        onClick={() => {
-          soundEffects.playMessage();
-          navigate('/support');
-        }}
-        className="fixed bottom-24 left-4 z-50 h-14 w-14 rounded-full shadow-lg bg-gradient-primary hover:bg-gradient-primary/90 text-white transition-all hover:scale-110 active:scale-95"
+        onClick={() => navigate('/support')}
+        className="fixed bottom-24 left-4 z-50 h-14 w-14 rounded-full shadow-lg bg-gradient-primary hover:bg-gradient-primary/90 text-white"
         size="icon"
         aria-label="Get Support"
       >
