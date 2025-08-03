@@ -65,7 +65,7 @@ const Discover = () => {
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/90 backdrop-blur-xl border-b border-border/30">
         <div className="p-6 text-center">
-          <h1 className="text-2xl font-bold bg-gradient-hero bg-clip-text text-transparent mb-2">
+          <h1 className="text-2xl font-bold text-primary mb-2">
             Ready to find your study squad? ✨
           </h1>
           <p className="text-sm text-muted-foreground">
