@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Eye } from "lucide-react";
 
 interface TutorCardProps {
   tutor: {
@@ -18,11 +19,10 @@ interface TutorCardProps {
   onSwipeLeft: () => void;
   onChat: () => void;
   onBook: () => void;
-  onSeeMoreForClass?: (className: string) => void;
-  moreTutorsAvailable?: number;
+  onViewProfile: () => void;
 }
 
-const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onSeeMoreForClass, moreTutorsAvailable = 0 }: TutorCardProps) => {
+const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewProfile }: TutorCardProps) => {
   const [isAnimating, setIsAnimating] = useState<'left' | 'right' | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -90,22 +90,30 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onSeeMore
             </div>
           </div>
 
+          {/* View Profile Button */}
+          <div className="flex justify-center">
+            <Button
+              variant="outline"
+              size="sm"
+              className="btn-smooth text-xs"
+              onClick={onViewProfile}
+            >
+              <Eye className="w-3 h-3 mr-1" />
+              View Full Profile
+            </Button>
+          </div>
+
           {/* Classes */}
           <div className="space-y-2">
             <div className="flex flex-wrap gap-2">
               {tutor.classes.slice(0, 3).map((className, index) => (
-                <Button
+                <Badge
                   key={index}
                   variant="outline"
-                  size="sm"
-                  className="text-xs h-7 px-2"
-                  onClick={() => onSeeMoreForClass?.(className)}
+                  className="text-xs"
                 >
                   {className}
-                  {moreTutorsAvailable > 0 && (
-                    <span className="ml-1 text-primary">+</span>
-                  )}
-                </Button>
+                </Badge>
               ))}
               {tutor.classes.length > 3 && (
                 <Badge variant="outline" className="text-xs">
@@ -113,12 +121,6 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onSeeMore
                 </Badge>
               )}
             </div>
-            
-            {moreTutorsAvailable > 0 && onSeeMoreForClass && (
-              <p className="text-xs text-muted-foreground">
-                💡 Tap a class to see {moreTutorsAvailable} more tutor{moreTutorsAvailable > 1 ? 's' : ''}
-              </p>
-            )}
           </div>
 
           {/* Tutor Style */}
@@ -160,18 +162,6 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onSeeMore
         >
           <span className="text-xl">👎</span>
         </Button>
-        
-        {/* See More Button (when not interested) */}
-        {moreTutorsAvailable > 0 && onSeeMoreForClass && (
-          <Button
-            variant="secondary"
-            className="px-6 h-14 rounded-full text-sm btn-smooth"
-            onClick={() => onSeeMoreForClass(tutor.classes[0])}
-            disabled={isAnimating !== null}
-          >
-            See More for<br />{tutor.classes[0]}
-          </Button>
-        )}
         
         <Button
           variant="campus"

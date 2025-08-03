@@ -21,9 +21,8 @@ const Discover = () => {
     // Handle booking logic - could open booking modal or navigate to booking page
   };
 
-  const handleSeeMoreForClass = (className: string) => {
-    // Navigate to tutors list page with the specific class
-    navigate(`/tutors?class=${encodeURIComponent(className)}`);
+  const handleViewProfile = (tutorId: string) => {
+    navigate(`/tutor/${tutorId}`);
   };
 
   return (
@@ -47,7 +46,7 @@ const Discover = () => {
           onTutorMatch={handleTutorMatch}
           onChat={handleChat}
           onBook={handleBook}
-          onSeeMoreForClass={handleSeeMoreForClass}
+          onViewProfile={handleViewProfile}
         />
       </div>
       </div>

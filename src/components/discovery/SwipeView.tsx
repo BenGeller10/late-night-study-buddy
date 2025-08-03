@@ -88,10 +88,10 @@ interface SwipeViewProps {
   onTutorMatch: (tutorId: string) => void;
   onChat: (tutorId: string) => void;
   onBook: (tutorId: string) => void;
-  onSeeMoreForClass?: (className: string) => void;
+  onViewProfile: (tutorId: string) => void;
 }
 
-const SwipeView = ({ onTutorMatch, onChat, onBook, onSeeMoreForClass }: SwipeViewProps) => {
+const SwipeView = ({ onTutorMatch, onChat, onBook, onViewProfile }: SwipeViewProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [savedTutors, setSavedTutors] = useState<string[]>([]);
   const [skippedTutors, setSkippedTutors] = useState<string[]>([]);
@@ -143,26 +143,6 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onSeeMoreForClass }: SwipeVie
     }
   };
 
-  const handleSeeMoreForClass = (className: string) => {
-    // Filter tutors who teach this specific class and haven't been shown yet
-    const availableTutors = mockTutors.filter(tutor => 
-      tutor.classes.includes(className) && 
-      !savedTutors.includes(tutor.id) && 
-      !skippedTutors.includes(tutor.id) &&
-      tutor.id !== currentTutor?.id
-    );
-    
-    if (availableTutors.length > 0) {
-      // Find the index of the first available tutor for this class
-      const nextTutorIndex = mockTutors.findIndex(tutor => tutor.id === availableTutors[0].id);
-      if (nextTutorIndex !== -1) {
-        setCurrentIndex(nextTutorIndex);
-      }
-    } else {
-      // Call parent callback if provided
-      onSeeMoreForClass?.(className);
-    }
-  };
 
   const nextTutor = () => {
     if (currentIndex < mockTutors.length - 1) {
@@ -201,7 +181,7 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onSeeMoreForClass }: SwipeVie
     );
   }
 
-  const moreTutorsForClasses = getMoreTutorsForClasses(currentTutor.classes);
+  
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-6">
@@ -212,8 +192,7 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onSeeMoreForClass }: SwipeVie
           onSwipeLeft={handleSwipeLeft}
           onChat={() => onChat(currentTutor.id)}
           onBook={() => onBook(currentTutor.id)}
-          onSeeMoreForClass={handleSeeMoreForClass}
-          moreTutorsAvailable={moreTutorsForClasses.length}
+          onViewProfile={() => onViewProfile(currentTutor.id)}
         />
       </div>
       
@@ -234,11 +213,6 @@ const SwipeView = ({ onTutorMatch, onChat, onBook, onSeeMoreForClass }: SwipeVie
         {savedTutors.length > 0 && (
           <div className="text-sm text-muted-foreground">
             💾 Saved {savedTutors.length} tutor{savedTutors.length > 1 ? 's' : ''}
-          </div>
-        )}
-        {moreTutorsForClasses.length > 0 && (
-          <div className="text-xs text-muted-foreground">
-            +{moreTutorsForClasses.length} more tutors available for these classes
           </div>
         )}
       </div>

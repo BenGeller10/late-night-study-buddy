@@ -7,6 +7,7 @@ import BottomNavigation from "@/components/layout/BottomNavigation";
 import Index from "./pages/Index";
 import Discover from "./pages/Discover";
 import TutorsList from "./pages/TutorsList";
+import TutorProfile from "./pages/TutorProfile";
 import Trends from "./pages/Trends";
 import Chat from "./pages/Chat";
 import Profile from "./pages/Profile";
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/discover" element={<Discover />} />
             <Route path="/tutors" element={<TutorsList />} />
+            <Route path="/tutor/:tutorId" element={<TutorProfile />} />
             <Route path="/trends" element={<Trends />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/chat/:tutorId" element={<Chat />} />
