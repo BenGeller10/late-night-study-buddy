@@ -12,24 +12,6 @@ const TopNavigation = () => {
 
   const navItems = [
     {
-      to: "/discover",
-      icon: Heart,
-      label: "Find",
-      activeColor: "text-primary"
-    },
-    {
-      to: "/trends", 
-      icon: TrendingUp,
-      label: "Trends",
-      activeColor: "text-accent"
-    },
-    {
-      to: "/chat",
-      icon: MessageCircle,
-      label: "Chat",
-      activeColor: "text-primary"
-    },
-    {
       to: "/profile",
       icon: User,
       label: "Profile",

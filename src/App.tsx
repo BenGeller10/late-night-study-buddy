@@ -39,12 +39,11 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
           
-          {/* Floating Action Button - Top Right */}
-          <FloatingActionButton />
+          {/* Top Navigation - Profile only */}
+          <TopNavigation />
           
-          {/* Bottom Navigation - Persistent across all pages */}
-        <TopNavigation />
-        <BottomNavigation />
+          {/* Bottom Navigation - Main navigation */}
+          <BottomNavigation />
         </div>
       </BrowserRouter>
     </TooltipProvider>
