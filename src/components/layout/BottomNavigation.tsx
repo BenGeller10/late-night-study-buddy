@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Heart, TrendingUp, MessageCircle, User } from "lucide-react";
+import { Heart, TrendingUp, MessageCircle, User, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const BottomNavigation = () => {
@@ -34,6 +34,12 @@ const BottomNavigation = () => {
       icon: User,
       label: "Profile",
       activeColor: "text-purple-500"
+    },
+    {
+      to: "/support",
+      icon: HelpCircle,
+      label: "Support",
+      activeColor: "text-green-500"
     }
   ];
 
