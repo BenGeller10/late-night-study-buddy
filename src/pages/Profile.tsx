@@ -135,7 +135,7 @@ const Profile = () => {
         </Card>
 
         {/* Study Streak */}
-        <StudyStreak />
+        <StudyStreak userId="mock-user-id" />
         
         {/* Achievements */}
         <Card className="glass-card">
@@ -147,10 +147,9 @@ const Profile = () => {
           </CardHeader>
           <CardContent>
             <BadgeDisplay 
-              badges={userBadges}
-              showDescription={true}
-              size="md"
-              maxDisplay={6}
+              userId="mock-user-id"
+              showAll={true}
+              limit={6}
             />
           </CardContent>
         </Card>

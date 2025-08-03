@@ -32,14 +32,14 @@ const Discover = () => {
       <div className="min-h-screen bg-background pb-20"> {/* Added bottom padding for navigation */}
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/20">
-        <div className="p-4 text-center">
-          <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-            Discover Tutors ✨
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Swipe to find your perfect study buddy
-          </p>
-        </div>
+          <div className="text-center">
+            <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              Find Your Study Buddy ✨
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Swipe to discover amazing tutors
+            </p>
+          </div>
       </div>
 
       {/* Main Swipe Interface */}

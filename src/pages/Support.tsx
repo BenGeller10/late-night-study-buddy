@@ -111,8 +111,14 @@ const Support = () => {
   };
 
   const renderMessageContent = (content: string) => {
-    // Define patterns for clickable actions
+    // Define patterns for clickable actions - NEW FORMAT [Go to Page: PageName]
     const actionPatterns = [
+      { pattern: /\[Go to Page: Home\]/g, text: "Go to Home", route: "/" },
+      { pattern: /\[Go to Page: Discover\]/g, text: "Find Tutors", route: "/discover" },
+      { pattern: /\[Go to Page: Profile\]/g, text: "View Profile", route: "/profile" },
+      { pattern: /\[Go to Page: Chat\]/g, text: "Check Messages", route: "/chat" },
+      { pattern: /\[Go to Page: Trends\]/g, text: "Hot Topics", route: "/trends" },
+      // Legacy patterns for backward compatibility
       { pattern: /\*\*Check Tutor Profiles\*\*/g, text: "Check Tutor Profiles", route: "/discover" },
       { pattern: /\*\*Find Tutors\*\*/g, text: "Find Tutors", route: "/discover" },
       { pattern: /\*\*Browse Tutors\*\*/g, text: "Browse Tutors", route: "/discover" },
@@ -151,7 +157,7 @@ const Support = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => navigate(button.route)}
-                  className="inline-flex items-center gap-2 mr-2 mb-1"
+                  className="inline-flex items-center gap-2 mr-2 mb-1 bg-gradient-primary/10 border-primary/20 text-primary hover:bg-gradient-primary/20 hover:scale-105 transition-all animate-fade-in"
                 >
                   {button.text}
                   <ExternalLink className="h-3 w-3" />
@@ -273,7 +279,7 @@ const Support = () => {
             </div>
             
             <p className="text-xs text-muted-foreground mt-2 text-center">
-              Press Enter to send • Our AI is here to help 24/7
+              Press Enter to send • Alex is here 24/7 💪
             </p>
           </div>
         </div>

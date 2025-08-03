@@ -14,19 +14,19 @@ const BottomNavigation = () => {
     {
       to: "/discover",
       icon: Heart,
-      label: "Discover",
+      label: "Find Tutors",
       activeColor: "text-pink-500"
     },
     {
       to: "/trends", 
       icon: TrendingUp,
-      label: "Trends",
+      label: "Hot Topics",
       activeColor: "text-orange-500"
     },
     {
       to: "/chat",
       icon: MessageCircle,
-      label: "Chat",
+      label: "Messages",
       activeColor: "text-blue-500"
     },
     {
@@ -38,7 +38,7 @@ const BottomNavigation = () => {
     {
       to: "/support",
       icon: HelpCircle,
-      label: "Support",
+      label: "Get Help",
       activeColor: "text-green-500"
     }
   ];
