@@ -1,7 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import SwipeView from "@/components/discovery/SwipeView";
 import PageTransition from "@/components/layout/PageTransition";
 
 const Discover = () => {
+  const navigate = useNavigate();
+
   const handleTutorMatch = (tutorId: string) => {
     console.log('Matched with tutor:', tutorId);
     // Handle tutor match logic - could navigate to chat or show success animation
@@ -15,6 +18,11 @@ const Discover = () => {
   const handleBook = (tutorId: string) => {
     console.log('Booking session with tutor:', tutorId);
     // Handle booking logic - could open booking modal or navigate to booking page
+  };
+
+  const handleSeeMoreForClass = (className: string) => {
+    // Navigate to tutors list page with the specific class
+    navigate(`/tutors?class=${encodeURIComponent(className)}`);
   };
 
   return (
@@ -38,6 +46,7 @@ const Discover = () => {
           onTutorMatch={handleTutorMatch}
           onChat={handleChat}
           onBook={handleBook}
+          onSeeMoreForClass={handleSeeMoreForClass}
         />
       </div>
       </div>

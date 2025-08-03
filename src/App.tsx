@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import BottomNavigation from "@/components/layout/BottomNavigation";
 import Index from "./pages/Index";
 import Discover from "./pages/Discover";
+import TutorsList from "./pages/TutorsList";
 import Trends from "./pages/Trends";
 import Chat from "./pages/Chat";
 import Profile from "./pages/Profile";
@@ -23,6 +24,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/discover" element={<Discover />} />
+            <Route path="/tutors" element={<TutorsList />} />
             <Route path="/trends" element={<Trends />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/profile" element={<Profile />} />
