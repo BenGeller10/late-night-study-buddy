@@ -98,6 +98,7 @@ const TutorsList = () => {
   const handleChat = (tutorId: string) => {
     console.log('Starting chat with tutor:', tutorId);
     // Navigate to chat with specific tutor
+    navigate(`/chat/${tutorId}`);
   };
 
   const handleBook = (tutorId: string) => {
