@@ -29,7 +29,7 @@ const Support = () => {
     setMessages([
       {
         id: '1',
-        content: "Hey there! I'm CC Support, your peer support agent here at Campus Connect! 👋 I'm a student just like you, and I'm here to help you navigate the app. What's up? Need help finding tutors, booking sessions, or got any tech issues? I got you! 😊",
+        content: "Hey there! I'm Alex, your peer support agent here at Campus Connect! 👋 I'm a student just like you, and I'm here to help you navigate the app. What's up? Need help finding tutors, booking sessions, or got any tech issues? I got you! 😊",
         isAI: true,
         timestamp: new Date()
       }
@@ -119,7 +119,7 @@ const Support = () => {
                 <Bot className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold">CC Support</h1>
+                <h1 className="text-xl font-bold">Alex</h1>
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary" className="bg-green-500/20 text-green-600">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-1" />
