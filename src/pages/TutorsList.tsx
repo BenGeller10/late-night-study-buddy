@@ -22,7 +22,7 @@ const mockTutors = [
     name: "Marcus Williams",
     profilePicture: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
     classes: ["CS 101", "CS 150", "MATH 120"],
-    tutorStyle: "Think of me as a study buddy who already took the class. No pressure. 🤝",
+    tutorStyle: "Think of me as a Campus Connect tutor who already took the class. No pressure. 🤝",
     hourlyRate: 0,
     isFree: true,
     rating: 4.7,

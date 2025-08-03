@@ -35,7 +35,7 @@ const Discover = () => {
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/20">
           <div className="text-center">
             <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              Find Your Study Buddy ✨
+              Find Your Campus Connect ✨
             </h1>
             <p className="text-sm text-muted-foreground">
               Swipe to discover amazing tutors
