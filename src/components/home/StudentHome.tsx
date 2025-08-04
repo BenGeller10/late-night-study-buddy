@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, X, User as UserIcon, MessageCircle, BookOpen, TrendingUp, Heart, Clock, Zap } from "lucide-react";
+import { Search, X, User as UserIcon, MessageCircle, BookOpen, Calendar, Heart, Clock, Zap } from "lucide-react";
 import SwipeView from "@/components/discovery/SwipeView";
 
 interface StudentHomeProps {
@@ -59,14 +59,14 @@ const StudentHome = ({ user, onRoleSwitch }: StudentHomeProps) => {
     {
       icon: BookOpen,
       label: "Study Groups",
-      action: () => console.log('Study groups'),
+      action: () => navigate('/study-groups'),
       color: "text-purple-500",
       bgColor: "bg-purple-50 dark:bg-purple-950"
     },
     {
-      icon: TrendingUp,
-      label: "Hot Topics",
-      action: () => navigate('/trends'),
+      icon: Calendar,
+      label: "My Sessions",
+      action: () => navigate('/my-sessions'),
       color: "text-orange-500",
       bgColor: "bg-orange-50 dark:bg-orange-950"
     }

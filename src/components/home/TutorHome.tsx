@@ -18,7 +18,8 @@ import {
   CheckCircle,
   XCircle,
   TrendingUp,
-  Award
+  Award,
+  BookOpen
 } from "lucide-react";
 
 interface TutorHomeProps {
@@ -177,6 +178,30 @@ const TutorHome = ({ user, onRoleSwitch }: TutorHomeProps) => {
               <div className="text-xs text-muted-foreground">Sessions</div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-2 gap-4">
+          <Button 
+            variant="outline" 
+            className="h-16 flex-col gap-2 border-purple-200 hover:border-purple-300"
+            onClick={() => navigate('/set-availability')}
+          >
+            <Calendar className="w-5 h-5 text-purple-600" />
+            <span className="text-sm">Set Availability</span>
+          </Button>
+          <Button variant="outline" className="h-16 flex-col gap-2 border-green-200 hover:border-green-300">
+            <DollarSign className="w-5 h-5 text-green-600" />
+            <span className="text-sm">Earnings</span>
+          </Button>
+          <Button variant="outline" className="h-16 flex-col gap-2 border-blue-200 hover:border-blue-300">
+            <BookOpen className="w-5 h-5 text-blue-600" />
+            <span className="text-sm">My Subjects</span>
+          </Button>
+          <Button variant="outline" className="h-16 flex-col gap-2 border-orange-200 hover:border-orange-300">
+            <Users className="w-5 h-5 text-orange-600" />
+            <span className="text-sm">Students</span>
+          </Button>
         </div>
 
         {/* Incoming Requests */}

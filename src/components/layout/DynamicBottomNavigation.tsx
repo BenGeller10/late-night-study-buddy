@@ -10,7 +10,8 @@ import {
   Search,
   Bell,
   Calendar,
-  BarChart3
+  BarChart3,
+  Users
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -67,10 +68,10 @@ const DynamicBottomNavigation = () => {
       activeColor: "text-blue-500"
     },
     {
-      to: "/trends", 
-      icon: TrendingUp,
-      label: "Hot Topics",
-      activeColor: "text-orange-500"
+      to: "/study-groups", 
+      icon: Users,
+      label: "Study Groups",
+      activeColor: "text-purple-500"
     },
     {
       to: "/chat",
@@ -82,7 +83,7 @@ const DynamicBottomNavigation = () => {
       to: "/profile",
       icon: User,
       label: "Profile",
-      activeColor: "text-purple-500"
+      activeColor: "text-orange-500"
     }
   ];
 
@@ -95,16 +96,16 @@ const DynamicBottomNavigation = () => {
       activeColor: "text-orange-500"
     },
     {
+      to: "/set-availability",
+      icon: Calendar,
+      label: "Schedule",
+      activeColor: "text-blue-500"
+    },
+    {
       to: "/chat",
       icon: MessageCircle,
       label: "Messages",
       activeColor: "text-green-500"
-    },
-    {
-      to: "/trends",
-      icon: BarChart3,
-      label: "Analytics",
-      activeColor: "text-blue-500"
     },
     {
       to: "/profile",

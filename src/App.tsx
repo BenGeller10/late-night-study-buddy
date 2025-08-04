@@ -15,6 +15,9 @@ import Trends from "./pages/Trends";
 import Chat from "./pages/Chat";
 import Profile from "./pages/Profile";
 import Support from "./pages/Support";
+import MySessions from "./pages/MySessions";
+import StudyGroups from "./pages/StudyGroups";
+import SetAvailability from "./pages/SetAvailability";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +42,9 @@ const App = () => (
             <Route path="/chat/:tutorId" element={<Chat />} />
             <Route path="/support" element={<Support />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/my-sessions" element={<MySessions />} />
+            <Route path="/study-groups" element={<StudyGroups />} />
+            <Route path="/set-availability" element={<SetAvailability />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
