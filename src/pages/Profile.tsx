@@ -2,41 +2,46 @@ import StudyStreak from "@/components/gamification/StudyStreak";
 import BadgeDisplay from "@/components/gamification/BadgeDisplay";
 import PageTransition from "@/components/layout/PageTransition";
 import SettingsDialog from "@/components/settings/SettingsDialog";
+import MySessions from "@/pages/profile/MySessions";
+import StudyMaterials from "@/pages/profile/StudyMaterials";
+import StudyGroups from "@/pages/profile/StudyGroups";
+import Earnings from "@/pages/profile/Earnings";
+import MySubjects from "@/pages/profile/MySubjects";
+import Students from "@/pages/profile/Students";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Settings, Star, BookOpen, Users, DollarSign, Clock, Calendar, Target, TrendingUp, Award, Search, MessageCircle } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Settings, Star, BookOpen, Users, DollarSign, Clock, Calendar, Target, TrendingUp, Award, Search, MessageCircle, FileText, GraduationCap, Calendar as CalendarIcon } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+type SubPage = 'hub' | 'my-sessions' | 'study-materials' | 'study-groups' | 'earnings' | 'my-subjects' | 'students' | 'set-availability';
+
 const Profile = () => {
+  const [currentPage, setCurrentPage] = useState<SubPage>('hub');
   const [isTutor, setIsTutor] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Fetch user data and role from database
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        console.log('Fetching user data...');
         const { data: { session } } = await supabase.auth.getSession();
-        console.log('Session:', session);
         
         if (session?.user) {
-          console.log('User found, fetching profile...');
           const { data: profile, error } = await supabase
             .from('profiles')
             .select('*')
             .eq('user_id', session.user.id)
             .single();
-          
-          console.log('Profile data:', profile);
-          console.log('Profile error:', error);
           
           if (profile) {
             setIsTutor(profile.is_tutor || false);
@@ -52,18 +57,7 @@ const Profile = () => {
               major: profile.major,
               year: profile.year
             });
-          } else {
-            console.log('No profile found, using user data only');
-            setUser({
-              id: session.user.id,
-              email: session.user.email,
-              display_name: session.user.user_metadata?.full_name || session.user.email,
-              avatar_url: session.user.user_metadata?.avatar_url || '',
-              is_tutor: false
-            });
           }
-        } else {
-          console.log('No session found');
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -75,91 +69,63 @@ const Profile = () => {
     fetchUserData();
   }, []);
 
-  // Handle role switching
   const handleRoleSwitch = async (newRole: boolean) => {
-    if (!user) {
-      console.log('No user found for role switch');
-      return;
-    }
-
-    // If switching to tutor and no venmo handle, prompt for it
-    if (newRole && !user.venmo_handle) {
-      const venmoHandle = prompt('To become a tutor, please enter your Venmo handle (e.g., @your-username):');
-      
-      if (!venmoHandle || !venmoHandle.trim()) {
-        toast({
-          title: "Venmo handle required",
-          description: "You need to provide a Venmo handle to become a tutor.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Update both role and venmo handle
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .update({ 
-            is_tutor: newRole,
-            venmo_handle: venmoHandle.trim()
-          })
-          .eq('user_id', user.id)
-          .select();
-
-        if (error) {
-          console.error('Database error:', error);
-          throw error;
-        }
-
-        setIsTutor(newRole);
-        setUser({ ...user, venmo_handle: venmoHandle.trim() });
-        toast({
-          title: `Welcome to tutoring! 🎓`,
-          description: `You're now a tutor. Students can pay you via ${venmoHandle.trim()}`,
-        });
-        return;
-      } catch (error: any) {
-        console.error('Role switch error:', error);
-        toast({
-          title: "Error becoming tutor",
-          description: error.message || "Failed to update profile. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
-    }
-
-    console.log('Switching role to:', newRole ? 'tutor' : 'student');
-    console.log('Current user:', user);
+    if (!user) return;
 
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('profiles')
         .update({ is_tutor: newRole })
-        .eq('user_id', user.id)
-        .select();
+        .eq('user_id', user.id);
 
-      console.log('Update result:', { data, error });
-
-      if (error) {
-        console.error('Database error:', error);
-        throw error;
-      }
+      if (error) throw error;
 
       setIsTutor(newRole);
+      setUser({ ...user, is_tutor: newRole });
       toast({
         title: `Switched to ${newRole ? 'Tutor' : 'Student'} mode`,
         description: `You're now viewing the ${newRole ? 'tutor' : 'student'} interface.`,
       });
     } catch (error: any) {
-      console.error('Role switch error:', error);
       toast({
         title: "Error switching roles",
-        description: error.message || "Failed to update role. Please try again.",
+        description: error.message,
         variant: "destructive",
       });
     }
   };
+
+  const handleNavigation = (page: SubPage) => {
+    if (page === 'set-availability') {
+      navigate('/set-availability');
+      return;
+    }
+    setCurrentPage(page);
+  };
+
+  const handleBackToHub = () => {
+    setCurrentPage('hub');
+  };
+
+  // Render sub-pages
+  if (currentPage !== 'hub') {
+    switch (currentPage) {
+      case 'my-sessions':
+        return <MySessions user={user} onBack={handleBackToHub} />;
+      case 'study-materials':
+        return <StudyMaterials user={user} onBack={handleBackToHub} />;
+      case 'study-groups':
+        return <StudyGroups user={user} onBack={handleBackToHub} />;
+      case 'earnings':
+        return <Earnings user={user} onBack={handleBackToHub} />;
+      case 'my-subjects':
+        return <MySubjects user={user} onBack={handleBackToHub} />;
+      case 'students':
+        return <Students user={user} onBack={handleBackToHub} />;
+      default:
+        return null;
+    }
+  }
 
   if (isLoading) {
     return (
@@ -184,15 +150,12 @@ const Profile = () => {
     );
   }
 
-  // Mock additional data - in real app would come from database
   const mockData = {
-    major: "Computer Science",
-    year: "Junior",
-    // Student stats
+    major: user?.major || "Computer Science",
+    year: user?.year || "Junior",
     sessionsAttended: 18,
     subjectsStudied: 4,
     hoursLearned: 45,
-    // Tutor stats
     sessionsTaught: 24,
     studentsHelped: 12,
     hoursTeaching: 68,
@@ -200,345 +163,214 @@ const Profile = () => {
     rating: 4.8
   };
 
-  const userBadges = [
-    {
-      id: '1',
-      name: 'Help Hero',
-      description: 'Completed 10 free tutoring sessions',
-      emoji: '👑',
-      type: 'achievement' as const,
-      rarity: 'epic' as const,
-      earned_at: '2024-01-15'
-    },
-    {
-      id: '2',
-      name: 'Course Master',
-      description: 'Helped 5 students pass finals in CALC 251',
-      emoji: '🏆',
-      type: 'achievement' as const,
-      rarity: 'legendary' as const,
-      earned_at: '2024-01-20'
-    },
-    {
-      id: '3',
-      name: 'Top-Rated',
-      description: 'Received 5-star reviews from 10 different students',
-      emoji: '⭐',
-      type: 'rating' as const,
-      rarity: 'rare' as const,
-      earned_at: '2024-01-10'
-    },
-    {
-      id: '4',
-      name: 'Late-Night Lifesaver',
-      description: 'Helped students during late-night study sessions',
-      emoji: '🦉',
-      type: 'special' as const,
-      rarity: 'rare' as const,
-      earned_at: '2024-01-05'
-    }
-  ];
-
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background pb-20"> {/* Added bottom padding for navigation */}
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/20">
-        <div className="flex items-center justify-between p-4">
-          <div>
-            <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              Profile
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Your campus persona
-            </p>
+      <div className="min-h-screen bg-background pb-20 animate-fade-in">
+        {/* Header */}
+        <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/20">
+          <div className="flex items-center justify-between p-4">
+            <div>
+              <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                Profile
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Your campus persona
+              </p>
+            </div>
+            <SettingsDialog user={user} onUserUpdate={setUser} />
           </div>
-          <SettingsDialog user={user} onUserUpdate={setUser} />
-        </div>
-        
-        {/* Role Toggle */}
-        <div className="px-4 pb-4">
-          <div className="flex items-center justify-center gap-3 p-3 bg-card/50 rounded-lg border border-border/50">
-            <Label htmlFor="role-toggle" className={`text-sm font-medium ${!isTutor ? 'text-primary' : 'text-muted-foreground'}`}>
-              📚 Student
-            </Label>
-            <Switch
-              id="role-toggle"
-              checked={isTutor}
-              onCheckedChange={handleRoleSwitch}
-            />
-            <Label htmlFor="role-toggle" className={`text-sm font-medium ${isTutor ? 'text-primary' : 'text-muted-foreground'}`}>
-              🧠 Tutor
-            </Label>
+          
+          {/* Role Toggle */}
+          <div className="px-4 pb-4">
+            <div className="flex items-center justify-center gap-3 p-3 bg-card/50 rounded-lg border border-border/50">
+              <Label htmlFor="role-toggle" className={`text-sm font-medium ${!isTutor ? 'text-primary' : 'text-muted-foreground'}`}>
+                📚 Student
+              </Label>
+              <Switch
+                id="role-toggle"
+                checked={isTutor}
+                onCheckedChange={handleRoleSwitch}
+              />
+              <Label htmlFor="role-toggle" className={`text-sm font-medium ${isTutor ? 'text-primary' : 'text-muted-foreground'}`}>
+                🧠 Tutor
+              </Label>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="p-4 space-y-6">
-        {/* User Info Card */}
-        <Card className="glass-card">
-          <CardContent className="p-6">
-             <div className="flex items-start gap-4">
-               <Avatar className="w-16 h-16">
-                 <AvatarImage src={user.avatar_url || "/placeholder.svg"} alt={user.display_name || "User"} />
-                 <AvatarFallback className="text-lg bg-primary/20 text-primary">
-                   {(user.display_name || user.email || "U").split(' ').map((n: string) => n[0]).join('').toUpperCase()}
-                 </AvatarFallback>
-               </Avatar>
+        {/* Content */}
+        <div className="p-4 space-y-6">
+          {/* User Info Card */}
+          <Card className="glass-card">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-4">
+                <Avatar className="w-16 h-16">
+                  <AvatarImage src={user.avatar_url || "/placeholder.svg"} alt={user.display_name || "User"} />
+                  <AvatarFallback className="text-lg bg-primary/20 text-primary">
+                    {(user.display_name || user.email || "U").split(' ').map((n: string) => n[0]).join('').toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+               
+                <div className="flex-1 space-y-2">
+                  <div>
+                    <h2 className="text-xl font-bold">{user.display_name || "User"}</h2>
+                    <p className="text-sm text-muted-foreground">{user.email}</p>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="outline" className="text-xs">
+                      📚 {mockData.major}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      🎓 {mockData.year}
+                    </Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      {isTutor ? 'Tutor' : 'Student'}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
               
-               <div className="flex-1 space-y-2">
-                 <div>
-                   <h2 className="text-xl font-bold">{user.display_name || "User"}</h2>
-                   <p className="text-sm text-muted-foreground">{user.email}</p>
-                 </div>
-                 
-                 <div className="flex flex-wrap gap-2">
-                   <Badge variant="outline" className="text-xs">
-                     📚 {mockData.major}
-                   </Badge>
-                   <Badge variant="outline" className="text-xs">
-                     🎓 {mockData.year}
-                   </Badge>
-                   <Badge variant="secondary" className="text-xs">
-                     {isTutor ? 'Tutor' : 'Student'}
-                   </Badge>
-                 </div>
-               </div>
-            </div>
-            
-            {isTutor ? (
-              /* Tutor Stats */
-               <div className="grid grid-cols-4 gap-4 mt-6 pt-4 border-t border-border/50">
-                 <div className="text-center">
-                   <div className="text-lg font-bold text-primary">{mockData.sessionsTaught}</div>
-                   <div className="text-xs text-muted-foreground">Sessions</div>
-                 </div>
-                 <div className="text-center">
-                   <div className="flex items-center justify-center gap-1">
-                     <Star className="w-3 h-3 fill-current text-yellow-500" />
-                     <span className="text-lg font-bold">{mockData.rating}</span>
-                   </div>
-                   <div className="text-xs text-muted-foreground">Rating</div>
-                 </div>
-                 <div className="text-center">
-                   <div className="text-lg font-bold text-accent">{mockData.studentsHelped}</div>
-                   <div className="text-xs text-muted-foreground">Students</div>
-                 </div>
-                 <div className="text-center">
-                   <div className="text-lg font-bold text-green-500">${mockData.earnings}</div>
-                   <div className="text-xs text-muted-foreground">Earned</div>
-                 </div>
-               </div>
-            ) : (
-              /* Student Stats */
-               <div className="grid grid-cols-3 gap-4 mt-6 pt-4 border-t border-border/50">
-                 <div className="text-center">
-                   <div className="text-lg font-bold text-primary">{mockData.sessionsAttended}</div>
-                   <div className="text-xs text-muted-foreground">Sessions</div>
-                 </div>
-                 <div className="text-center">
-                   <div className="text-lg font-bold text-accent">{mockData.subjectsStudied}</div>
-                   <div className="text-xs text-muted-foreground">Subjects</div>
-                 </div>
-                 <div className="text-center">
-                   <div className="text-lg font-bold text-blue-500">{mockData.hoursLearned}h</div>
-                   <div className="text-xs text-muted-foreground">Learned</div>
-                 </div>
-               </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {isTutor ? (
-          /* TUTOR INTERFACE */
-          <>
-            {/* Teaching Overview */}
-            <Card className="glass-card border-sky-200 dark:border-sky-800">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-sky-600 dark:text-sky-300">
-                  <Award className="w-5 h-5" />
-                  Teaching Overview
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4">
-                   <div className="space-y-2">
-                     <div className="flex items-center gap-2 text-sm">
-                       <Clock className="w-4 h-4 text-muted-foreground" />
-                       <span>Hours Teaching: <strong>{mockData.hoursTeaching}</strong></span>
-                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <TrendingUp className="w-4 h-4 text-muted-foreground" />
-                      <span>This Month: <strong>12 sessions</strong></span>
-                    </div>
+              {isTutor ? (
+                <div className="grid grid-cols-4 gap-4 mt-6 pt-4 border-t border-border/50">
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-primary">{mockData.sessionsTaught}</div>
+                    <div className="text-xs text-muted-foreground">Sessions</div>
                   </div>
+                  <div className="text-center">
+                    <div className="flex items-center justify-center gap-1">
+                      <Star className="w-3 h-3 fill-current text-yellow-500" />
+                      <span className="text-lg font-bold">{mockData.rating}</span>
+                    </div>
+                    <div className="text-xs text-muted-foreground">Rating</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-accent">{mockData.studentsHelped}</div>
+                    <div className="text-xs text-muted-foreground">Students</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-green-500">${mockData.earnings}</div>
+                    <div className="text-xs text-muted-foreground">Earned</div>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-3 gap-4 mt-6 pt-4 border-t border-border/50">
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-primary">{mockData.sessionsAttended}</div>
+                    <div className="text-xs text-muted-foreground">Sessions</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-accent">{mockData.subjectsStudied}</div>
+                    <div className="text-xs text-muted-foreground">Subjects</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-blue-500">{mockData.hoursLearned}h</div>
+                    <div className="text-xs text-muted-foreground">Learned</div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {isTutor ? (
+            <>
+              {/* Tutor Navigation Buttons */}
+              <div className="grid grid-cols-2 gap-4">
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex-col gap-2 border-sky-200 hover:border-sky-300 hover-scale"
+                  onClick={() => handleNavigation('set-availability')}
+                >
+                  <CalendarIcon className="w-6 h-6 text-sky-600" />
+                  <span className="text-sm font-medium">Set Availability</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex-col gap-2 border-green-200 hover:border-green-300 hover-scale"
+                  onClick={() => handleNavigation('earnings')}
+                >
+                  <DollarSign className="w-6 h-6 text-green-600" />
+                  <span className="text-sm font-medium">Earnings</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex-col gap-2 border-blue-200 hover:border-blue-300 hover-scale"
+                  onClick={() => handleNavigation('my-subjects')}
+                >
+                  <BookOpen className="w-6 h-6 text-blue-600" />
+                  <span className="text-sm font-medium">My Subjects</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex-col gap-2 border-orange-200 hover:border-orange-300 hover-scale"
+                  onClick={() => handleNavigation('students')}
+                >
+                  <Users className="w-6 h-6 text-orange-600" />
+                  <span className="text-sm font-medium">Students</span>
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Learning Progress */}
+              <Card className="glass-card border-purple-200 dark:border-purple-800">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-purple-600 dark:text-purple-300">
+                    <GraduationCap className="w-5 h-5" />
+                    Learning Progress
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Target className="w-4 h-4 text-muted-foreground" />
-                      <span>Success Rate: <strong>94%</strong></span>
+                    <div className="flex justify-between text-sm">
+                      <span>Calculus II</span>
+                      <span className="text-muted-foreground">85%</span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <MessageCircle className="w-4 h-4 text-muted-foreground" />
-                      <span>Response Time: <strong>5 min</strong></span>
-                    </div>
+                    <Progress value={85} className="h-2" />
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            {/* My Connections - Tutor Only */}
-            <Card className="glass-card border-blue-200 dark:border-blue-800">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-blue-600 dark:text-blue-300">
-                  <Users className="w-5 h-5" />
-                  My Connections
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <p className="text-sm text-muted-foreground">
-                    Students who have connected with you will appear here. You can manage your connections, start conversations, and schedule sessions.
-                  </p>
-                  <div className="text-center py-4">
-                    <Users className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">No connections yet</p>
-                    <p className="text-xs text-muted-foreground">Accept student matches to see them here</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+              {/* Student Navigation Buttons */}
+              <div className="grid grid-cols-2 gap-4">
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex-col gap-2 border-blue-200 hover:border-blue-300 hover-scale"
+                  onClick={() => navigate('/discover')}
+                >
+                  <Search className="w-6 h-6 text-blue-600" />
+                  <span className="text-sm font-medium">Find Tutors</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex-col gap-2 border-green-200 hover:border-green-300 hover-scale"
+                  onClick={() => handleNavigation('my-sessions')}
+                >
+                  <Calendar className="w-6 h-6 text-green-600" />
+                  <span className="text-sm font-medium">My Sessions</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex-col gap-2 border-orange-200 hover:border-orange-300 hover-scale"
+                  onClick={() => handleNavigation('study-materials')}
+                >
+                  <FileText className="w-6 h-6 text-orange-600" />
+                  <span className="text-sm font-medium">Study Materials</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex-col gap-2 border-purple-200 hover:border-purple-300 hover-scale"
+                  onClick={() => handleNavigation('study-groups')}
+                >
+                  <Users className="w-6 h-6 text-purple-600" />
+                  <span className="text-sm font-medium">Study Groups</span>
+                </Button>
+              </div>
+            </>
+          )}
 
-            {/* Tutor Actions */}
-            <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline" className="h-16 flex-col gap-2 border-sky-200 hover:border-sky-300">
-                <Calendar className="w-5 h-5 text-sky-600" />
-                <span className="text-sm">Set Availability</span>
-              </Button>
-              <Button variant="outline" className="h-16 flex-col gap-2 border-green-200 hover:border-green-300">
-                <DollarSign className="w-5 h-5 text-green-600" />
-                <span className="text-sm">Earnings</span>
-              </Button>
-              <Button variant="outline" className="h-16 flex-col gap-2 border-blue-200 hover:border-blue-300">
-                <BookOpen className="w-5 h-5 text-blue-600" />
-                <span className="text-sm">My Subjects</span>
-              </Button>
-              <Button variant="outline" className="h-16 flex-col gap-2 border-orange-200 hover:border-orange-300">
-                <Users className="w-5 h-5 text-orange-600" />
-                <span className="text-sm">Students</span>
-              </Button>
-            </div>
-
-            {/* Tutor Achievements */}
-            <Card className="glass-card border-yellow-200 dark:border-yellow-800">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-yellow-700 dark:text-yellow-300">
-                  <span className="text-lg">🏆</span>
-                  Teaching Achievements
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <BadgeDisplay 
-                  badges={userBadges}
-                  showDescription={true}
-                  size="md"
-                  maxDisplay={6}
-                />
-              </CardContent>
-            </Card>
-
-            {/* Tutor Coming Soon */}
-            <div className="text-center space-y-2 py-8">
-              <span className="text-4xl">👨‍🏫</span>
-              <h3 className="text-lg font-semibold">Tutor Dashboard Expanding!</h3>
-              <p className="text-muted-foreground text-sm">
-                Student feedback, advanced scheduling, and payment tracking
-              </p>
-            </div>
-          </>
-        ) : (
-          /* STUDENT INTERFACE */
-          <>
-            {/* Study Progress */}
-            <StudyStreak />
-
-            {/* Learning Path */}
-            <Card className="glass-card border-blue-200 dark:border-blue-800">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
-                  <Target className="w-5 h-5" />
-                  Learning Progress
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Calculus II</span>
-                    <span className="text-xs text-muted-foreground">85% complete</span>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: '85%' }}></div>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Organic Chemistry</span>
-                    <span className="text-xs text-muted-foreground">62% complete</span>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div className="bg-green-500 h-2 rounded-full" style={{ width: '62%' }}></div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Student Actions */}
-            <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline" className="h-16 flex-col gap-2 border-blue-200 hover:border-blue-300">
-                <Search className="w-5 h-5 text-blue-600" />
-                <span className="text-sm">Find Tutors</span>
-              </Button>
-              <Button variant="outline" className="h-16 flex-col gap-2 border-green-200 hover:border-green-300">
-                <Calendar className="w-5 h-5 text-green-600" />
-                <span className="text-sm">My Sessions</span>
-              </Button>
-              <Button variant="outline" className="h-16 flex-col gap-2 border-purple-200 hover:border-purple-300">
-                <BookOpen className="w-5 h-5 text-purple-600" />
-                <span className="text-sm">Study Materials</span>
-              </Button>
-              <Button variant="outline" className="h-16 flex-col gap-2 border-orange-200 hover:border-orange-300">
-                <Users className="w-5 h-5 text-orange-600" />
-                <span className="text-sm">Study Groups</span>
-              </Button>
-            </div>
-
-            {/* Student Achievements */}
-            <Card className="glass-card border-green-200 dark:border-green-800">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-green-700 dark:text-green-300">
-                  <span className="text-lg">🎯</span>
-                  Learning Achievements
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <BadgeDisplay 
-                  badges={userBadges.filter(badge => ['Help Hero', 'Top-Rated'].includes(badge.name))}
-                  showDescription={true}
-                  size="md"
-                  maxDisplay={4}
-                />
-              </CardContent>
-            </Card>
-
-            {/* Student Coming Soon */}
-            <div className="text-center space-y-2 py-8">
-              <span className="text-4xl">🎓</span>
-              <h3 className="text-lg font-semibold">Student Hub Growing!</h3>
-              <p className="text-muted-foreground text-sm">
-                Study plans, grade tracking, and personalized recommendations
-              </p>
-            </div>
-          </>
-        )}
-      </div>
+          <StudyStreak />
+        </div>
       </div>
     </PageTransition>
   );
