@@ -355,9 +355,9 @@ const Profile = () => {
           /* TUTOR INTERFACE */
           <>
             {/* Teaching Overview */}
-            <Card className="glass-card border-purple-200 dark:border-purple-800">
+            <Card className="glass-card border-sky-200 dark:border-sky-800">
               <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-purple-700 dark:text-purple-300">
+                <CardTitle className="flex items-center gap-2 text-sky-600 dark:text-sky-300">
                   <Award className="w-5 h-5" />
                   Teaching Overview
                 </CardTitle>
@@ -390,8 +390,8 @@ const Profile = () => {
 
             {/* Tutor Actions */}
             <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline" className="h-16 flex-col gap-2 border-purple-200 hover:border-purple-300">
-                <Calendar className="w-5 h-5 text-purple-600" />
+              <Button variant="outline" className="h-16 flex-col gap-2 border-sky-200 hover:border-sky-300">
+                <Calendar className="w-5 h-5 text-sky-600" />
                 <span className="text-sm">Set Availability</span>
               </Button>
               <Button variant="outline" className="h-16 flex-col gap-2 border-green-200 hover:border-green-300">

@@ -115,7 +115,7 @@ const TutorHome = ({ user, onRoleSwitch }: TutorHomeProps) => {
         <div className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold text-purple-600">
+              <h1 className="text-xl font-bold text-sky-400">
                 TutorPro Dashboard 💼
               </h1>
               <p className="text-sm text-muted-foreground">
@@ -163,10 +163,10 @@ const TutorHome = ({ user, onRoleSwitch }: TutorHomeProps) => {
             </CardContent>
           </Card>
           
-          <Card className="glass-card border-purple-200 dark:border-purple-800">
+          <Card className="glass-card border-sky-200 dark:border-sky-800">
             <CardContent className="p-4 text-center">
-              <TrendingUp className="w-6 h-6 text-purple-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-purple-600">{stats.sessionsThisMonth}</div>
+              <TrendingUp className="w-6 h-6 text-sky-500 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-sky-600">{stats.sessionsThisMonth}</div>
               <div className="text-xs text-muted-foreground">Sessions</div>
             </CardContent>
           </Card>
@@ -176,10 +176,10 @@ const TutorHome = ({ user, onRoleSwitch }: TutorHomeProps) => {
         <div className="grid grid-cols-2 gap-4">
           <Button 
             variant="outline" 
-            className="h-16 flex-col gap-2 border-purple-200 hover:border-purple-300"
+            className="h-16 flex-col gap-2 border-sky-200 hover:border-sky-300"
             onClick={() => navigate('/set-availability')}
           >
-            <Calendar className="w-5 h-5 text-purple-600" />
+            <Calendar className="w-5 h-5 text-sky-600" />
             <span className="text-sm">Set Availability</span>
           </Button>
           <Button variant="outline" className="h-16 flex-col gap-2 border-green-200 hover:border-green-300">
@@ -299,10 +299,10 @@ const TutorHome = ({ user, onRoleSwitch }: TutorHomeProps) => {
         </Card>
 
         {/* Your Impact */}
-        <Card className="glass-card border-purple-200 dark:border-purple-800">
+        <Card className="glass-card border-sky-200 dark:border-sky-800">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2">
-              <Award className="w-5 h-5 text-purple-500" />
+              <Award className="w-5 h-5 text-sky-500" />
               Your Impact This Week
             </CardTitle>
           </CardHeader>
@@ -322,7 +322,7 @@ const TutorHome = ({ user, onRoleSwitch }: TutorHomeProps) => {
                   <div className="text-xs text-muted-foreground">Students</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-lg font-bold text-purple-500">4.9</div>
+                  <div className="text-lg font-bold text-sky-500">4.9</div>
                   <div className="text-xs text-muted-foreground">Avg Rating</div>
                 </div>
               </div>
