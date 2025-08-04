@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, Mail, Lock, User, ArrowLeft, DollarSign } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import PageTransition from "@/components/layout/PageTransition";
@@ -29,6 +30,7 @@ const Auth = () => {
   const [profileImage, setProfileImage] = useState("");
   const [isTutor, setIsTutor] = useState(false);
   const [venmoHandle, setVenmoHandle] = useState("");
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   // Check if user is already authenticated
   useEffect(() => {
@@ -145,6 +147,12 @@ const Auth = () => {
       return;
     }
 
+    if (!agreedToTerms) {
+      setError("You must agree to the Terms of Service to continue");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       // Clean up existing state
       cleanupAuthState();
@@ -208,6 +216,7 @@ const Auth = () => {
     setProfileImage("");
     setIsTutor(false);
     setVenmoHandle("");
+    setAgreedToTerms(false);
     setError("");
   };
 
@@ -454,10 +463,49 @@ const Auth = () => {
                       </div>
                     </div>
 
+                    {/* Terms of Service Agreement */}
+                    <div className="space-y-3">
+                      <div className="flex items-start space-x-3">
+                        <Checkbox
+                          id="terms-agreement"
+                          checked={agreedToTerms}
+                          onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
+                          disabled={isLoading}
+                        />
+                        <div className="grid gap-1.5 leading-none">
+                          <Label
+                            htmlFor="terms-agreement"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            I agree to the Terms of Service and Privacy Policy *
+                          </Label>
+                          <p className="text-xs text-muted-foreground">
+                            By checking this box, you agree to our{" "}
+                            <button 
+                              type="button"
+                              className="underline hover:text-primary"
+                              onClick={() => window.open("/terms", "_blank")}
+                            >
+                              Terms of Service
+                            </button>
+                            {" "}and{" "}
+                            <button 
+                              type="button"
+                              className="underline hover:text-primary"
+                              onClick={() => window.open("/privacy", "_blank")}
+                            >
+                              Privacy Policy
+                            </button>
+                            .
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
                     <Button
                       type="submit"
                       className="w-full bg-gradient-primary hover:bg-gradient-primary/90"
-                      disabled={isLoading || !profileImage || (isTutor && !venmoHandle.trim())}
+                      disabled={isLoading || !agreedToTerms}
                     >
                       {isLoading ? "Creating account..." : `Create ${isTutor ? 'Tutor' : 'Student'} Account`}
                     </Button>
