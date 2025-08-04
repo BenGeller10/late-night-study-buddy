@@ -115,11 +115,11 @@ const TutorHome = ({ user, onRoleSwitch }: TutorHomeProps) => {
         <div className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold">
-                Welcome back, {user.user_metadata?.full_name?.split(' ')[0] || 'Tutor'}! 🎓
+              <h1 className="text-xl font-bold text-purple-600">
+                TutorPro Dashboard 💼
               </h1>
               <p className="text-sm text-muted-foreground">
-                Ready to help students succeed?
+                Manage your tutoring business
               </p>
             </div>
             

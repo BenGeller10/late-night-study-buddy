@@ -26,24 +26,24 @@ const TutorInterface = ({ user, onRoleSwitch }: TutorInterfaceProps) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Tutor-specific navigation
+  // Tutor-specific navigation (TutorPro)
   const tutorNavItems = [
     {
       to: "/liked-students",
       icon: Heart,
-      label: "Matches",
+      label: "Clients",
       activeColor: "text-pink-500"
     },
     {
       to: "/bookings",
       icon: Calendar,
-      label: "Bookings",
+      label: "Business",
       activeColor: "text-blue-500"
     },
     {
       to: "/set-availability",
       icon: Clock,
-      label: "Schedule",
+      label: "Hours",
       activeColor: "text-purple-500"
     },
     {

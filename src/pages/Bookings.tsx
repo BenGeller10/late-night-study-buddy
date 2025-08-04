@@ -185,11 +185,11 @@ const Bookings = () => {
           <div className="p-4">
             <div className="flex items-center justify-between">
               <div className="text-center flex-1">
-                <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                  My Bookings 📅
+                <h1 className="text-xl font-bold text-purple-600">
+                  TutorPro - Business Calendar 💼
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Your tutoring schedule
+                  Your tutoring appointments & earnings
                 </p>
               </div>
               

@@ -28,18 +28,18 @@ const StudentInterface = ({ user, onRoleSwitch }: StudentInterfaceProps) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Student-specific navigation
+  // Student-specific navigation (StudyBuddy)
   const studentNavItems = [
     {
       to: "/home",
       icon: Search,
-      label: "Find Tutors",
+      label: "Find Buddies",
       activeColor: "text-blue-500"
     },
     {
       to: "/my-sessions", 
       icon: Calendar,
-      label: "My Sessions",
+      label: "Learning Path",
       activeColor: "text-purple-500"
     },
     {

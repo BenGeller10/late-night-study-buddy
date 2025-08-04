@@ -133,11 +133,11 @@ const LikedStudents = () => {
           <div className="p-4">
             <div className="flex items-center justify-between">
               <div className="text-center flex-1">
-                <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                  Student Matches ❤️
+                <h1 className="text-xl font-bold text-purple-600">
+                  TutorPro - Student Matches 💼
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Students who liked your profile
+                  Manage your potential clients
                 </p>
               </div>
               
