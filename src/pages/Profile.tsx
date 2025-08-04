@@ -1,6 +1,7 @@
 import StudyStreak from "@/components/gamification/StudyStreak";
 import BadgeDisplay from "@/components/gamification/BadgeDisplay";
 import PageTransition from "@/components/layout/PageTransition";
+import SettingsDialog from "@/components/settings/SettingsDialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -252,9 +253,7 @@ const Profile = () => {
               Your campus persona
             </p>
           </div>
-          <Button variant="ghost" size="sm">
-            <Settings className="w-4 h-4" />
-          </Button>
+          <SettingsDialog user={user} onUserUpdate={setUser} />
         </div>
         
         {/* Role Toggle */}
