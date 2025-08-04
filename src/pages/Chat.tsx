@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import ChatConversation from "@/components/chat/ChatConversation";
 import RealChatConversation from "@/components/chat/RealChatConversation";
 import ChatList from "@/components/chat/ChatList";
+import NewChatDialog from "@/components/chat/NewChatDialog";
 import PageTransition from "@/components/layout/PageTransition";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +19,7 @@ const Chat = () => {
   const [isTutor, setIsTutor] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   
-  const { conversations, loading, currentUser } = useConversations();
+  const { conversations, loading, currentUser, refetchConversations } = useConversations();
 
   // Check if user is a tutor
   useEffect(() => {
@@ -45,6 +46,12 @@ const Chat = () => {
 
   const handleBackToList = () => {
     navigate('/chat');
+  };
+
+  const handleNewConversation = (participantId: string) => {
+    // Refresh conversations and navigate to the new chat
+    refetchConversations();
+    navigate(`/chat/${participantId}`);
   };
 
   // If we have a conversation ID in the URL, show the conversation
@@ -101,14 +108,21 @@ const Chat = () => {
             : 'bg-background/80 border-border/20'
         }`}>
           <div className="p-4">
-            <h1 className={`text-xl font-bold ${
-              isTutor ? 'text-sky-400' : 'bg-gradient-primary bg-clip-text text-transparent'
-            }`}>
-              Messages 💬
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              {isTutor ? 'Chat with your students' : 'Chat with your tutors and study groups'}
-            </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className={`text-xl font-bold ${
+                  isTutor ? 'text-sky-400' : 'bg-gradient-primary bg-clip-text text-transparent'
+                }`}>
+                  Messages 💬
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  {isTutor ? 'Chat with your students' : 'Chat with your tutors and study groups'}
+                </p>
+              </div>
+              
+              {/* New Chat Button */}
+              <NewChatDialog onConversationCreated={handleNewConversation} />
+            </div>
           </div>
         </div>
 
