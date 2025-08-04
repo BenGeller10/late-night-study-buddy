@@ -146,7 +146,7 @@ const SetAvailability = () => {
             <Button 
               onClick={saveAvailability}
               disabled={saving}
-              variant="campus"
+              variant="blue"
             >
               <Save className="w-4 h-4 mr-2" />
               {saving ? 'Saving...' : 'Save'}
@@ -184,7 +184,7 @@ const SetAvailability = () => {
                       <CardTitle className="text-lg">{day}</CardTitle>
                       <Button
                         size="sm"
-                        variant="campus"
+                        variant="blue"
                         onClick={() => addTimeSlot(day)}
                       >
                         <Plus className="w-4 h-4 mr-2" />
