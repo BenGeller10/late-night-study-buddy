@@ -110,6 +110,7 @@ const TutorProfile = ({ email, fullName, password, onNext, onBack }: TutorProfil
   };
 
   const handleSubmit = () => {
+    // Validation
     if (selectedSubjects.length === 0) {
       toast.error('Please select at least one subject to tutor');
       return;
@@ -125,12 +126,24 @@ const TutorProfile = ({ email, fullName, password, onNext, onBack }: TutorProfil
       return;
     }
 
+    if (!venmoHandle.startsWith('@')) {
+      toast.error('Venmo handle should start with @');
+      return;
+    }
+
     const availableDays = Object.keys(availability).filter(
       day => availability[day as keyof typeof availability].available
     );
 
     if (availableDays.length === 0) {
       toast.error('Please select at least one day when you\'re available');
+      return;
+    }
+
+    // Validate hourly rates
+    const invalidRates = selectedSubjects.filter(s => s.hourly_rate < 10 || s.hourly_rate > 100);
+    if (invalidRates.length > 0) {
+      toast.error('Hourly rates must be between $10 and $100');
       return;
     }
 
