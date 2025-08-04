@@ -103,9 +103,54 @@ const LikedStudents = () => {
     navigate(`/student/${studentId}`);
   };
 
-  const handleAcceptStudent = (studentId: string) => {
-    // Logic to accept the student match
-    console.log('Accepting student:', studentId);
+  const handleAcceptStudent = async (studentId: string) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        toast({
+          title: "Authentication required",
+          description: "Please sign in to accept connections.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Update or create connection record
+      const { error } = await supabase
+        .from('tutor_student_connections')
+        .upsert({
+          tutor_id: session.user.id,
+          student_id: studentId,
+          status: 'accepted'
+        }, {
+          onConflict: 'tutor_id,student_id'
+        });
+
+      if (error) {
+        console.error('Error accepting student:', error);
+        toast({
+          title: "Error",
+          description: "Failed to accept connection. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Connection accepted! ✅",
+        description: "You can now chat and schedule sessions with this student.",
+      });
+
+      // Remove from liked students list
+      setLikedStudents(prev => prev.filter(student => student.user_id !== studentId));
+    } catch (error) {
+      console.error('Error accepting student:', error);
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   if (isLoading) {

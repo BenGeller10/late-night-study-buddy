@@ -361,6 +361,33 @@ export type Database = {
         }
         Relationships: []
       }
+      tutor_student_connections: {
+        Row: {
+          created_at: string
+          id: string
+          status: string
+          student_id: string
+          tutor_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          status?: string
+          student_id: string
+          tutor_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          status?: string
+          student_id?: string
+          tutor_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tutor_subjects: {
         Row: {
           hourly_rate: number | null

@@ -388,6 +388,28 @@ const Profile = () => {
               </CardContent>
             </Card>
 
+            {/* My Connections - Tutor Only */}
+            <Card className="glass-card border-blue-200 dark:border-blue-800">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-blue-600 dark:text-blue-300">
+                  <Users className="w-5 h-5" />
+                  My Connections
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    Students who have connected with you will appear here. You can manage your connections, start conversations, and schedule sessions.
+                  </p>
+                  <div className="text-center py-4">
+                    <Users className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">No connections yet</p>
+                    <p className="text-xs text-muted-foreground">Accept student matches to see them here</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Tutor Actions */}
             <div className="grid grid-cols-2 gap-4">
               <Button variant="outline" className="h-16 flex-col gap-2 border-sky-200 hover:border-sky-300">
