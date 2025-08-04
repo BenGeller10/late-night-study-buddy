@@ -22,21 +22,47 @@ const Profile = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
+        console.log('Fetching user data...');
         const { data: { session } } = await supabase.auth.getSession();
+        console.log('Session:', session);
+        
         if (session?.user) {
-          const { data: profile } = await supabase
+          console.log('User found, fetching profile...');
+          const { data: profile, error } = await supabase
             .from('profiles')
             .select('*')
             .eq('user_id', session.user.id)
             .single();
           
+          console.log('Profile data:', profile);
+          console.log('Profile error:', error);
+          
           if (profile) {
             setIsTutor(profile.is_tutor || false);
             setUser({
-              ...session.user,
-              ...profile
+              id: session.user.id,
+              email: session.user.email,
+              display_name: profile.display_name,
+              avatar_url: profile.avatar_url,
+              is_tutor: profile.is_tutor,
+              venmo_handle: profile.venmo_handle,
+              bio: profile.bio,
+              campus: profile.campus,
+              major: profile.major,
+              year: profile.year
+            });
+          } else {
+            console.log('No profile found, using user data only');
+            setUser({
+              id: session.user.id,
+              email: session.user.email,
+              display_name: session.user.user_metadata?.full_name || session.user.email,
+              avatar_url: session.user.user_metadata?.avatar_url || '',
+              is_tutor: false
             });
           }
+        } else {
+          console.log('No session found');
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
