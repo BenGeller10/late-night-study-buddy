@@ -8,16 +8,97 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Settings, Star, BookOpen, Users, DollarSign, Clock, Calendar, Target, TrendingUp, Award, Search, MessageCircle } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Profile = () => {
-  const [isTutor, setIsTutor] = useState(true);
-  
-  // Mock user data - would come from auth/database in real app
-  const user = {
-    name: "Alex Chen",
-    email: "alex.chen@university.edu",
-    avatar: "/placeholder.svg",
+  const [isTutor, setIsTutor] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
+
+  // Fetch user data and role from database
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .single();
+          
+          if (profile) {
+            setIsTutor(profile.is_tutor || false);
+            setUser({
+              ...session.user,
+              ...profile
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  // Handle role switching
+  const handleRoleSwitch = async (newRole: boolean) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_tutor: newRole })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      setIsTutor(newRole);
+      toast({
+        title: `Switched to ${newRole ? 'Tutor' : 'Student'} mode`,
+        description: `You're now viewing the ${newRole ? 'tutor' : 'student'} interface.`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error switching roles",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <PageTransition>
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading profile...</p>
+          </div>
+        </div>
+      </PageTransition>
+    );
+  }
+
+  if (!user) {
+    return (
+      <PageTransition>
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <p className="text-muted-foreground">Please sign in to view your profile.</p>
+        </div>
+      </PageTransition>
+    );
+  }
+
+  // Mock additional data - in real app would come from database
+  const mockData = {
     major: "Computer Science",
     year: "Junior",
     // Student stats
@@ -99,7 +180,7 @@ const Profile = () => {
             <Switch
               id="role-toggle"
               checked={isTutor}
-              onCheckedChange={setIsTutor}
+              onCheckedChange={handleRoleSwitch}
             />
             <Label htmlFor="role-toggle" className={`text-sm font-medium ${isTutor ? 'text-primary' : 'text-muted-foreground'}`}>
               🧠 Tutor
@@ -113,73 +194,73 @@ const Profile = () => {
         {/* User Info Card */}
         <Card className="glass-card">
           <CardContent className="p-6">
-            <div className="flex items-start gap-4">
-              <Avatar className="w-16 h-16">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="text-lg bg-primary/20 text-primary">
-                  {user.name.split(' ').map(n => n[0]).join('')}
-                </AvatarFallback>
-              </Avatar>
+             <div className="flex items-start gap-4">
+               <Avatar className="w-16 h-16">
+                 <AvatarImage src={user.avatar_url || "/placeholder.svg"} alt={user.display_name || "User"} />
+                 <AvatarFallback className="text-lg bg-primary/20 text-primary">
+                   {(user.display_name || user.email || "U").split(' ').map((n: string) => n[0]).join('').toUpperCase()}
+                 </AvatarFallback>
+               </Avatar>
               
-              <div className="flex-1 space-y-2">
-                <div>
-                  <h2 className="text-xl font-bold">{user.name}</h2>
-                  <p className="text-sm text-muted-foreground">{user.email}</p>
-                </div>
-                
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline" className="text-xs">
-                    📚 {user.major}
-                  </Badge>
-                  <Badge variant="outline" className="text-xs">
-                    🎓 {user.year}
-                  </Badge>
-                  <Badge variant="secondary" className="text-xs">
-                    {isTutor ? 'Tutor' : 'Student'}
-                  </Badge>
-                </div>
-              </div>
+               <div className="flex-1 space-y-2">
+                 <div>
+                   <h2 className="text-xl font-bold">{user.display_name || "User"}</h2>
+                   <p className="text-sm text-muted-foreground">{user.email}</p>
+                 </div>
+                 
+                 <div className="flex flex-wrap gap-2">
+                   <Badge variant="outline" className="text-xs">
+                     📚 {mockData.major}
+                   </Badge>
+                   <Badge variant="outline" className="text-xs">
+                     🎓 {mockData.year}
+                   </Badge>
+                   <Badge variant="secondary" className="text-xs">
+                     {isTutor ? 'Tutor' : 'Student'}
+                   </Badge>
+                 </div>
+               </div>
             </div>
             
             {isTutor ? (
               /* Tutor Stats */
-              <div className="grid grid-cols-4 gap-4 mt-6 pt-4 border-t border-border/50">
-                <div className="text-center">
-                  <div className="text-lg font-bold text-primary">{user.sessionsTaught}</div>
-                  <div className="text-xs text-muted-foreground">Sessions</div>
-                </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-1">
-                    <Star className="w-3 h-3 fill-current text-yellow-500" />
-                    <span className="text-lg font-bold">{user.rating}</span>
-                  </div>
-                  <div className="text-xs text-muted-foreground">Rating</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-accent">{user.studentsHelped}</div>
-                  <div className="text-xs text-muted-foreground">Students</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-green-500">${user.earnings}</div>
-                  <div className="text-xs text-muted-foreground">Earned</div>
-                </div>
-              </div>
+               <div className="grid grid-cols-4 gap-4 mt-6 pt-4 border-t border-border/50">
+                 <div className="text-center">
+                   <div className="text-lg font-bold text-primary">{mockData.sessionsTaught}</div>
+                   <div className="text-xs text-muted-foreground">Sessions</div>
+                 </div>
+                 <div className="text-center">
+                   <div className="flex items-center justify-center gap-1">
+                     <Star className="w-3 h-3 fill-current text-yellow-500" />
+                     <span className="text-lg font-bold">{mockData.rating}</span>
+                   </div>
+                   <div className="text-xs text-muted-foreground">Rating</div>
+                 </div>
+                 <div className="text-center">
+                   <div className="text-lg font-bold text-accent">{mockData.studentsHelped}</div>
+                   <div className="text-xs text-muted-foreground">Students</div>
+                 </div>
+                 <div className="text-center">
+                   <div className="text-lg font-bold text-green-500">${mockData.earnings}</div>
+                   <div className="text-xs text-muted-foreground">Earned</div>
+                 </div>
+               </div>
             ) : (
               /* Student Stats */
-              <div className="grid grid-cols-3 gap-4 mt-6 pt-4 border-t border-border/50">
-                <div className="text-center">
-                  <div className="text-lg font-bold text-primary">{user.sessionsAttended}</div>
-                  <div className="text-xs text-muted-foreground">Sessions</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-accent">{user.subjectsStudied}</div>
-                  <div className="text-xs text-muted-foreground">Subjects</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-blue-500">{user.hoursLearned}h</div>
-                  <div className="text-xs text-muted-foreground">Learned</div>
-                </div>
-              </div>
+               <div className="grid grid-cols-3 gap-4 mt-6 pt-4 border-t border-border/50">
+                 <div className="text-center">
+                   <div className="text-lg font-bold text-primary">{mockData.sessionsAttended}</div>
+                   <div className="text-xs text-muted-foreground">Sessions</div>
+                 </div>
+                 <div className="text-center">
+                   <div className="text-lg font-bold text-accent">{mockData.subjectsStudied}</div>
+                   <div className="text-xs text-muted-foreground">Subjects</div>
+                 </div>
+                 <div className="text-center">
+                   <div className="text-lg font-bold text-blue-500">{mockData.hoursLearned}h</div>
+                   <div className="text-xs text-muted-foreground">Learned</div>
+                 </div>
+               </div>
             )}
           </CardContent>
         </Card>
@@ -197,11 +278,11 @@ const Profile = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Clock className="w-4 h-4 text-muted-foreground" />
-                      <span>Hours Teaching: <strong>{user.hoursTeaching}</strong></span>
-                    </div>
+                   <div className="space-y-2">
+                     <div className="flex items-center gap-2 text-sm">
+                       <Clock className="w-4 h-4 text-muted-foreground" />
+                       <span>Hours Teaching: <strong>{mockData.hoursTeaching}</strong></span>
+                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <TrendingUp className="w-4 h-4 text-muted-foreground" />
                       <span>This Month: <strong>12 sessions</strong></span>

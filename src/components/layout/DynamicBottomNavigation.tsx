@@ -25,7 +25,7 @@ const DynamicBottomNavigation = () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
-          const { data: profile } = await (supabase as any)
+          const { data: profile } = await supabase
             .from('profiles')
             .select('is_tutor')
             .eq('user_id', session.user.id)
@@ -40,6 +40,23 @@ const DynamicBottomNavigation = () => {
       }
     };
 
+    // Listen for profile changes to update navigation immediately
+    const profileSubscription = supabase
+      .channel('profile-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles'
+        },
+        (payload) => {
+          // Re-fetch role when profile is updated
+          fetchUserRole();
+        }
+      )
+      .subscribe();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
         fetchUserRole();
@@ -51,7 +68,10 @@ const DynamicBottomNavigation = () => {
 
     fetchUserRole();
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      profileSubscription.unsubscribe();
+    };
   }, []);
   
   // Don't show bottom nav on onboarding pages (index route) or while loading
