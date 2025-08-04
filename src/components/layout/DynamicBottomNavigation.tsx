@@ -32,6 +32,7 @@ const DynamicBottomNavigation = () => {
             .eq('user_id', session.user.id)
             .single();
           
+          console.log('Setting tutor role:', profile?.is_tutor);
           setIsTutor(profile?.is_tutor || false);
         }
       } catch (error) {
@@ -53,6 +54,7 @@ const DynamicBottomNavigation = () => {
         },
         (payload) => {
           // Re-fetch role when profile is updated
+          console.log('Profile updated, re-fetching role');
           fetchUserRole();
         }
       )
@@ -89,15 +91,15 @@ const DynamicBottomNavigation = () => {
       activeColor: "text-blue-500"
     },
     {
-      to: "/study-groups", 
-      icon: Users,
-      label: "Study Groups",
+      to: "/my-sessions", 
+      icon: Calendar,
+      label: "My Sessions",
       activeColor: "text-purple-500"
     },
     {
-      to: "/chat",
-      icon: MessageCircle,
-      label: "Messages",
+      to: "/study-groups", 
+      icon: Users,
+      label: "Study Groups",
       activeColor: "text-green-500"
     },
     {
@@ -129,12 +131,6 @@ const DynamicBottomNavigation = () => {
       activeColor: "text-purple-500"
     },
     {
-      to: "/chat",
-      icon: MessageCircle,
-      label: "Messages",
-      activeColor: "text-green-500"
-    },
-    {
       to: "/support",
       icon: HelpCircle,
       label: "Support",
@@ -142,6 +138,7 @@ const DynamicBottomNavigation = () => {
     }
   ];
 
+  console.log('Current role - isTutor:', isTutor);
   const navItems = isTutor ? tutorNavItems : studentNavItems;
 
   return (
