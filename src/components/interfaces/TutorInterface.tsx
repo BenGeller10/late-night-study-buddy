@@ -69,7 +69,7 @@ const TutorInterface = ({ user, onRoleSwitch }: TutorInterfaceProps) => {
   }, [location.pathname, navigate]);
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gray-800">
       {/* Tutor Routes */}
       <Routes>
         <Route path="/liked-students" element={<LikedStudents />} />
@@ -83,7 +83,7 @@ const TutorInterface = ({ user, onRoleSwitch }: TutorInterfaceProps) => {
       </Routes>
       
       {/* Tutor Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-slate-100/90 backdrop-blur-xl border-t border-slate-200">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-gray-700/90 backdrop-blur-xl border-t border-gray-600">
         <div className="flex justify-around items-center py-2 px-4 max-w-lg mx-auto">
           {tutorNavItems.map(({ to, icon: Icon, label, activeColor }) => {
             const isActive = location.pathname === to;
