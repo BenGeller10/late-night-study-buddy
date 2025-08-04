@@ -48,7 +48,7 @@ const StudentHome = ({ user, onRoleSwitch }: StudentHomeProps) => {
           <div className="flex items-center justify-between">
               <div className="text-center flex-1">
                 <h1 className="text-xl font-bold text-blue-600">
-                  StudyBuddy ✨
+                  Campus Connect ✨
                 </h1>
                 <p className="text-sm text-muted-foreground">
                   Find your perfect study partner
