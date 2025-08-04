@@ -12,6 +12,7 @@ import TutorsList from "./pages/TutorsList";
 import TutorProfile from "./pages/TutorProfile";
 import LikedTutors from "./pages/LikedTutors";
 import LikedStudents from "./pages/LikedStudents";
+import Bookings from "./pages/Bookings";
 import Trends from "./pages/Trends";
 import Chat from "./pages/Chat";
 import Profile from "./pages/Profile";
@@ -47,6 +48,7 @@ const App = () => (
             <Route path="/my-sessions" element={<MySessions />} />
             <Route path="/study-groups" element={<StudyGroups />} />
             <Route path="/set-availability" element={<SetAvailability />} />
+            <Route path="/bookings" element={<Bookings />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

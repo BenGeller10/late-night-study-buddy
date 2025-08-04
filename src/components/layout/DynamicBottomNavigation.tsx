@@ -10,6 +10,7 @@ import {
   Search,
   Bell,
   Calendar,
+  Clock,
   BarChart3,
   Users
 } from "lucide-react";
@@ -116,10 +117,16 @@ const DynamicBottomNavigation = () => {
       activeColor: "text-pink-500"
     },
     {
-      to: "/set-availability",
+      to: "/bookings",
       icon: Calendar,
-      label: "Schedule",
+      label: "Bookings",
       activeColor: "text-blue-500"
+    },
+    {
+      to: "/set-availability",
+      icon: Clock,
+      label: "Schedule",
+      activeColor: "text-purple-500"
     },
     {
       to: "/chat",
@@ -131,7 +138,7 @@ const DynamicBottomNavigation = () => {
       to: "/support",
       icon: HelpCircle,
       label: "Support",
-      activeColor: "text-purple-500"
+      activeColor: "text-orange-500"
     }
   ];
 
