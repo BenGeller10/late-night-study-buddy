@@ -141,8 +141,8 @@ const Auth = () => {
       return;
     }
 
-    if (isTutor && !venmoHandle.trim()) {
-      setError("Venmo handle is required for tutors");
+    if (!isTutor && !venmoHandle.trim()) {
+      setError("Venmo handle is required for students");
       setIsLoading(false);
       return;
     }
@@ -168,7 +168,7 @@ const Auth = () => {
             full_name: fullName.trim(),
             avatar_url: profileImage,
             is_tutor: isTutor,
-            venmo_handle: isTutor ? venmoHandle.trim() : null,
+            venmo_handle: !isTutor ? venmoHandle.trim() : null,
           }
         }
       });
@@ -381,7 +381,7 @@ const Auth = () => {
                       <Label>I want to...</Label>
                       <div className="flex items-center justify-center gap-3 p-3 bg-card/50 rounded-lg border border-border/50">
                         <Label htmlFor="role-toggle" className={`text-sm font-medium ${!isTutor ? 'text-primary' : 'text-muted-foreground'}`}>
-                          📚 Become a Student
+                          🧠 Become a Tutor
                         </Label>
                         <Switch
                           id="role-toggle"
@@ -390,13 +390,13 @@ const Auth = () => {
                           disabled={isLoading}
                         />
                         <Label htmlFor="role-toggle" className={`text-sm font-medium ${isTutor ? 'text-primary' : 'text-muted-foreground'}`}>
-                          🧠 Become a Tutor
+                          📚 Become a Student
                         </Label>
                       </div>
                     </div>
 
-                    {/* Venmo Handle for Tutors */}
-                    {isTutor && (
+                    {/* Venmo Handle for Students */}
+                    {!isTutor && (
                       <div className="space-y-2">
                         <Label htmlFor="venmo-handle">Venmo Handle *</Label>
                         <div className="relative">
@@ -408,12 +408,12 @@ const Auth = () => {
                             value={venmoHandle}
                             onChange={(e) => setVenmoHandle(e.target.value)}
                             className="pl-10"
-                            required={isTutor}
+                            required={!isTutor}
                             disabled={isLoading}
                           />
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          Students will use this to pay you for tutoring sessions
+                          Tutors will use this to receive payment for sessions
                         </p>
                       </div>
                     )}
