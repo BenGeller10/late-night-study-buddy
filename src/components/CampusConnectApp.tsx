@@ -101,16 +101,24 @@ const CampusConnectApp = () => {
         </div>
         
         <p className="text-xs text-muted-foreground">
-          Tap the navigation icons below to get started
+          Ready to join Campus Connect?
         </p>
         
-        <Button
-          onClick={() => navigate('/auth')}
-          variant="outline"
-          className="mt-4"
-        >
-          Sign In / Sign Up
-        </Button>
+        <div className="flex gap-3">
+          <Button
+            onClick={() => navigate('/auth')}
+            className="flex-1 bg-gradient-primary hover:bg-gradient-primary/90"
+          >
+            Sign Up
+          </Button>
+          <Button
+            onClick={() => navigate('/auth')}
+            variant="outline"
+            className="flex-1"
+          >
+            Sign In
+          </Button>
+        </div>
       </div>
     </div>
   );

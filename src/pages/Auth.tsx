@@ -7,9 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Eye, EyeOff, Mail, Lock, User, ArrowLeft, DollarSign } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import PageTransition from "@/components/layout/PageTransition";
+import ImageUpload from "@/components/ui/image-upload";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -24,6 +26,9 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [profileImage, setProfileImage] = useState("");
+  const [isTutor, setIsTutor] = useState(false);
+  const [venmoHandle, setVenmoHandle] = useState("");
 
   // Check if user is already authenticated
   useEffect(() => {
@@ -128,6 +133,18 @@ const Auth = () => {
       return;
     }
 
+    if (!profileImage) {
+      setError("Profile photo is required");
+      setIsLoading(false);
+      return;
+    }
+
+    if (isTutor && !venmoHandle.trim()) {
+      setError("Venmo handle is required for tutors");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       // Clean up existing state
       cleanupAuthState();
@@ -141,6 +158,9 @@ const Auth = () => {
           emailRedirectTo: redirectUrl,
           data: {
             full_name: fullName.trim(),
+            avatar_url: profileImage,
+            is_tutor: isTutor,
+            venmo_handle: isTutor ? venmoHandle.trim() : null,
           }
         }
       });
@@ -185,6 +205,9 @@ const Auth = () => {
     setPassword("");
     setFullName("");
     setConfirmPassword("");
+    setProfileImage("");
+    setIsTutor(false);
+    setVenmoHandle("");
     setError("");
   };
 
@@ -300,8 +323,18 @@ const Auth = () => {
 
                 <TabsContent value="signup" className="space-y-4 mt-4">
                   <form onSubmit={handleSignUp} className="space-y-4">
+                    {/* Profile Image Upload */}
                     <div className="space-y-2">
-                      <Label htmlFor="signup-name">Full Name</Label>
+                      <Label>Profile Photo *</Label>
+                      <ImageUpload
+                        onImageUpload={setProfileImage}
+                        currentImage={profileImage}
+                        required={true}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-name">Full Name *</Label>
                       <div className="relative">
                         <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                         <Input
@@ -318,7 +351,7 @@ const Auth = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="signup-email">Email</Label>
+                      <Label htmlFor="signup-email">Email *</Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                         <Input
@@ -334,8 +367,50 @@ const Auth = () => {
                       </div>
                     </div>
 
+                    {/* Role Selection */}
+                    <div className="space-y-3">
+                      <Label>I want to...</Label>
+                      <div className="flex items-center justify-center gap-3 p-3 bg-card/50 rounded-lg border border-border/50">
+                        <Label htmlFor="role-toggle" className={`text-sm font-medium ${!isTutor ? 'text-primary' : 'text-muted-foreground'}`}>
+                          📚 Find Tutors
+                        </Label>
+                        <Switch
+                          id="role-toggle"
+                          checked={isTutor}
+                          onCheckedChange={setIsTutor}
+                          disabled={isLoading}
+                        />
+                        <Label htmlFor="role-toggle" className={`text-sm font-medium ${isTutor ? 'text-primary' : 'text-muted-foreground'}`}>
+                          🧠 Become a Tutor
+                        </Label>
+                      </div>
+                    </div>
+
+                    {/* Venmo Handle for Tutors */}
+                    {isTutor && (
+                      <div className="space-y-2">
+                        <Label htmlFor="venmo-handle">Venmo Handle *</Label>
+                        <div className="relative">
+                          <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                          <Input
+                            id="venmo-handle"
+                            type="text"
+                            placeholder="@your-venmo-username"
+                            value={venmoHandle}
+                            onChange={(e) => setVenmoHandle(e.target.value)}
+                            className="pl-10"
+                            required={isTutor}
+                            disabled={isLoading}
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Students will use this to pay you for tutoring sessions
+                        </p>
+                      </div>
+                    )}
+
                     <div className="space-y-2">
-                      <Label htmlFor="signup-password">Password</Label>
+                      <Label htmlFor="signup-password">Password *</Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                         <Input
@@ -363,7 +438,7 @@ const Auth = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="confirm-password">Confirm Password</Label>
+                      <Label htmlFor="confirm-password">Confirm Password *</Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                         <Input
@@ -382,9 +457,9 @@ const Auth = () => {
                     <Button
                       type="submit"
                       className="w-full bg-gradient-primary hover:bg-gradient-primary/90"
-                      disabled={isLoading}
+                      disabled={isLoading || !profileImage || (isTutor && !venmoHandle.trim())}
                     >
-                      {isLoading ? "Creating account..." : "Create Account"}
+                      {isLoading ? "Creating account..." : `Create ${isTutor ? 'Tutor' : 'Student'} Account`}
                     </Button>
                   </form>
                 </TabsContent>
