@@ -33,13 +33,13 @@ const StudentInterface = ({ user, onRoleSwitch }: StudentInterfaceProps) => {
     {
       to: "/home",
       icon: Search,
-      label: "Find Buddies",
+      label: "Find a Tutor",
       activeColor: "text-blue-500"
     },
     {
       to: "/my-sessions", 
       icon: Calendar,
-      label: "Learning Path",
+      label: "My Sessions",
       activeColor: "text-purple-500"
     },
     {
