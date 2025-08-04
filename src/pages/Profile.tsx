@@ -76,15 +76,27 @@ const Profile = () => {
 
   // Handle role switching
   const handleRoleSwitch = async (newRole: boolean) => {
-    if (!user) return;
+    if (!user) {
+      console.log('No user found for role switch');
+      return;
+    }
+
+    console.log('Switching role to:', newRole ? 'tutor' : 'student');
+    console.log('Current user:', user);
 
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .update({ is_tutor: newRole })
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .select();
 
-      if (error) throw error;
+      console.log('Update result:', { data, error });
+
+      if (error) {
+        console.error('Database error:', error);
+        throw error;
+      }
 
       setIsTutor(newRole);
       toast({
@@ -92,9 +104,10 @@ const Profile = () => {
         description: `You're now viewing the ${newRole ? 'tutor' : 'student'} interface.`,
       });
     } catch (error: any) {
+      console.error('Role switch error:', error);
       toast({
         title: "Error switching roles",
-        description: error.message,
+        description: error.message || "Failed to update role. Please try again.",
         variant: "destructive",
       });
     }
