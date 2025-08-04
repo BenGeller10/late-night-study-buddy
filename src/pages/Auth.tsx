@@ -372,7 +372,7 @@ const Auth = () => {
                       <Label>I want to...</Label>
                       <div className="flex items-center justify-center gap-3 p-3 bg-card/50 rounded-lg border border-border/50">
                         <Label htmlFor="role-toggle" className={`text-sm font-medium ${!isTutor ? 'text-primary' : 'text-muted-foreground'}`}>
-                          📚 Find Tutors
+                          📚 Become a Student
                         </Label>
                         <Switch
                           id="role-toggle"
