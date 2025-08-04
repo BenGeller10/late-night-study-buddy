@@ -11,6 +11,7 @@ import Discover from "./pages/Discover";
 import TutorsList from "./pages/TutorsList";
 import TutorProfile from "./pages/TutorProfile";
 import LikedTutors from "./pages/LikedTutors";
+import LikedStudents from "./pages/LikedStudents";
 import Trends from "./pages/Trends";
 import Chat from "./pages/Chat";
 import Profile from "./pages/Profile";
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/tutors" element={<TutorsList />} />
             <Route path="/tutor/:tutorId" element={<TutorProfile />} />
             <Route path="/liked-tutors" element={<LikedTutors />} />
+            <Route path="/liked-students" element={<LikedStudents />} />
             <Route path="/trends" element={<Trends />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/chat/:tutorId" element={<Chat />} />

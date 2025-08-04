@@ -110,10 +110,10 @@ const DynamicBottomNavigation = () => {
   // Tutor navigation items
   const tutorNavItems = [
     {
-      to: "/home",
-      icon: Bell,
-      label: "Requests",
-      activeColor: "text-orange-500"
+      to: "/liked-students",
+      icon: Heart,
+      label: "Matches",
+      activeColor: "text-pink-500"
     },
     {
       to: "/set-availability",
