@@ -193,8 +193,8 @@ const Auth = () => {
             is_tutor: isTutor,
             venmo_handle: isTutor ? venmoHandle.trim() : null,
             schedule_data: scheduleData,
-            bio: tutorData?.bio || null,
-            experience: tutorData?.experience || null,
+            bio: tutorData?.bio || "",
+            experience: tutorData?.experience || "",
           }
         }
       });

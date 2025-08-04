@@ -129,6 +129,7 @@ export type Database = {
           campus: string | null
           created_at: string
           display_name: string | null
+          experience: string | null
           id: string
           is_tutor: boolean | null
           major: string | null
@@ -144,6 +145,7 @@ export type Database = {
           campus?: string | null
           created_at?: string
           display_name?: string | null
+          experience?: string | null
           id?: string
           is_tutor?: boolean | null
           major?: string | null
@@ -159,6 +161,7 @@ export type Database = {
           campus?: string | null
           created_at?: string
           display_name?: string | null
+          experience?: string | null
           id?: string
           is_tutor?: boolean | null
           major?: string | null
