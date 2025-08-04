@@ -281,6 +281,7 @@ const Support = () => {
                 onClick={handleSendMessage}
                 disabled={isLoading || !inputMessage.trim()}
                 size="icon"
+                variant="blue"
                 className="shrink-0"
               >
                 {isLoading ? (
