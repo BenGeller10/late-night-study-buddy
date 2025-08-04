@@ -16,6 +16,8 @@ import {
   MapPin
 } from "lucide-react";
 import PageTransition from "@/components/layout/PageTransition";
+import { useConversations } from "@/hooks/useConversations";
+import { useToast } from "@/hooks/use-toast";
 
 interface LikedStudent {
   id: string;
@@ -35,6 +37,8 @@ const LikedStudents = () => {
   const navigate = useNavigate();
   const [likedStudents, setLikedStudents] = useState<LikedStudent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { createConversation } = useConversations();
+  const { toast } = useToast();
 
   // Mock data - in real app would come from database
   useEffect(() => {
@@ -99,8 +103,26 @@ const LikedStudents = () => {
     }, 1000);
   }, []);
 
-  const handleChat = (studentId: string) => {
-    navigate(`/chat/${studentId}`);
+  const handleChat = async (studentId: string) => {
+    try {
+      const conversationId = await createConversation(studentId);
+      if (conversationId) {
+        navigate(`/chat/${studentId}`);
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to start conversation",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error starting chat:', error);
+      toast({
+        title: "Error", 
+        description: "Failed to start conversation",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleViewProfile = (studentId: string) => {

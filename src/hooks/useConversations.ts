@@ -72,9 +72,9 @@ export const useConversations = () => {
           // Get other participant's profile
           const { data: profileData } = await supabase
             .from('profiles')
-            .select('id, display_name, avatar_url, is_tutor')
+            .select('id, user_id, display_name, avatar_url, is_tutor')
             .eq('user_id', otherParticipantId)
-            .single();
+            .maybeSingle();
 
           // Get last message
           const { data: lastMessageData } = await supabase
@@ -83,7 +83,7 @@ export const useConversations = () => {
             .eq('conversation_id', conv.id)
             .order('created_at', { ascending: false })
             .limit(1)
-            .single();
+            .maybeSingle();
 
           return {
             ...conv,
@@ -112,11 +112,49 @@ export const useConversations = () => {
     }
   }, [currentUser]);
 
+  const createConversation = async (otherParticipantId: string) => {
+    if (!currentUser) return null;
+
+    try {
+      // Check if conversation already exists
+      const { data: existingConversation } = await supabase
+        .from('conversations')
+        .select('id')
+        .or(`and(participant1_id.eq.${currentUser.id},participant2_id.eq.${otherParticipantId}),and(participant1_id.eq.${otherParticipantId},participant2_id.eq.${currentUser.id})`)
+        .maybeSingle();
+
+      if (existingConversation) {
+        return existingConversation.id;
+      }
+
+      // Create new conversation
+      const { data: newConversation, error } = await supabase
+        .from('conversations')
+        .insert({
+          participant1_id: currentUser.id,
+          participant2_id: otherParticipantId
+        })
+        .select('id')
+        .single();
+
+      if (error) throw error;
+
+      // Refresh conversations list
+      await fetchConversations();
+      
+      return newConversation.id;
+    } catch (error) {
+      console.error('Error creating conversation:', error);
+      return null;
+    }
+  };
+
   return {
     conversations,
     loading,
     currentUser,
-    refetchConversations: fetchConversations
+    refetchConversations: fetchConversations,
+    createConversation
   };
 };
 

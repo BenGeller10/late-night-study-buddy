@@ -40,11 +40,7 @@ const Chat = () => {
   }, []);
 
   const handleChatSelect = (participantId: string) => {
-    if (isTutor) {
-      navigate(`/chat/${participantId}`);
-    } else {
-      navigate(`/chat/${participantId}`);
-    }
+    navigate(`/chat/${participantId}`);
   };
 
   const handleBackToList = () => {
@@ -54,10 +50,13 @@ const Chat = () => {
   // If we have a conversation ID in the URL, show the conversation
   const conversationParticipantId = tutorId || studentId;
   if (conversationParticipantId && currentUser) {
-    // Find the conversation with this participant
-    const conversation = conversations.find(conv => 
-      conv.other_participant.id === conversationParticipantId
-    );
+    // Find the conversation with this participant (matching by user_id)
+    const conversation = conversations.find(conv => {
+      // The other_participant.id is actually the user_id from profiles table
+      // But we need to match against the user_id that was passed in the URL
+      return conv.participant1_id === conversationParticipantId || 
+             conv.participant2_id === conversationParticipantId;
+    });
 
     if (conversation) {
       return (
@@ -139,7 +138,11 @@ const Chat = () => {
                     className={`p-4 cursor-pointer transition-all hover:shadow-md ${
                       isTutor ? 'bg-gray-700 border-gray-600 hover:bg-gray-600' : ''
                     }`}
-                    onClick={() => handleChatSelect(conversation.other_participant.id)}
+                    onClick={() => handleChatSelect(
+                      conversation.participant1_id === currentUser.id 
+                        ? conversation.participant2_id 
+                        : conversation.participant1_id
+                    )}
                   >
                     <div className="flex items-center gap-3">
                       <Avatar className="w-12 h-12">
