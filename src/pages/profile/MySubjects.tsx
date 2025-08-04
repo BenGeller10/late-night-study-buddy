@@ -105,7 +105,7 @@ const MySubjects = ({ user, onBack }: MySubjectsProps) => {
       setTutorSubjects([...tutorSubjects, data]);
       toast({
         title: "Subject added!",
-        description: "You can now tutor this subject.",
+        description: "You can now tutor this subject. Don't forget to set your availability!",
       });
     } catch (error: any) {
       console.error('Error adding subject:', error);

@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, MessageCircle, Calendar, Star, Clock, Award, Users } from "lucide-react";
 import PageTransition from "@/components/layout/PageTransition";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock data - same as SwipeView for consistency
 const mockTutors = [
@@ -61,6 +62,7 @@ const mockTutors = [
 const TutorProfile = () => {
   const { tutorId } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
   
   const tutor = mockTutors.find(t => t.id === tutorId);
 
@@ -84,8 +86,12 @@ const TutorProfile = () => {
   };
 
   const handleBook = () => {
-    console.log('Booking session with tutor:', tutor.id);
-    // Handle booking logic
+    const calendlyUrl = `https://calendly.com/campus-connect-tutor/${tutor.id}`;
+    window.open(calendlyUrl, '_blank');
+    toast({
+      title: "Opening calendar...",
+      description: `Book a session with ${tutor.name}`,
+    });
   };
 
   return (

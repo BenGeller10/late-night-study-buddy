@@ -57,8 +57,7 @@ const SettingsDialog = ({ user, onUserUpdate }: SettingsDialogProps) => {
   const [displayName, setDisplayName] = useState(user?.display_name || "");
   const [bio, setBio] = useState(user?.bio || "");
   const [major, setMajor] = useState(user?.major || "");
-  const [year, setYear] = useState(user?.year || "");
-  const [campus, setCampus] = useState(user?.campus || "");
+  const [gradYear, setGradYear] = useState(user?.year || "");
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || "");
   const [venmoHandle, setVenmoHandle] = useState(user?.venmo_handle || "");
 
@@ -91,8 +90,7 @@ const SettingsDialog = ({ user, onUserUpdate }: SettingsDialogProps) => {
           display_name: displayName.trim(),
           bio: bio.trim(),
           major: major.trim(),
-          year: year ? parseInt(year) : null,
-          campus: campus.trim(),
+          year: gradYear ? parseInt(gradYear) : null,
           avatar_url: avatarUrl,
           venmo_handle: venmoHandle.trim() || null,
         })
@@ -108,8 +106,7 @@ const SettingsDialog = ({ user, onUserUpdate }: SettingsDialogProps) => {
         display_name: displayName.trim(),
         bio: bio.trim(),
         major: major.trim(),
-        year: year ? parseInt(year) : null,
-        campus: campus.trim(),
+        year: gradYear ? parseInt(gradYear) : null,
         avatar_url: avatarUrl,
         venmo_handle: venmoHandle.trim() || null,
       });
@@ -158,7 +155,7 @@ const SettingsDialog = ({ user, onUserUpdate }: SettingsDialogProps) => {
     "Other"
   ];
 
-  const yearOptions = ["1", "2", "3", "4", "5+"];
+  const gradYearOptions = Array.from({length: 10}, (_, i) => (new Date().getFullYear() + i).toString());
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -250,7 +247,7 @@ const SettingsDialog = ({ user, onUserUpdate }: SettingsDialogProps) => {
                 </div>
 
                 {/* Academic Info */}
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="major">Major</Label>
                     <Input
@@ -261,27 +258,14 @@ const SettingsDialog = ({ user, onUserUpdate }: SettingsDialogProps) => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="year">Year</Label>
-                    <Select value={year} onValueChange={setYear}>
+                    <Label htmlFor="grad-year">Graduation Year</Label>
+                    <Select value={gradYear} onValueChange={setGradYear}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select year" />
+                        <SelectValue placeholder="Select graduation year" />
                       </SelectTrigger>
                       <SelectContent>
-                        {yearOptions.map(y => (
-                          <SelectItem key={y} value={y}>{y}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="campus">Campus</Label>
-                    <Select value={campus} onValueChange={setCampus}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select campus" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {campusOptions.map(c => (
-                          <SelectItem key={c} value={c}>{c}</SelectItem>
+                        {gradYearOptions.map(year => (
+                          <SelectItem key={year} value={year}>{year}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>

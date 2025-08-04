@@ -253,11 +253,28 @@ const Students = ({ user, onBack }: StudentsProps) => {
 
                       {/* Action Buttons */}
                       <div className="flex gap-2 pt-2">
-                        <Button variant="outline" size="sm" className="flex-1">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="flex-1"
+                          onClick={() => {
+                            toast({
+                              title: "Opening chat...",
+                              description: `Starting conversation with ${student.display_name}`,
+                            });
+                          }}
+                        >
                           <MessageCircle className="w-4 h-4 mr-2" />
                           Message
                         </Button>
-                        <Button variant="outline" size="sm" className="flex-1">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="flex-1"
+                          onClick={() => {
+                            window.open('https://calendly.com/your-calendly-link', '_blank');
+                          }}
+                        >
                           <Calendar className="w-4 h-4 mr-2" />
                           Schedule
                         </Button>

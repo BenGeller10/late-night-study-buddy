@@ -7,9 +7,11 @@ import SwipeView from "@/components/discovery/SwipeView";
 import AIMatchmaking from "@/components/discovery/AIMatchmaking";
 import PageTransition from "@/components/layout/PageTransition";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Discover = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [user, setUser] = useState<any>(null);
 
@@ -33,8 +35,12 @@ const Discover = () => {
   };
 
   const handleBook = (tutorId: string) => {
-    console.log('Booking session with tutor:', tutorId);
-    // Handle booking logic - could open booking modal or navigate to booking page
+    const calendlyUrl = `https://calendly.com/campus-connect-tutor/${tutorId}`;
+    window.open(calendlyUrl, '_blank');
+    toast({
+      title: "Opening calendar...",
+      description: "Book a session with your selected tutor",
+    });
   };
 
   const handleViewProfile = (tutorId: string) => {
