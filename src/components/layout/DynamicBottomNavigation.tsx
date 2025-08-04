@@ -18,11 +18,6 @@ const DynamicBottomNavigation = () => {
   const location = useLocation();
   const [isTutor, setIsTutor] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  
-  // Don't show bottom nav on onboarding pages (index route)
-  if (location.pathname === "/") {
-    return null;
-  }
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -57,6 +52,11 @@ const DynamicBottomNavigation = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+  
+  // Don't show bottom nav on onboarding pages (index route) or while loading
+  if (location.pathname === "/" || isLoading) {
+    return null;
+  }
 
   // Student navigation items
   const studentNavItems = [
@@ -115,10 +115,6 @@ const DynamicBottomNavigation = () => {
   ];
 
   const navItems = isTutor ? tutorNavItems : studentNavItems;
-
-  if (isLoading) {
-    return null; // Don't show navigation while loading
-  }
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-t border-border/30 transition-all duration-500">
