@@ -44,7 +44,7 @@ const TutorInterface = ({ user, onRoleSwitch }: TutorInterfaceProps) => {
     {
       to: "/bookings",
       icon: Calendar,
-      label: "Business",
+      label: "Schedule",
       activeColor: "text-blue-400"
     },
     {
