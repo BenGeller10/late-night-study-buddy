@@ -103,6 +103,14 @@ const CampusConnectApp = () => {
         <p className="text-xs text-muted-foreground">
           Tap the navigation icons below to get started
         </p>
+        
+        <Button
+          onClick={() => navigate('/auth')}
+          variant="outline"
+          className="mt-4"
+        >
+          Sign In / Sign Up
+        </Button>
       </div>
     </div>
   );

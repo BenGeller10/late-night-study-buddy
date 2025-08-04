@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DynamicBottomNavigation from "@/components/layout/DynamicBottomNavigation";
 import Index from "./pages/Index";
+import Auth from "./pages/Auth";
 import Home from "./pages/Home";
 import Discover from "./pages/Discover";
 import TutorsList from "./pages/TutorsList";
@@ -27,6 +28,7 @@ const App = () => (
         <div className="min-h-screen bg-background">
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<Auth />} />
             <Route path="/home" element={<Home />} />
             <Route path="/discover" element={<Discover />} />
             <Route path="/tutors" element={<TutorsList />} />
