@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Calendar } from "@/components/ui/calendar";
 import { 
-  Calendar,
+  Calendar as CalendarIcon,
   ChevronLeft, 
   ChevronRight,
   Clock,
@@ -18,6 +19,11 @@ import {
   BookOpen,
   Star
 } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import PageTransition from "@/components/layout/PageTransition";
 import { cn } from "@/lib/utils";
 
@@ -39,97 +45,83 @@ interface BookedSession {
 
 const Bookings = () => {
   const navigate = useNavigate();
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [currentWeek, setCurrentWeek] = useState(startOfWeek(new Date()));
   const [bookedSessions, setBookedSessions] = useState<BookedSession[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<'week' | 'month'>('week');
 
-  // Mock data - in real app would come from database
+  // Fetch real session data from database
   useEffect(() => {
-    const mockSessions: BookedSession[] = [
-      {
-        id: '1',
-        studentName: 'Emma Johnson',
-        studentAvatar: '/placeholder.svg',
-        subject: 'Organic Chemistry',
-        date: new Date(),
-        startTime: '2:00 PM',
-        endTime: '3:30 PM',
-        duration: 90,
-        location: 'Science Library - Room 204',
-        amount: 45,
-        status: 'confirmed',
-        studentRating: 4.9,
-        notes: 'Focus on reaction mechanisms for upcoming exam'
-      },
-      {
-        id: '2',
-        studentName: 'Marcus Chen',
-        studentAvatar: '/placeholder.svg',
-        subject: 'Data Structures',
-        date: addDays(new Date(), 1),
-        startTime: '10:00 AM',
-        endTime: '11:00 AM',
-        duration: 60,
-        location: 'Computer Lab - Building C',
-        amount: 30,
-        status: 'confirmed',
-        studentRating: 4.7
-      },
-      {
-        id: '3',
-        studentName: 'Sofia Rodriguez',
-        studentAvatar: '/placeholder.svg',
-        subject: 'Statistics',
-        date: addDays(new Date(), 2),
-        startTime: '3:00 PM',
-        endTime: '4:30 PM',
-        duration: 90,
-        location: 'Math Center',
-        amount: 45,
-        status: 'pending',
-        studentRating: 4.8
-      },
-      {
-        id: '4',
-        studentName: 'Jake Williams',
-        studentAvatar: '/placeholder.svg',
-        subject: 'Calculus I',
-        date: addDays(new Date(), 4),
-        startTime: '1:00 PM',
-        endTime: '2:00 PM',
-        duration: 60,
-        location: 'Study Room 3A',
-        amount: 30,
-        status: 'confirmed',
-        studentRating: 4.6
-      },
-      {
-        id: '5',
-        studentName: 'Amy Park',
-        studentAvatar: '/placeholder.svg',
-        subject: 'Biology',
-        date: addDays(new Date(), 6),
-        startTime: '11:00 AM',
-        endTime: '12:30 PM',
-        duration: 90,
-        location: 'Biology Lab',
-        amount: 45,
-        status: 'confirmed',
-        studentRating: 4.9
-      }
-    ];
+    const fetchSessions = async () => {
+      try {
+        const { data: user } = await supabase.auth.getUser();
+        if (!user.user) return;
 
-    setTimeout(() => {
-      setBookedSessions(mockSessions);
-      setIsLoading(false);
-    }, 1000);
+        const { data: sessions, error } = await supabase
+          .from('sessions')
+          .select(`
+            id,
+            scheduled_at,
+            duration_minutes,
+            total_amount,
+            status,
+            location,
+            notes,
+            student_rating,
+            tutor_rating,
+            profiles!sessions_student_id_fkey (
+              display_name,
+              avatar_url
+            ),
+            subjects (
+              name
+            )
+          `)
+          .eq('tutor_id', user.user.id)
+          .not('scheduled_at', 'is', null)
+          .order('scheduled_at', { ascending: true });
+
+        if (error) {
+          console.error('Error fetching sessions:', error);
+          return;
+        }
+
+        const formattedSessions: BookedSession[] = sessions?.map(session => ({
+          id: session.id,
+          studentName: session.profiles?.display_name || 'Unknown Student',
+          studentAvatar: session.profiles?.avatar_url || '/placeholder.svg',
+          subject: session.subjects?.name || 'Unknown Subject',
+          date: new Date(session.scheduled_at),
+          startTime: format(new Date(session.scheduled_at), 'h:mm a'),
+          endTime: format(new Date(new Date(session.scheduled_at).getTime() + (session.duration_minutes || 60) * 60000), 'h:mm a'),
+          duration: session.duration_minutes || 60,
+          location: session.location || 'TBD',
+          amount: Number(session.total_amount) || 0,
+          status: session.status as 'confirmed' | 'pending' | 'completed' | 'cancelled',
+          studentRating: session.student_rating || undefined,
+          notes: session.notes || undefined
+        })) || [];
+
+        setBookedSessions(formattedSessions);
+      } catch (error) {
+        console.error('Error fetching sessions:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSessions();
   }, []);
 
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(currentWeek, i));
 
   const getSessionsForDate = (date: Date) => {
     return bookedSessions.filter(session => isSameDay(session.date, date));
+  };
+
+  const getDatesWithSessions = () => {
+    return bookedSessions.map(session => session.date);
   };
 
   const getStatusColor = (status: string) => {
@@ -208,11 +200,11 @@ const Bookings = () => {
 
         {/* Content */}
         <div className="p-4 space-y-6">
-          {/* Week Stats */}
+          {/* Stats and Calendar Picker */}
           <div className="grid grid-cols-2 gap-4">
             <Card className="glass-card">
               <CardContent className="p-4 text-center">
-                <Calendar className="w-6 h-6 text-blue-500 mx-auto mb-2" />
+                <CalendarIcon className="w-6 h-6 text-blue-500 mx-auto mb-2" />
                 <div className="text-2xl font-bold text-blue-600">{sessionsThisWeek}</div>
                 <div className="text-xs text-muted-foreground">Sessions This Week</div>
               </CardContent>
@@ -227,94 +219,171 @@ const Bookings = () => {
             </Card>
           </div>
 
-          {/* Week Navigation */}
+          {/* Calendar Navigation */}
           <Card className="glass-card">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setCurrentWeek(subWeeks(currentWeek, 1))}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                
-                <CardTitle className="text-center">
-                  Week of {format(currentWeek, 'MMM d, yyyy')}
-                </CardTitle>
-                
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setCurrentWeek(addWeeks(currentWeek, 1))}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
+                <CardTitle>Your Schedule</CardTitle>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant={viewMode === 'week' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setViewMode('week')}
+                  >
+                    Week
+                  </Button>
+                  <Button
+                    variant={viewMode === 'month' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setViewMode('month')}
+                  >
+                    Month
+                  </Button>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <CalendarIcon className="w-4 h-4 mr-2" />
+                        Jump to Date
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="end">
+                      <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={(date) => {
+                          setSelectedDate(date);
+                          if (date) {
+                            setCurrentWeek(startOfWeek(date));
+                          }
+                        }}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                        modifiers={{
+                          booked: getDatesWithSessions()
+                        }}
+                        modifiersStyles={{
+                          booked: { backgroundColor: 'hsl(var(--primary))', color: 'white', borderRadius: '50%' }
+                        }}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
             </CardHeader>
-            
-            <CardContent>
-              {/* Calendar Grid */}
-              <div className="grid grid-cols-7 gap-2 mb-4">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                  <div key={day} className="text-center text-xs font-medium text-muted-foreground p-2">
-                    {day}
-                  </div>
-                ))}
-                
-                {weekDays.map((day) => {
-                  const sessionsForDay = getSessionsForDate(day);
-                  const isSelected = isSameDay(day, selectedDate);
-                  const isCurrentDay = isToday(day);
-                  
-                  return (
-                    <button
-                      key={day.toISOString()}
-                      onClick={() => setSelectedDate(day)}
-                      className={cn(
-                        "relative p-2 rounded-lg text-sm transition-colors",
-                        "hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary",
-                        isSelected && "bg-primary text-primary-foreground",
-                        isCurrentDay && !isSelected && "bg-muted text-foreground font-semibold"
-                      )}
-                    >
-                      <div>{format(day, 'd')}</div>
-                      {sessionsForDay.length > 0 && (
-                        <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2">
-                          <div className={cn(
-                            "w-1.5 h-1.5 rounded-full",
-                            isSelected ? "bg-primary-foreground" : "bg-primary"
-                          )} />
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </CardContent>
           </Card>
+
+          {/* Week/Month View */}
+          {viewMode === 'week' ? (
+            <Card className="glass-card">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setCurrentWeek(subWeeks(currentWeek, 1))}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  
+                  <CardTitle className="text-center">
+                    Week of {format(currentWeek, 'MMM d, yyyy')}
+                  </CardTitle>
+                  
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setCurrentWeek(addWeeks(currentWeek, 1))}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+              
+              <CardContent>
+                {/* Calendar Grid */}
+                <div className="grid grid-cols-7 gap-2 mb-4">
+                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+                    <div key={day} className="text-center text-xs font-medium text-muted-foreground p-2">
+                      {day}
+                    </div>
+                  ))}
+                  
+                  {weekDays.map((day) => {
+                    const sessionsForDay = getSessionsForDate(day);
+                    const isSelected = selectedDate ? isSameDay(day, selectedDate) : false;
+                    const isCurrentDay = isToday(day);
+                    
+                    return (
+                      <button
+                        key={day.toISOString()}
+                        onClick={() => setSelectedDate(day)}
+                        className={cn(
+                          "relative p-2 rounded-lg text-sm transition-colors",
+                          "hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary",
+                          isSelected && "bg-primary text-primary-foreground",
+                          isCurrentDay && !isSelected && "bg-muted text-foreground font-semibold"
+                        )}
+                      >
+                        <div>{format(day, 'd')}</div>
+                        {sessionsForDay.length > 0 && (
+                          <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2">
+                            <div className={cn(
+                              "w-1.5 h-1.5 rounded-full",
+                              isSelected ? "bg-primary-foreground" : "bg-primary"
+                            )} />
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="glass-card">
+              <CardContent className="p-4">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  className={cn("w-full pointer-events-auto")}
+                  modifiers={{
+                    booked: getDatesWithSessions()
+                  }}
+                  modifiersStyles={{
+                    booked: { 
+                      backgroundColor: 'hsl(var(--primary))', 
+                      color: 'white', 
+                      borderRadius: '6px',
+                      fontWeight: 'bold'
+                    }
+                  }}
+                />
+              </CardContent>
+            </Card>
+          )}
 
           {/* Selected Day Sessions */}
           <Card className="glass-card">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>
-                  {format(selectedDate, 'EEEE, MMMM d')}
-                  {isToday(selectedDate) && (
+                  {selectedDate ? format(selectedDate, 'EEEE, MMMM d') : 'Select a date'}
+                  {selectedDate && isToday(selectedDate) && (
                     <Badge variant="secondary" className="ml-2">Today</Badge>
                   )}
                 </span>
                 <Badge variant="outline">
-                  {getSessionsForDate(selectedDate).length} session{getSessionsForDate(selectedDate).length !== 1 ? 's' : ''}
+                  {selectedDate ? getSessionsForDate(selectedDate).length : 0} session{selectedDate && getSessionsForDate(selectedDate).length !== 1 ? 's' : ''}
                 </Badge>
               </CardTitle>
             </CardHeader>
             
             <CardContent className="space-y-4">
-              {getSessionsForDate(selectedDate).length === 0 ? (
+              {!selectedDate || getSessionsForDate(selectedDate).length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
-                  <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p>No sessions scheduled for this day</p>
+                  <CalendarIcon className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p>{!selectedDate ? 'Select a date to view sessions' : 'No sessions scheduled for this day'}</p>
                   <Button 
                     variant="outline" 
                     size="sm" 
