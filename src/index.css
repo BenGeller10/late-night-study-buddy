@@ -15,11 +15,16 @@
 
     --popover: 220 25% 12%;
     --popover-foreground: 210 20% 95%;
-
+    
     /* Campus Purple - The main brand vibe */
     --primary: 260 85% 65%;
     --primary-foreground: 210 20% 95%;
     --primary-glow: 260 85% 75%;
+
+    /* Blue variant for buttons and CTAs */
+    --blue: 217 91% 60%;
+    --blue-foreground: 210 20% 95%;
+    --blue-glow: 217 91% 70%;
 
     /* Subtle grays for cards and surfaces */
     --secondary: 220 20% 18%;
@@ -77,6 +82,10 @@
     --primary: 260 85% 55%;
     --primary-foreground: 210 20% 95%;
     --primary-glow: 260 85% 65%;
+
+    --blue: 217 91% 50%;
+    --blue-foreground: 210 20% 95%;
+    --blue-glow: 217 91% 60%;
 
     --secondary: 210 15% 94%;
     --secondary-foreground: 220 27% 8%;

@@ -17,15 +17,31 @@ import {
   MessageCircle,
   MapPin,
   BookOpen,
-  Star
+  Star,
+  Download,
+  ExternalLink,
+  Plus
 } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import PageTransition from "@/components/layout/PageTransition";
 import { cn } from "@/lib/utils";
+import { 
+  createCalendarEvent, 
+  downloadCalendarEvent, 
+  createGoogleCalendarUrl, 
+  createOutlookCalendarUrl,
+  type CalendarEvent 
+} from "@/lib/calendar-utils";
 
 interface BookedSession {
   id: string;
@@ -124,6 +140,46 @@ const Bookings = () => {
     return bookedSessions.map(session => session.date);
   };
 
+  const createSessionCalendarEvent = (session: BookedSession): CalendarEvent => {
+    const startDateTime = new Date(session.date);
+    const [startTime] = session.startTime.split(' ');
+    const [hours, minutes] = startTime.split(':');
+    const isPM = session.startTime.includes('PM');
+    
+    startDateTime.setHours(
+      isPM && parseInt(hours) !== 12 ? parseInt(hours) + 12 : 
+      !isPM && parseInt(hours) === 12 ? 0 : parseInt(hours)
+    );
+    startDateTime.setMinutes(parseInt(minutes));
+
+    const endDateTime = new Date(startDateTime);
+    endDateTime.setMinutes(endDateTime.getMinutes() + session.duration);
+
+    return {
+      title: `Tutoring Session: ${session.subject}`,
+      description: `Tutoring session with ${session.studentName}\n\nSubject: ${session.subject}\nDuration: ${session.duration} minutes\nLocation: ${session.location}${session.notes ? `\n\nNotes: ${session.notes}` : ''}`,
+      start: startDateTime,
+      end: endDateTime,
+      location: session.location
+    };
+  };
+
+  const handleAddToCalendar = (session: BookedSession, type: 'google' | 'outlook' | 'download') => {
+    const calendarEvent = createSessionCalendarEvent(session);
+    
+    switch (type) {
+      case 'google':
+        window.open(createGoogleCalendarUrl(calendarEvent), '_blank');
+        break;
+      case 'outlook':
+        window.open(createOutlookCalendarUrl(calendarEvent), '_blank');
+        break;
+      case 'download':
+        downloadCalendarEvent(calendarEvent, `tutoring_${session.studentName.replace(/\s+/g, '_')}_${format(session.date, 'yyyy_MM_dd')}`);
+        break;
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'confirmed': return 'bg-green-500';
@@ -187,10 +243,10 @@ const Bookings = () => {
               
               {/* Profile Button */}
               <Button
-                variant="ghost"
+                variant="blue"
                 size="icon"
                 onClick={() => navigate('/profile')}
-                className="btn-smooth hover:bg-muted/50"
+                className="btn-smooth"
               >
                 <UserIcon className="h-6 w-6" />
               </Button>
@@ -226,14 +282,14 @@ const Bookings = () => {
                 <CardTitle>Your Schedule</CardTitle>
                 <div className="flex items-center gap-2">
                   <Button
-                    variant={viewMode === 'week' ? 'default' : 'outline'}
+                    variant={viewMode === 'week' ? 'blue' : 'outline'}
                     size="sm"
                     onClick={() => setViewMode('week')}
                   >
                     Week
                   </Button>
                   <Button
-                    variant={viewMode === 'month' ? 'default' : 'outline'}
+                    variant={viewMode === 'month' ? 'blue' : 'outline'}
                     size="sm"
                     onClick={() => setViewMode('month')}
                   >
@@ -241,7 +297,7 @@ const Bookings = () => {
                   </Button>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button variant="outline" size="sm">
+                      <Button variant="blue" size="sm">
                         <CalendarIcon className="w-4 h-4 mr-2" />
                         Jump to Date
                       </Button>
@@ -278,7 +334,7 @@ const Bookings = () => {
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <Button
-                    variant="ghost"
+                    variant="blue"
                     size="icon"
                     onClick={() => setCurrentWeek(subWeeks(currentWeek, 1))}
                   >
@@ -290,7 +346,7 @@ const Bookings = () => {
                   </CardTitle>
                   
                   <Button
-                    variant="ghost"
+                    variant="blue"
                     size="icon"
                     onClick={() => setCurrentWeek(addWeeks(currentWeek, 1))}
                   >
@@ -319,8 +375,8 @@ const Bookings = () => {
                         onClick={() => setSelectedDate(day)}
                         className={cn(
                           "relative p-2 rounded-lg text-sm transition-colors",
-                          "hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary",
-                          isSelected && "bg-primary text-primary-foreground",
+                          "hover:bg-blue/20 focus:outline-none focus:ring-2 focus:ring-blue",
+                          isSelected && "bg-blue text-blue-foreground",
                           isCurrentDay && !isSelected && "bg-muted text-foreground font-semibold"
                         )}
                       >
@@ -329,7 +385,7 @@ const Bookings = () => {
                           <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2">
                             <div className={cn(
                               "w-1.5 h-1.5 rounded-full",
-                              isSelected ? "bg-primary-foreground" : "bg-primary"
+                              isSelected ? "bg-blue-foreground" : "bg-blue"
                             )} />
                           </div>
                         )}
@@ -346,14 +402,41 @@ const Bookings = () => {
                   mode="single"
                   selected={selectedDate}
                   onSelect={setSelectedDate}
-                  className={cn("w-full pointer-events-auto")}
+                  className={cn("w-full pointer-events-auto rounded-lg")}
+                  classNames={{
+                    months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                    month: "space-y-4",
+                    caption: "flex justify-center pt-1 relative items-center",
+                    caption_label: "text-lg font-semibold",
+                    nav: "space-x-1 flex items-center",
+                    nav_button: cn(
+                      "h-8 w-8 bg-transparent p-0 opacity-50 hover:opacity-100 hover:bg-blue/20"
+                    ),
+                    nav_button_previous: "absolute left-1",
+                    nav_button_next: "absolute right-1",
+                    table: "w-full border-collapse space-y-1",
+                    head_row: "flex",
+                    head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+                    row: "flex w-full mt-2",
+                    cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                    day: cn(
+                      "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-blue/20 rounded-md transition-colors"
+                    ),
+                    day_range_end: "day-range-end",
+                    day_selected: "bg-blue text-blue-foreground hover:bg-blue hover:text-blue-foreground focus:bg-blue focus:text-blue-foreground font-semibold",
+                    day_today: "bg-accent text-accent-foreground font-semibold",
+                    day_outside: "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
+                    day_disabled: "text-muted-foreground opacity-50",
+                    day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
+                    day_hidden: "invisible",
+                  }}
                   modifiers={{
                     booked: getDatesWithSessions()
                   }}
                   modifiersStyles={{
                     booked: { 
-                      backgroundColor: 'hsl(var(--primary))', 
-                      color: 'white', 
+                      backgroundColor: 'hsl(var(--blue))', 
+                      color: 'hsl(var(--blue-foreground))', 
                       borderRadius: '6px',
                       fontWeight: 'bold'
                     }
@@ -385,22 +468,23 @@ const Bookings = () => {
                   <CalendarIcon className="w-12 h-12 mx-auto mb-3 opacity-50" />
                   <p>{!selectedDate ? 'Select a date to view sessions' : 'No sessions scheduled for this day'}</p>
                   <Button 
-                    variant="outline" 
+                    variant="blue" 
                     size="sm" 
                     className="mt-2"
                     onClick={() => navigate('/set-availability')}
                   >
+                    <Plus className="w-4 h-4 mr-2" />
                     Set Availability
                   </Button>
                 </div>
               ) : (
                 getSessionsForDate(selectedDate).map((session) => (
-                  <Card key={session.id} className="border-l-4 border-l-primary">
+                  <Card key={session.id} className="border-l-4 border-l-blue">
                     <CardContent className="p-4">
                       <div className="flex items-start gap-4">
                         <Avatar className="w-12 h-12">
                           <AvatarImage src={session.studentAvatar} alt={session.studentName} />
-                          <AvatarFallback className="bg-primary/20 text-primary">
+                          <AvatarFallback className="bg-blue/20 text-blue">
                             {session.studentName.split(' ').map(n => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>
@@ -450,7 +534,7 @@ const Bookings = () => {
                           )}
 
                           <div className="flex gap-2 pt-2">
-                            <Button size="sm" variant="outline" className="flex-1">
+                            <Button size="sm" variant="blue" className="flex-1">
                               <MessageCircle className="w-4 h-4 mr-2" />
                               Message
                             </Button>
@@ -458,6 +542,28 @@ const Bookings = () => {
                               <BookOpen className="w-4 h-4 mr-2" />
                               Details
                             </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button size="sm" variant="blue">
+                                  <CalendarIcon className="w-4 h-4 mr-2" />
+                                  Add to Calendar
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => handleAddToCalendar(session, 'google')}>
+                                  <ExternalLink className="w-4 h-4 mr-2" />
+                                  Google Calendar
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleAddToCalendar(session, 'outlook')}>
+                                  <ExternalLink className="w-4 h-4 mr-2" />
+                                  Outlook Calendar
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleAddToCalendar(session, 'download')}>
+                                  <Download className="w-4 h-4 mr-2" />
+                                  Download .ics file
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </div>
                       </div>
