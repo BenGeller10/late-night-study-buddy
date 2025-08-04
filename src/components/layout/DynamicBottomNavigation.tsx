@@ -80,9 +80,9 @@ const DynamicBottomNavigation = () => {
       activeColor: "text-green-500"
     },
     {
-      to: "/profile",
-      icon: User,
-      label: "Profile",
+      to: "/support",
+      icon: HelpCircle,
+      label: "Support",
       activeColor: "text-orange-500"
     }
   ];
@@ -108,9 +108,9 @@ const DynamicBottomNavigation = () => {
       activeColor: "text-green-500"
     },
     {
-      to: "/profile",
-      icon: User,
-      label: "Profile",
+      to: "/support",
+      icon: HelpCircle,
+      label: "Support",
       activeColor: "text-purple-500"
     }
   ];

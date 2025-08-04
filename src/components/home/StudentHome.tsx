@@ -102,15 +102,6 @@ const StudentHome = ({ user, onRoleSwitch }: StudentHomeProps) => {
         />
       </div>
 
-      {/* Floating Support Button */}
-      <Button
-        onClick={() => navigate('/support')}
-        className="fixed bottom-24 left-4 z-50 h-14 w-14 rounded-full shadow-lg bg-gradient-primary hover:bg-gradient-primary/90 text-white"
-        size="icon"
-        aria-label="Get Support"
-      >
-        <HelpCircle className="h-6 w-6" />
-      </Button>
     </div>
   );
 };
