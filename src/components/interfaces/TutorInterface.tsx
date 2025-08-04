@@ -13,7 +13,8 @@ import {
   Heart, 
   Calendar, 
   Clock, 
-  HelpCircle 
+  HelpCircle,
+  MessageCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -35,6 +36,12 @@ const TutorInterface = ({ user, onRoleSwitch }: TutorInterfaceProps) => {
       activeColor: "text-pink-500"
     },
     {
+      to: "/chat",
+      icon: MessageCircle,
+      label: "Messages",
+      activeColor: "text-green-500"
+    },
+    {
       to: "/bookings",
       icon: Calendar,
       label: "Business",
@@ -45,12 +52,6 @@ const TutorInterface = ({ user, onRoleSwitch }: TutorInterfaceProps) => {
       icon: Clock,
       label: "Hours",
       activeColor: "text-purple-500"
-    },
-    {
-      to: "/support",
-      icon: HelpCircle,
-      label: "Support",
-      activeColor: "text-orange-500"
     }
   ];
 
