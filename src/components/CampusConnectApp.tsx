@@ -4,10 +4,11 @@ import WelcomeScreen from "./onboarding/WelcomeScreen";
 import EmailVerification from "./onboarding/EmailVerification";
 import ScheduleUpload from "./onboarding/ScheduleUpload";
 import ProfileCreation from "./onboarding/ProfileCreation";
+import TutorProfile from "./onboarding/TutorProfile";
 import RoleSelection from "./onboarding/RoleSelection";
 import { Button } from "@/components/ui/button";
 
-type AppState = 'welcome' | 'email-verification' | 'schedule-upload' | 'profile-creation' | 'role-selection' | 'main-app';
+type AppState = 'welcome' | 'email-verification' | 'role-selection' | 'schedule-upload' | 'profile-creation' | 'tutor-profile' | 'main-app';
 type UserRole = 'student' | 'tutor' | null;
 
 const CampusConnectApp = () => {
@@ -33,7 +34,7 @@ const CampusConnectApp = () => {
 
   const handleEmailVerification = (email: string) => {
     setUserEmail(email);
-    setAppState('schedule-upload');
+    setAppState('role-selection');
   };
 
   const handleScheduleUpload = (schedule: string) => {
@@ -41,22 +42,46 @@ const CampusConnectApp = () => {
     setAppState('profile-creation');
   };
 
-  const handleProfileCreation = (profile: { fullName: string; password: string }) => {
-    setProfileData(profile);
-    setAppState('role-selection');
-  };
-
   const handleRoleSelection = (role: UserRole) => {
     setUserRole(role);
+    if (role === 'student') {
+      setAppState('schedule-upload');
+    } else if (role === 'tutor') {
+      setAppState('tutor-profile');
+    }
+  };
+
+  const handleTutorProfile = (tutorData: any) => {
+    setProfileData({
+      fullName: tutorData.fullName,
+      password: tutorData.password
+    });
+    setScheduleData(tutorData.scheduleData);
     
-    // Redirect to auth page with pre-filled data from onboarding
+    // Redirect to auth page with tutor data
     navigate('/auth', { 
       state: { 
         email: userEmail,
-        fullName: profileData?.fullName || '',
-        password: profileData?.password || '',
+        fullName: tutorData.fullName,
+        password: tutorData.password,
+        scheduleData: tutorData.scheduleData,
+        userRole: 'tutor',
+        tutorData: tutorData,
+        fromOnboarding: true
+      }
+    });
+  };
+
+  const handleProfileCreation = (profile: { fullName: string; password: string }) => {
+    setProfileData(profile);
+    // For students, redirect to auth after profile creation
+    navigate('/auth', { 
+      state: { 
+        email: userEmail,
+        fullName: profile.fullName,
+        password: profile.password,
         scheduleData: scheduleData,
-        userRole: role,
+        userRole: 'student',
         fromOnboarding: true
       }
     });
@@ -68,6 +93,10 @@ const CampusConnectApp = () => {
 
   const handleBackToEmail = () => {
     setAppState('email-verification');
+  };
+
+  const handleBackToRole = () => {
+    setAppState('role-selection');
   };
 
   const handleBackToSchedule = () => {
@@ -82,8 +111,12 @@ const CampusConnectApp = () => {
     return <EmailVerification onNext={handleEmailVerification} onBack={handleBackToWelcome} />;
   }
 
+  if (appState === 'role-selection') {
+    return <RoleSelection onSelectRole={handleRoleSelection} />;
+  }
+
   if (appState === 'schedule-upload') {
-    return <ScheduleUpload onNext={handleScheduleUpload} onBack={handleBackToEmail} />;
+    return <ScheduleUpload onNext={handleScheduleUpload} onBack={handleBackToRole} />;
   }
 
   if (appState === 'profile-creation') {
@@ -97,8 +130,16 @@ const CampusConnectApp = () => {
     );
   }
 
-  if (appState === 'role-selection') {
-    return <RoleSelection onSelectRole={handleRoleSelection} />;
+  if (appState === 'tutor-profile') {
+    return (
+      <TutorProfile 
+        email={userEmail}
+        fullName=""
+        password=""
+        onNext={handleTutorProfile} 
+        onBack={handleBackToRole} 
+      />
+    );
   }
 
   // Main App Interface - Onboarding Complete Screen

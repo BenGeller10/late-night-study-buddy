@@ -33,6 +33,7 @@ const Auth = () => {
   const [venmoHandle, setVenmoHandle] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [scheduleData, setScheduleData] = useState("");
+  const [tutorData, setTutorData] = useState<any>(null);
 
   // Check if user is already authenticated
   useEffect(() => {
@@ -60,9 +61,16 @@ const Auth = () => {
       setPassword(state.password || "");
       setConfirmPassword(state.password || "");
       setScheduleData(state.scheduleData || "");
+      setTutorData(state.tutorData || null);
       setIsTutor(state.userRole === 'tutor');
       setActiveTab("signup");
       setAgreedToTerms(true); // Auto-agree since they went through onboarding
+      
+      // Pre-fill tutor-specific data
+      if (state.tutorData) {
+        setVenmoHandle(state.tutorData.venmoHandle || "");
+        setProfileImage("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNGNEY0RjUiLz48L3N2Zz4K"); // Placeholder
+      }
     }
 
     return () => subscription.unsubscribe();
@@ -185,6 +193,8 @@ const Auth = () => {
             is_tutor: isTutor,
             venmo_handle: isTutor ? venmoHandle.trim() : null,
             schedule_data: scheduleData,
+            bio: tutorData?.bio || null,
+            experience: tutorData?.experience || null,
           }
         }
       });
@@ -199,18 +209,42 @@ const Auth = () => {
       }
 
       if (data.user) {
+        // Create tutor subjects if this is a tutor
+        if (tutorData?.subjects && data.user.id) {
+          try {
+            for (const subject of tutorData.subjects) {
+              await supabase
+                .from('tutor_subjects')
+                .insert({
+                  tutor_id: data.user.id,
+                  subject_id: subject.subject_id,
+                  hourly_rate: subject.hourly_rate
+                });
+            }
+          } catch (error) {
+            console.error('Error creating tutor subjects:', error);
+          }
+        }
+
         if (data.user.email_confirmed_at) {
           // User is immediately confirmed
+          const isStudentWithSchedule = scheduleData && !isTutor;
+          const message = isStudentWithSchedule 
+            ? "Welcome to Campus Connect! Let's find you the perfect tutor." 
+            : isTutor 
+            ? "Welcome to Campus Connect! Students can now find and book you."
+            : "Welcome to Campus Connect!";
+            
           toast({
             title: "Account created!",
-            description: scheduleData && !isTutor 
-              ? "Welcome to Campus Connect! Let's find you the perfect tutor." 
-              : "Welcome to Campus Connect!",
+            description: message,
           });
           
-          // Redirect students with schedule data to discover page for AI matching
-          if (scheduleData && !isTutor) {
+          // Redirect based on user type
+          if (isStudentWithSchedule) {
             window.location.href = '/discover';
+          } else if (isTutor) {
+            window.location.href = '/set-availability';
           } else {
             window.location.href = '/home';
           }
