@@ -32,7 +32,7 @@ const TutorInterface = ({ user, onRoleSwitch }: TutorInterfaceProps) => {
     {
       to: "/liked-students",
       icon: Heart,
-      label: "Clients",
+      label: "Students",
       activeColor: "text-blue-600"
     },
     {

@@ -200,8 +200,8 @@ const LikedStudents = () => {
                     <div className="flex items-start gap-4">
                       <Avatar className="w-14 h-14">
                         <AvatarImage src={student.avatar} alt={student.name} />
-                        <AvatarFallback className="bg-primary/20 text-primary">
-                          {student.name.split(' ').map(n => n[0]).join('')}
+                         <AvatarFallback className="bg-sky-500/20 text-sky-600">
+                           {student.name.split(' ').map(n => n[0]).join('')}
                         </AvatarFallback>
                       </Avatar>
                       
@@ -248,7 +248,7 @@ const LikedStudents = () => {
                           <Button
                             size="sm"
                             onClick={() => handleAcceptStudent(student.id)}
-                            className="flex-1 bg-gradient-primary hover:bg-gradient-primary/90"
+                            className="flex-1 bg-sky-500 hover:bg-sky-600 text-white"
                           >
                             <Heart className="w-4 h-4 mr-2" />
                             Accept Match
