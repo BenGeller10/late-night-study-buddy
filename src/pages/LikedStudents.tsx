@@ -21,16 +21,14 @@ import { useToast } from "@/hooks/use-toast";
 
 interface LikedStudent {
   id: string;
-  name: string;
-  avatar: string;
+  user_id: string;
+  display_name: string;
+  avatar_url: string;
   major: string;
-  year: string;
-  subjects: string[];
-  rating: number;
-  lastActive: string;
+  year: number;
   bio: string;
   campus: string;
-  matchDate: string;
+  is_tutor: boolean;
 }
 
 const LikedStudents = () => {
@@ -40,67 +38,43 @@ const LikedStudents = () => {
   const { createConversation } = useConversations();
   const { toast } = useToast();
 
-  // Mock data - in real app would come from database
+  // Fetch real student profiles from the database
   useEffect(() => {
-    const mockStudents: LikedStudent[] = [
-      {
-        id: '1',
-        name: 'Emma Johnson',
-        avatar: '/placeholder.svg',
-        major: 'Biology',
-        year: 'Sophomore',
-        subjects: ['BIO 201', 'CHEM 102'],
-        rating: 4.9,
-        lastActive: '2 hours ago',
-        bio: 'Pre-med student struggling with organic chemistry. Looking for consistent help.',
-        campus: 'Main Campus',
-        matchDate: '2024-01-15'
-      },
-      {
-        id: '2',
-        name: 'Marcus Chen',
-        avatar: '/placeholder.svg',
-        major: 'Computer Science',
-        year: 'Junior',
-        subjects: ['CS 301', 'MATH 245'],
-        rating: 4.7,
-        lastActive: '1 day ago',
-        bio: 'Need help with data structures and algorithms for upcoming interviews.',
-        campus: 'North Campus',
-        matchDate: '2024-01-12'
-      },
-      {
-        id: '3',
-        name: 'Sofia Rodriguez',
-        avatar: '/placeholder.svg',
-        major: 'Economics',
-        year: 'Senior',
-        subjects: ['ECON 301', 'STAT 200'],
-        rating: 4.8,
-        lastActive: '3 hours ago',
-        bio: 'Senior thesis work on behavioral economics. Need advanced statistics help.',
-        campus: 'Main Campus',
-        matchDate: '2024-01-10'
-      },
-      {
-        id: '4',
-        name: 'Jake Williams',
-        avatar: '/placeholder.svg',
-        major: 'Physics',
-        year: 'Freshman',
-        subjects: ['PHYS 101', 'MATH 151'],
-        rating: 4.6,
-        lastActive: '5 hours ago',
-        bio: 'First year struggling with calculus-based physics. Very motivated to learn!',
-        campus: 'South Campus',
-        matchDate: '2024-01-08'
-      }
-    ];
+    const fetchStudentProfiles = async () => {
+      try {
+        const { data: profiles, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('is_tutor', false)
+          .limit(10);
 
-    setTimeout(() => {
-      setLikedStudents(mockStudents);
-      setIsLoading(false);
-    }, 1000);
+        if (error) {
+          console.error('Error fetching student profiles:', error);
+          return;
+        }
+
+        // Convert profiles to LikedStudent format
+        const studentData: LikedStudent[] = (profiles || []).map(profile => ({
+          id: profile.id,
+          user_id: profile.user_id,
+          display_name: profile.display_name || 'Student',
+          avatar_url: profile.avatar_url || '',
+          major: profile.major || 'Undeclared',
+          year: profile.year || 1,
+          bio: profile.bio || 'Student looking for tutoring help',
+          campus: profile.campus || 'Campus',
+          is_tutor: profile.is_tutor
+        }));
+
+        setLikedStudents(studentData);
+      } catch (error) {
+        console.error('Error fetching students:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchStudentProfiles();
   }, []);
 
   const handleChat = async (studentId: string) => {
@@ -198,78 +172,62 @@ const LikedStudents = () => {
                 <Card key={student.id} className="glass-card hover:bg-muted/20 transition-colors">
                   <CardContent className="p-4">
                     <div className="flex items-start gap-4">
-                      <Avatar className="w-14 h-14">
-                        <AvatarImage src={student.avatar} alt={student.name} />
-                         <AvatarFallback className="bg-sky-500/20 text-sky-600">
-                           {student.name.split(' ').map(n => n[0]).join('')}
-                        </AvatarFallback>
-                      </Avatar>
-                      
-                      <div className="flex-1 space-y-2">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h3 className="font-semibold">{student.name}</h3>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <GraduationCap className="w-4 h-4" />
-                              <span>{student.major} • {student.year}</span>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center gap-1">
-                            <Star className="w-4 h-4 fill-current text-yellow-500" />
-                            <span className="text-sm font-medium">{student.rating}</span>
-                          </div>
-                        </div>
+                       <Avatar className="w-14 h-14">
+                         <AvatarImage src={student.avatar_url} alt={student.display_name} />
+                          <AvatarFallback className="bg-sky-500/20 text-sky-600">
+                            {student.display_name.split(' ').map(n => n[0]).join('')}
+                         </AvatarFallback>
+                       </Avatar>
+                       
+                       <div className="flex-1 space-y-2">
+                         <div className="flex items-start justify-between">
+                           <div>
+                             <h3 className="font-semibold text-white">{student.display_name}</h3>
+                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                               <GraduationCap className="w-4 h-4" />
+                               <span>{student.major} • Year {student.year}</span>
+                             </div>
+                           </div>
+                         </div>
 
-                        <div className="flex flex-wrap gap-1">
-                          {student.subjects.map((subject) => (
-                            <Badge key={subject} variant="secondary" className="text-xs">
-                              {subject}
-                            </Badge>
-                          ))}
-                        </div>
+                         <p className="text-sm text-muted-foreground line-clamp-2">
+                           {student.bio}
+                         </p>
 
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                          {student.bio}
-                        </p>
+                         <div className="flex items-center justify-between text-xs text-muted-foreground">
+                           <div className="flex items-center gap-1">
+                             <MapPin className="w-3 h-3" />
+                             <span>{student.campus}</span>
+                           </div>
+                         </div>
 
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <MapPin className="w-3 h-3" />
-                            <span>{student.campus}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            <span>Active {student.lastActive}</span>
-                          </div>
-                        </div>
-
-                        <div className="flex gap-2 pt-2">
-                          <Button
-                            size="sm"
-                            onClick={() => handleAcceptStudent(student.id)}
-                            className="flex-1 bg-sky-500 hover:bg-sky-600 text-white"
-                          >
-                            <Heart className="w-4 h-4 mr-2" />
-                            Accept Match
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleChat(student.id)}
-                            className="flex-1"
-                          >
-                            <MessageCircle className="w-4 h-4 mr-2" />
-                            Chat
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleViewProfile(student.id)}
-                          >
-                            <BookOpen className="w-4 h-4" />
-                          </Button>
-                        </div>
+                         <div className="flex gap-2 pt-2">
+                           <Button
+                             size="sm"
+                             onClick={() => handleAcceptStudent(student.user_id)}
+                             className="flex-1 bg-sky-500 hover:bg-sky-600 text-white"
+                           >
+                             <Heart className="w-4 h-4 mr-2" />
+                             Accept Match
+                           </Button>
+                           <Button
+                             size="sm"
+                             variant="outline"
+                             onClick={() => handleChat(student.user_id)}
+                             className="flex-1 border-sky-400 text-sky-400 hover:bg-sky-500 hover:text-white"
+                           >
+                             <MessageCircle className="w-4 h-4 mr-2" />
+                             Chat
+                           </Button>
+                           <Button
+                             size="sm"
+                             variant="ghost"
+                             onClick={() => handleViewProfile(student.user_id)}
+                             className="text-sky-400 hover:bg-sky-500 hover:text-white"
+                           >
+                             <BookOpen className="w-4 h-4" />
+                           </Button>
+                         </div>
                       </div>
                     </div>
                   </CardContent>
