@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Send, Bot, User, Loader2, ExternalLink } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import PageTransition from "@/components/layout/PageTransition";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -21,12 +21,29 @@ const Support = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isTutor, setIsTutor] = useState(false);
   const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Check if user is a tutor
+    const checkUserRole = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('is_tutor')
+          .eq('user_id', session.user.id)
+          .single();
+        
+        setIsTutor(profile?.is_tutor || false);
+      }
+    };
+    
+    checkUserRole();
+    
     // Add welcome message
     setMessages([
       {
@@ -173,7 +190,9 @@ const Support = () => {
         <div className="sticky top-0 z-10 bg-gray-700/80 backdrop-blur-lg border-b border-gray-600">
           <div className="p-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                isTutor ? "bg-sky-500" : "bg-gradient-primary"
+              }`}>
                 <Bot className="h-5 w-5 text-white" />
               </div>
               <div>
@@ -201,7 +220,7 @@ const Support = () => {
               <Avatar className="w-8 h-8 shrink-0">
                 <AvatarFallback className={
                   message.isAI 
-                    ? "bg-gradient-primary text-white" 
+                    ? isTutor ? "bg-sky-500 text-white" : "bg-gradient-primary text-white"
                     : "bg-muted"
                 }>
                   {message.isAI ? <Bot className="h-4 w-4" /> : <User className="h-4 w-4" />}
@@ -229,7 +248,7 @@ const Support = () => {
           {isLoading && (
             <div className="flex items-start gap-3">
               <Avatar className="w-8 h-8 shrink-0">
-                <AvatarFallback className="bg-gradient-primary text-white">
+                <AvatarFallback className={isTutor ? "bg-sky-500 text-white" : "bg-gradient-primary text-white"}>
                   <Bot className="h-4 w-4" />
                 </AvatarFallback>
               </Avatar>
