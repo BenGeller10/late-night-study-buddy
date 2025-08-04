@@ -123,23 +123,15 @@ const TutorHome = ({ user, onRoleSwitch }: TutorHomeProps) => {
               </p>
             </div>
             
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onRoleSwitch(false)}
-                className="text-xs"
-              >
-                Switch to Student
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => navigate('/profile')}
-              >
-                <UserIcon className="h-5 w-5" />
-              </Button>
-            </div>
+            {/* Profile Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/profile')}
+              className="btn-smooth hover:bg-muted/50"
+            >
+              <UserIcon className="h-6 w-6" />
+            </Button>
           </div>
         </div>
       </div>

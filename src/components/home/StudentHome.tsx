@@ -66,17 +66,6 @@ const StudentHome = ({ user, onRoleSwitch }: StudentHomeProps) => {
             </Button>
           </div>
           
-          {/* Role Switch Button */}
-          <div className="flex justify-center">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onRoleSwitch(true)}
-              className="text-xs"
-            >
-              Switch to Tutor Mode
-            </Button>
-          </div>
           
           {/* Search Bar */}
           <div className="relative max-w-md mx-auto">
