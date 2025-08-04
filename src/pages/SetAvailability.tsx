@@ -111,7 +111,7 @@ const SetAvailability = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center pb-20">
+      <div className="min-h-screen bg-gray-800 flex items-center justify-center pb-20">
         <div className="text-center space-y-2">
           <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto"></div>
           <p className="text-muted-foreground">Loading your availability...</p>
@@ -122,9 +122,9 @@ const SetAvailability = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background pb-20">
+      <div className="min-h-screen bg-gray-800 pb-20">
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/20">
+        <div className="sticky top-0 z-10 bg-gray-700/80 backdrop-blur-lg border-b border-gray-600">
           <div className="flex items-center justify-between p-4">
             <div className="flex items-center gap-3">
               <Button

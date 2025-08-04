@@ -109,9 +109,9 @@ const TutorHome = ({ user, onRoleSwitch }: TutorHomeProps) => {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-gray-800 pb-20">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/20">
+      <div className="sticky top-0 z-10 bg-gray-700/80 backdrop-blur-lg border-b border-gray-600">
         <div className="p-4">
           <div className="flex items-center justify-between">
             <div>

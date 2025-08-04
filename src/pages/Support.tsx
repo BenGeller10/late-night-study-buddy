@@ -168,9 +168,9 @@ const Support = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background pb-20">
+      <div className="min-h-screen bg-gray-800 pb-20">
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/20">
+        <div className="sticky top-0 z-10 bg-gray-700/80 backdrop-blur-lg border-b border-gray-600">
           <div className="p-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center">
@@ -247,7 +247,7 @@ const Support = () => {
         </div>
 
         {/* Input Area */}
-        <div className="fixed bottom-20 left-0 right-0 bg-background/80 backdrop-blur-lg border-t border-border/20 p-4">
+        <div className="fixed bottom-20 left-0 right-0 bg-gray-700/80 backdrop-blur-lg border-t border-gray-600 p-4">
           <div className="max-w-4xl mx-auto">
             <div className="flex gap-2">
               <Input
