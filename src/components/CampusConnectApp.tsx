@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import WelcomeScreen from "./onboarding/WelcomeScreen";
 import RoleSelection from "./onboarding/RoleSelection";
 import SwipeView from "./discovery/SwipeView";
@@ -13,6 +14,7 @@ type AppState = 'welcome' | 'role-selection' | 'main-app';
 type UserRole = 'student' | 'tutor' | null;
 
 const CampusConnectApp = () => {
+  const navigate = useNavigate();
   const [appState, setAppState] = useState<AppState>('welcome');
   const [userEmail, setUserEmail] = useState<string>('');
   const [userRole, setUserRole] = useState<UserRole>(null);
@@ -30,9 +32,10 @@ const CampusConnectApp = () => {
 
   const handleRoleSelection = (role: UserRole) => {
     setUserRole(role);
-    setAppState('main-app');
     // Mark onboarding as complete
     localStorage.setItem('campus-connect-onboarded', 'true');
+    // Navigate to home page
+    navigate('/home');
   };
 
   const handleTutorMatch = (tutorId: string) => {

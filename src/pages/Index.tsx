@@ -10,8 +10,8 @@ const Index = () => {
     const hasCompletedOnboarding = localStorage.getItem('campus-connect-onboarded');
     
     if (hasCompletedOnboarding === 'true') {
-      // Redirect to discover page if onboarding is complete
-      navigate('/discover');
+      // Redirect to home page if onboarding is complete
+      navigate('/home');
     }
   }, [navigate]);
 

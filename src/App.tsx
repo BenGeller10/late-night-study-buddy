@@ -3,8 +3,9 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import BottomNavigation from "@/components/layout/BottomNavigation";
+import DynamicBottomNavigation from "@/components/layout/DynamicBottomNavigation";
 import Index from "./pages/Index";
+import Home from "./pages/Home";
 import Discover from "./pages/Discover";
 import TutorsList from "./pages/TutorsList";
 import TutorProfile from "./pages/TutorProfile";
@@ -26,6 +27,7 @@ const App = () => (
         <div className="min-h-screen bg-background">
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/discover" element={<Discover />} />
             <Route path="/tutors" element={<TutorsList />} />
             <Route path="/tutor/:tutorId" element={<TutorProfile />} />
@@ -39,8 +41,8 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
           
-          {/* Bottom Navigation - Persistent across all pages */}
-          <BottomNavigation />
+          {/* Dynamic Bottom Navigation - Adapts to user role */}
+          <DynamicBottomNavigation />
         </div>
       </BrowserRouter>
     </TooltipProvider>
