@@ -132,6 +132,7 @@ export type Database = {
           id: string
           is_tutor: boolean | null
           major: string | null
+          schedule_data: string | null
           updated_at: string
           user_id: string
           venmo_handle: string | null
@@ -146,6 +147,7 @@ export type Database = {
           id?: string
           is_tutor?: boolean | null
           major?: string | null
+          schedule_data?: string | null
           updated_at?: string
           user_id: string
           venmo_handle?: string | null
@@ -160,6 +162,7 @@ export type Database = {
           id?: string
           is_tutor?: boolean | null
           major?: string | null
+          schedule_data?: string | null
           updated_at?: string
           user_id?: string
           venmo_handle?: string | null

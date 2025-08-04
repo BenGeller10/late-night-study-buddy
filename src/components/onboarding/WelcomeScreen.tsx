@@ -4,23 +4,7 @@ import { Input } from "@/components/ui/input";
 import campusLogo from "@/assets/campus-connect-logo.png";
 import heroImage from "@/assets/campus-hero-image.jpg";
 
-const WelcomeScreen = ({ onNext }: { onNext: (email: string) => void }) => {
-  const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.includes('.edu')) {
-      alert('Please use your .edu email address 📧');
-      return;
-    }
-    
-    setIsLoading(true);
-    // Simulate email verification
-    setTimeout(() => {
-      onNext(email);
-    }, 1500);
-  };
+const WelcomeScreen = ({ onSignUp, onSignIn }: { onSignUp: () => void; onSignIn: () => void }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-card flex flex-col">
@@ -49,31 +33,25 @@ const WelcomeScreen = ({ onNext }: { onNext: (email: string) => void }) => {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Input
-                type="email"
-                placeholder="your.name@university.edu"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="h-14 text-center text-lg bg-card/50 backdrop-blur-sm border-border/50 focus:border-accent"
-                required
-              />
-              <p className="text-xs text-muted-foreground">
-                We need your .edu email to verify you're a student 🎓
-              </p>
-            </div>
-
+          <div className="space-y-4">
             <Button
-              type="submit"
               variant="campus"
               size="lg"
-              className="w-full"
-              disabled={isLoading}
+              className="w-full h-14"
+              onClick={onSignUp}
             >
-              {isLoading ? "Sending verification..." : "Get Started 🚀"}
+              Sign Up 🚀
             </Button>
-          </form>
+
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full h-14"
+              onClick={onSignIn}
+            >
+              Sign In
+            </Button>
+          </div>
 
           <div className="text-xs text-muted-foreground max-w-xs">
             By continuing, you agree to our vibe check and campus community guidelines

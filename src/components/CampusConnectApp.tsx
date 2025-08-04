@@ -1,16 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import WelcomeScreen from "./onboarding/WelcomeScreen";
+import EmailVerification from "./onboarding/EmailVerification";
+import ScheduleUpload from "./onboarding/ScheduleUpload";
+import ProfileCreation from "./onboarding/ProfileCreation";
 import RoleSelection from "./onboarding/RoleSelection";
-import SwipeView from "./discovery/SwipeView";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import HotTopicsFeed from "./gamification/HotTopicsFeed";
-import WeeklyLeaderboard from "./gamification/WeeklyLeaderboard";
-import StudyStreak from "./gamification/StudyStreak";
-import BadgeDisplay from "./gamification/BadgeDisplay";
 
-type AppState = 'welcome' | 'role-selection' | 'main-app';
+type AppState = 'welcome' | 'email-verification' | 'schedule-upload' | 'profile-creation' | 'role-selection' | 'main-app';
 type UserRole = 'student' | 'tutor' | null;
 
 const CampusConnectApp = () => {
@@ -18,15 +15,34 @@ const CampusConnectApp = () => {
   const [appState, setAppState] = useState<AppState>('welcome');
   const [userEmail, setUserEmail] = useState<string>('');
   const [userRole, setUserRole] = useState<UserRole>(null);
-  const [currentView, setCurrentView] = useState<'swipe' | 'search' | 'chat' | 'profile'>('swipe');
+  const [scheduleData, setScheduleData] = useState<string>('');
+  const [profileData, setProfileData] = useState<{ fullName: string; password: string } | null>(null);
 
   // Set dark mode on component mount for campus vibes
   useEffect(() => {
     document.documentElement.classList.add('dark');
   }, []);
 
+  const handleSignUp = () => {
+    setAppState('email-verification');
+  };
+
+  const handleSignIn = () => {
+    navigate('/auth');
+  };
+
   const handleEmailVerification = (email: string) => {
     setUserEmail(email);
+    setAppState('schedule-upload');
+  };
+
+  const handleScheduleUpload = (schedule: string) => {
+    setScheduleData(schedule);
+    setAppState('profile-creation');
+  };
+
+  const handleProfileCreation = (profile: { fullName: string; password: string }) => {
+    setProfileData(profile);
     setAppState('role-selection');
   };
 
@@ -38,23 +54,39 @@ const CampusConnectApp = () => {
     navigate('/home');
   };
 
-  const handleTutorMatch = (tutorId: string) => {
-    console.log('Matched with tutor:', tutorId);
-    // Handle tutor match logic
+  const handleBackToWelcome = () => {
+    setAppState('welcome');
   };
 
-  const handleChat = (tutorId: string) => {
-    console.log('Starting chat with tutor:', tutorId);
-    setCurrentView('chat');
+  const handleBackToEmail = () => {
+    setAppState('email-verification');
   };
 
-  const handleBook = (tutorId: string) => {
-    console.log('Booking session with tutor:', tutorId);
-    // Handle booking logic
+  const handleBackToSchedule = () => {
+    setAppState('schedule-upload');
   };
 
   if (appState === 'welcome') {
-    return <WelcomeScreen onNext={handleEmailVerification} />;
+    return <WelcomeScreen onSignUp={handleSignUp} onSignIn={handleSignIn} />;
+  }
+
+  if (appState === 'email-verification') {
+    return <EmailVerification onNext={handleEmailVerification} onBack={handleBackToWelcome} />;
+  }
+
+  if (appState === 'schedule-upload') {
+    return <ScheduleUpload onNext={handleScheduleUpload} onBack={handleBackToEmail} />;
+  }
+
+  if (appState === 'profile-creation') {
+    return (
+      <ProfileCreation 
+        email={userEmail}
+        scheduleData={scheduleData}
+        onNext={handleProfileCreation} 
+        onBack={handleBackToSchedule} 
+      />
+    );
   }
 
   if (appState === 'role-selection') {

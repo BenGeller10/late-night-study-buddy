@@ -1,14 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { HelpCircle, Search, X, User } from "lucide-react";
 import SwipeView from "@/components/discovery/SwipeView";
+import AIMatchmaking from "@/components/discovery/AIMatchmaking";
 import PageTransition from "@/components/layout/PageTransition";
+import { supabase } from "@/integrations/supabase/client";
 
 const Discover = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+  }, []);
 
   const handleTutorMatch = (tutorId: string) => {
     console.log('Matched with tutor:', tutorId);
@@ -89,8 +100,19 @@ const Discover = () => {
         </div>
       </div>
 
-      {/* Main Swipe Interface */}
-      <div className="p-4">
+      {/* Main Content */}
+      <div className="p-4 space-y-6">
+        {/* AI Matchmaking - Only show if user is authenticated and no search query */}
+        {user && !searchQuery && (
+          <AIMatchmaking
+            studentId={user.id}
+            className={searchQuery || "Organic Chemistry"}
+            onChat={handleChat}
+            onBook={handleBook}
+          />
+        )}
+
+        {/* Swipe Interface */}
         <SwipeView
           onTutorMatch={handleTutorMatch}
           onChat={handleChat}
