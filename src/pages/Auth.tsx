@@ -141,8 +141,8 @@ const Auth = () => {
       return;
     }
 
-    if (!isTutor && !venmoHandle.trim()) {
-      setError("Venmo handle is required for students");
+    if (isTutor && !venmoHandle.trim()) {
+      setError("Venmo handle is required for tutors");
       setIsLoading(false);
       return;
     }
@@ -168,7 +168,7 @@ const Auth = () => {
             full_name: fullName.trim(),
             avatar_url: profileImage,
             is_tutor: isTutor,
-            venmo_handle: !isTutor ? venmoHandle.trim() : null,
+            venmo_handle: isTutor ? venmoHandle.trim() : null,
           }
         }
       });
@@ -396,7 +396,7 @@ const Auth = () => {
                     </div>
 
                     {/* Venmo Handle for Students */}
-                    {!isTutor && (
+                    {isTutor && (
                       <div className="space-y-2">
                         <Label htmlFor="venmo-handle">Venmo Handle *</Label>
                         <div className="relative">
@@ -408,12 +408,12 @@ const Auth = () => {
                             value={venmoHandle}
                             onChange={(e) => setVenmoHandle(e.target.value)}
                             className="pl-10"
-                            required={!isTutor}
+                            required={isTutor}
                             disabled={isLoading}
                           />
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          Tutors will use this to receive payment for sessions
+                          Students will use this to send payment for sessions
                         </p>
                       </div>
                     )}
