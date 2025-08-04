@@ -20,13 +20,21 @@ import {
   Star,
   Download,
   ExternalLink,
-  Plus
+  Plus,
+  ChevronDown
 } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -66,6 +74,8 @@ const Bookings = () => {
   const [bookedSessions, setBookedSessions] = useState<BookedSession[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'week' | 'month'>('week');
+  const [jumpToMonth, setJumpToMonth] = useState<string>((new Date().getMonth() + 1).toString());
+  const [jumpToYear, setJumpToYear] = useState<string>(new Date().getFullYear().toString());
 
   // Fetch real session data from database
   useEffect(() => {
@@ -180,6 +190,34 @@ const Bookings = () => {
     }
   };
 
+  // Generate month and year options for the jump to date feature
+  const months = [
+    { value: '1', label: 'January' },
+    { value: '2', label: 'February' },
+    { value: '3', label: 'March' },
+    { value: '4', label: 'April' },
+    { value: '5', label: 'May' },
+    { value: '6', label: 'June' },
+    { value: '7', label: 'July' },
+    { value: '8', label: 'August' },
+    { value: '9', label: 'September' },
+    { value: '10', label: 'October' },
+    { value: '11', label: 'November' },
+    { value: '12', label: 'December' }
+  ];
+
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 10 }, (_, i) => {
+    const year = currentYear - 2 + i;
+    return { value: year.toString(), label: year.toString() };
+  });
+
+  const handleJumpToDate = () => {
+    const newDate = new Date(parseInt(jumpToYear), parseInt(jumpToMonth) - 1, 1);
+    setSelectedDate(newDate);
+    setCurrentWeek(startOfWeek(newDate));
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'confirmed': return 'bg-green-500';
@@ -234,10 +272,10 @@ const Bookings = () => {
             <div className="flex items-center justify-between">
               <div className="text-center flex-1">
                 <h1 className="text-xl font-bold text-sky-400">
-                  TutorPro - Business Calendar 💼
+                  Calendar 📅
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Your tutoring appointments & earnings
+                  Your tutoring appointments & schedule
                 </p>
               </div>
               
@@ -302,25 +340,50 @@ const Bookings = () => {
                         Jump to Date
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="end">
-                      <Calendar
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={(date) => {
-                          setSelectedDate(date);
-                          if (date) {
-                            setCurrentWeek(startOfWeek(date));
-                          }
-                        }}
-                        initialFocus
-                        className={cn("p-3 pointer-events-auto")}
-                        modifiers={{
-                          booked: getDatesWithSessions()
-                        }}
-                        modifiersStyles={{
-                          booked: { backgroundColor: 'hsl(var(--primary))', color: 'white', borderRadius: '50%' }
-                        }}
-                      />
+                    <PopoverContent className="w-80 p-4" align="end">
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-sm">Jump to Date</h4>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-2">
+                            <label className="text-xs font-medium text-muted-foreground">Month</label>
+                            <Select value={jumpToMonth} onValueChange={setJumpToMonth}>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select month" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {months.map((month) => (
+                                  <SelectItem key={month.value} value={month.value}>
+                                    {month.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-xs font-medium text-muted-foreground">Year</label>
+                            <Select value={jumpToYear} onValueChange={setJumpToYear}>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select year" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {years.map((year) => (
+                                  <SelectItem key={year.value} value={year.value}>
+                                    {year.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                        <Button 
+                          variant="blue" 
+                          size="sm" 
+                          className="w-full"
+                          onClick={handleJumpToDate}
+                        >
+                          Go to Date
+                        </Button>
+                      </div>
                     </PopoverContent>
                   </Popover>
                 </div>
