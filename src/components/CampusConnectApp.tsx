@@ -48,10 +48,18 @@ const CampusConnectApp = () => {
 
   const handleRoleSelection = (role: UserRole) => {
     setUserRole(role);
-    // Mark onboarding as complete
-    localStorage.setItem('campus-connect-onboarded', 'true');
-    // Navigate to home page
-    navigate('/home');
+    
+    // Redirect to auth page with pre-filled data from onboarding
+    navigate('/auth', { 
+      state: { 
+        email: userEmail,
+        fullName: profileData?.fullName || '',
+        password: profileData?.password || '',
+        scheduleData: scheduleData,
+        userRole: role,
+        fromOnboarding: true
+      }
+    });
   };
 
   const handleBackToWelcome = () => {

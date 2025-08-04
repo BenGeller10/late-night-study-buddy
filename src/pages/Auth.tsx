@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ import ImageUpload from "@/components/ui/image-upload";
 
 const Auth = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -31,6 +32,7 @@ const Auth = () => {
   const [isTutor, setIsTutor] = useState(false);
   const [venmoHandle, setVenmoHandle] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [scheduleData, setScheduleData] = useState("");
 
   // Check if user is already authenticated
   useEffect(() => {
@@ -50,8 +52,21 @@ const Auth = () => {
 
     checkAuth();
 
+    // Pre-fill form if coming from onboarding
+    const state = location.state as any;
+    if (state?.fromOnboarding) {
+      setEmail(state.email || "");
+      setFullName(state.fullName || "");
+      setPassword(state.password || "");
+      setConfirmPassword(state.password || "");
+      setScheduleData(state.scheduleData || "");
+      setIsTutor(state.userRole === 'tutor');
+      setActiveTab("signup");
+      setAgreedToTerms(true); // Auto-agree since they went through onboarding
+    }
+
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, location.state]);
 
   const cleanupAuthState = () => {
     // Remove all Supabase auth keys from localStorage
@@ -169,6 +184,7 @@ const Auth = () => {
             avatar_url: profileImage,
             is_tutor: isTutor,
             venmo_handle: isTutor ? venmoHandle.trim() : null,
+            schedule_data: scheduleData,
           }
         }
       });
@@ -187,9 +203,17 @@ const Auth = () => {
           // User is immediately confirmed
           toast({
             title: "Account created!",
-            description: "Welcome to Campus Connect!",
+            description: scheduleData && !isTutor 
+              ? "Welcome to Campus Connect! Let's find you the perfect tutor." 
+              : "Welcome to Campus Connect!",
           });
-          window.location.href = '/home';
+          
+          // Redirect students with schedule data to discover page for AI matching
+          if (scheduleData && !isTutor) {
+            window.location.href = '/discover';
+          } else {
+            window.location.href = '/home';
+          }
         } else {
           // Email confirmation required
           toast({
