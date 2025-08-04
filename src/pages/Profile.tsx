@@ -81,6 +81,53 @@ const Profile = () => {
       return;
     }
 
+    // If switching to tutor and no venmo handle, prompt for it
+    if (newRole && !user.venmo_handle) {
+      const venmoHandle = prompt('To become a tutor, please enter your Venmo handle (e.g., @your-username):');
+      
+      if (!venmoHandle || !venmoHandle.trim()) {
+        toast({
+          title: "Venmo handle required",
+          description: "You need to provide a Venmo handle to become a tutor.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Update both role and venmo handle
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .update({ 
+            is_tutor: newRole,
+            venmo_handle: venmoHandle.trim()
+          })
+          .eq('user_id', user.id)
+          .select();
+
+        if (error) {
+          console.error('Database error:', error);
+          throw error;
+        }
+
+        setIsTutor(newRole);
+        setUser({ ...user, venmo_handle: venmoHandle.trim() });
+        toast({
+          title: `Welcome to tutoring! 🎓`,
+          description: `You're now a tutor. Students can pay you via ${venmoHandle.trim()}`,
+        });
+        return;
+      } catch (error: any) {
+        console.error('Role switch error:', error);
+        toast({
+          title: "Error becoming tutor",
+          description: error.message || "Failed to update profile. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     console.log('Switching role to:', newRole ? 'tutor' : 'student');
     console.log('Current user:', user);
 
