@@ -184,7 +184,7 @@ const SetAvailability = () => {
                       <CardTitle className="text-lg">{day}</CardTitle>
                       <Button
                         size="sm"
-                        variant="blue"
+                        variant="outline"
                         onClick={() => addTimeSlot(day)}
                       >
                         <Plus className="w-4 h-4 mr-2" />
