@@ -52,6 +52,12 @@ const TutorInterface = ({ user, onRoleSwitch }: TutorInterfaceProps) => {
       icon: Clock,
       label: "Hours",
       activeColor: "text-purple-500"
+    },
+    {
+      to: "/support",
+      icon: HelpCircle,
+      label: "Support",
+      activeColor: "text-orange-500"
     }
   ];
 
