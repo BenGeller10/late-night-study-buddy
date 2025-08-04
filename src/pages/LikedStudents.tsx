@@ -130,10 +130,10 @@ const LikedStudents = () => {
             <div className="flex items-center justify-between">
               <div className="text-center flex-1">
                 <h1 className="text-xl font-bold text-sky-400">
-                  TutorPro - Student Matches 💼
+                  Liked Students 💙
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Manage your potential clients
+                  Students interested in your tutoring
                 </p>
               </div>
               
