@@ -33,31 +33,31 @@ const TutorInterface = ({ user, onRoleSwitch }: TutorInterfaceProps) => {
       to: "/liked-students",
       icon: Heart,
       label: "Clients",
-      activeColor: "text-pink-500"
+      activeColor: "text-blue-600"
     },
     {
       to: "/chat",
       icon: MessageCircle,
       label: "Messages",
-      activeColor: "text-green-500"
+      activeColor: "text-blue-500"
     },
     {
       to: "/bookings",
       icon: Calendar,
       label: "Business",
-      activeColor: "text-blue-500"
+      activeColor: "text-blue-400"
     },
     {
       to: "/set-availability",
       icon: Clock,
       label: "Hours",
-      activeColor: "text-purple-500"
+      activeColor: "text-slate-600"
     },
     {
       to: "/support",
       icon: HelpCircle,
       label: "Support",
-      activeColor: "text-orange-500"
+      activeColor: "text-slate-500"
     }
   ];
 
@@ -69,7 +69,7 @@ const TutorInterface = ({ user, onRoleSwitch }: TutorInterfaceProps) => {
   }, [location.pathname, navigate]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-slate-50">
       {/* Tutor Routes */}
       <Routes>
         <Route path="/liked-students" element={<LikedStudents />} />
@@ -83,7 +83,7 @@ const TutorInterface = ({ user, onRoleSwitch }: TutorInterfaceProps) => {
       </Routes>
       
       {/* Tutor Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-t border-border/30">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-slate-100/90 backdrop-blur-xl border-t border-slate-200">
         <div className="flex justify-around items-center py-2 px-4 max-w-lg mx-auto">
           {tutorNavItems.map(({ to, icon: Icon, label, activeColor }) => {
             const isActive = location.pathname === to;

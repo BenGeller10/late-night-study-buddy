@@ -34,25 +34,25 @@ const StudentInterface = ({ user, onRoleSwitch }: StudentInterfaceProps) => {
       to: "/home",
       icon: Search,
       label: "Find Buddies",
-      activeColor: "text-blue-600"
+      activeColor: "text-blue-500"
     },
     {
       to: "/my-sessions", 
       icon: Calendar,
       label: "Learning Path",
-      activeColor: "text-blue-500"
+      activeColor: "text-purple-500"
     },
     {
       to: "/study-groups", 
       icon: Users,
       label: "Study Groups",
-      activeColor: "text-blue-400"
+      activeColor: "text-green-500"
     },
     {
       to: "/support",
       icon: HelpCircle,
       label: "Support",
-      activeColor: "text-slate-600"
+      activeColor: "text-orange-500"
     }
   ];
 
@@ -64,7 +64,7 @@ const StudentInterface = ({ user, onRoleSwitch }: StudentInterfaceProps) => {
   }, [location.pathname, navigate]);
 
   return (
-    <div className="min-h-screen bg-slate-50">{/*Changed to light gray background*/}
+    <div className="min-h-screen bg-background">
       {/* Student Routes */}
       <Routes>
         <Route path="/home" element={<StudentHome user={user} onRoleSwitch={onRoleSwitch} />} />
@@ -80,7 +80,7 @@ const StudentInterface = ({ user, onRoleSwitch }: StudentInterfaceProps) => {
       </Routes>
       
       {/* Student Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-slate-100/90 backdrop-blur-xl border-t border-slate-200">{/*Changed to light gray navigation*/}
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-t border-border/30">
         <div className="flex justify-around items-center py-2 px-4 max-w-lg mx-auto">
           {studentNavItems.map(({ to, icon: Icon, label, activeColor }) => {
             const isActive = location.pathname === to;
