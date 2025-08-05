@@ -127,13 +127,19 @@ export type Database = {
           avatar_url: string
           bio: string | null
           campus: string | null
+          completed_intro_questions: boolean | null
           created_at: string
           display_name: string | null
+          dream_career: string | null
           experience: string | null
+          favorite_study_spot: string | null
           id: string
           is_tutor: boolean | null
           major: string | null
+          major_passion: string | null
           schedule_data: string | null
+          semester_goal: string | null
+          stress_relief: string | null
           updated_at: string
           user_id: string
           venmo_handle: string | null
@@ -143,13 +149,19 @@ export type Database = {
           avatar_url: string
           bio?: string | null
           campus?: string | null
+          completed_intro_questions?: boolean | null
           created_at?: string
           display_name?: string | null
+          dream_career?: string | null
           experience?: string | null
+          favorite_study_spot?: string | null
           id?: string
           is_tutor?: boolean | null
           major?: string | null
+          major_passion?: string | null
           schedule_data?: string | null
+          semester_goal?: string | null
+          stress_relief?: string | null
           updated_at?: string
           user_id: string
           venmo_handle?: string | null
@@ -159,13 +171,19 @@ export type Database = {
           avatar_url?: string
           bio?: string | null
           campus?: string | null
+          completed_intro_questions?: boolean | null
           created_at?: string
           display_name?: string | null
+          dream_career?: string | null
           experience?: string | null
+          favorite_study_spot?: string | null
           id?: string
           is_tutor?: boolean | null
           major?: string | null
+          major_passion?: string | null
           schedule_data?: string | null
+          semester_goal?: string | null
+          stress_relief?: string | null
           updated_at?: string
           user_id?: string
           venmo_handle?: string | null

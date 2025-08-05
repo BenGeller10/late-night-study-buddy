@@ -5,15 +5,18 @@ import { Input } from "@/components/ui/input";
 import { HelpCircle, Search, X, User } from "lucide-react";
 import SwipeView from "@/components/discovery/SwipeView";
 import AIMatchmaking from "@/components/discovery/AIMatchmaking";
+import SmartMatchingCard from "@/components/ai-agent/SmartMatchingCard";
 import PageTransition from "@/components/layout/PageTransition";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useSmartMatching } from "@/hooks/useSmartMatching";
 
 const Discover = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [user, setUser] = useState<any>(null);
+  const { matchedTutors, showRecommendation } = useSmartMatching(user?.id);
 
   useEffect(() => {
     const getUser = async () => {
@@ -108,6 +111,23 @@ const Discover = () => {
 
       {/* Main Content */}
       <div className="p-4 space-y-6">
+        {/* Smart Recommendations - show if user completed onboarding */}
+        {user && !searchQuery && showRecommendation && (
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold mb-3">🎯 Recommended for You</h3>
+            <div className="space-y-2">
+              {matchedTutors.map(tutor => (
+                <SmartMatchingCard
+                  key={tutor.id}
+                  tutor={tutor}
+                  onChat={handleChat}
+                  onBook={handleBook}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* AI Matchmaking - Only show if user is authenticated and no search query */}
         {user && !searchQuery && (
           <AIMatchmaking

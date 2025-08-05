@@ -6,7 +6,10 @@ import ScheduleUpload from "./onboarding/ScheduleUpload";
 import ProfileCreation from "./onboarding/ProfileCreation";
 import TutorProfile from "./onboarding/TutorProfile";
 import RoleSelection from "./onboarding/RoleSelection";
+import CollegeQuestionPopup from "./ai-agent/CollegeQuestionPopup";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { useCollegeAgent } from "@/hooks/useCollegeAgent";
 
 type AppState = 'welcome' | 'email-verification' | 'role-selection' | 'schedule-upload' | 'profile-creation' | 'tutor-profile' | 'main-app';
 type UserRole = 'student' | 'tutor' | null;
@@ -18,6 +21,16 @@ const CampusConnectApp = () => {
   const [userRole, setUserRole] = useState<UserRole>(null);
   const [scheduleData, setScheduleData] = useState<string>('');
   const [profileData, setProfileData] = useState<{ fullName: string; password: string } | null>(null);
+  const [user, setUser] = useState<any>(null);
+  const { showQuestionPopup, closeQuestionPopup } = useCollegeAgent(user?.id);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+  }, []);
 
   // Set dark mode on component mount for campus vibes
   useEffect(() => {
@@ -144,64 +157,75 @@ const CampusConnectApp = () => {
 
   // Main App Interface - Onboarding Complete Screen
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
-      <div className="text-center space-y-6 max-w-md">
-        <div className="w-20 h-20 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto animate-bounce-in">
-          <span className="text-3xl">🎓</span>
-        </div>
-        
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-            Welcome to Campus Connect! ✨
-          </h1>
-          <p className="text-muted-foreground">
-            You're all set! Use the navigation below to explore.
-          </p>
-        </div>
-        
-        <div className="glass-card p-4 rounded-2xl space-y-3">
-          <h3 className="font-semibold">Quick Tips:</h3>
-          <div className="space-y-2 text-sm text-muted-foreground text-left">
-            <div className="flex items-start gap-2">
-              <span>💫</span>
-              <span>Swipe through tutors on <strong>Discover</strong></span>
-            </div>
-            <div className="flex items-start gap-2">
-              <span>🔥</span>
-              <span>Check campus trends and leaderboards</span>
-            </div>
-            <div className="flex items-start gap-2">
-              <span>💬</span>
-              <span>Chat with matched tutors (coming soon)</span>
-            </div>
-            <div className="flex items-start gap-2">
-              <span>🏆</span>
-              <span>Build your profile and earn badges</span>
+    <>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+        <div className="text-center space-y-6 max-w-md">
+          <div className="w-20 h-20 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto animate-bounce-in">
+            <span className="text-3xl">🎓</span>
+          </div>
+          
+          <div className="space-y-2">
+            <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              Welcome to Campus Connect! ✨
+            </h1>
+            <p className="text-muted-foreground">
+              You're all set! Use the navigation below to explore.
+            </p>
+          </div>
+          
+          <div className="glass-card p-4 rounded-2xl space-y-3">
+            <h3 className="font-semibold">Quick Tips:</h3>
+            <div className="space-y-2 text-sm text-muted-foreground text-left">
+              <div className="flex items-start gap-2">
+                <span>💫</span>
+                <span>Swipe through tutors on <strong>Discover</strong></span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span>🔥</span>
+                <span>Check campus trends and leaderboards</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span>💬</span>
+                <span>Chat with matched tutors (coming soon)</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span>🏆</span>
+                <span>Build your profile and earn badges</span>
+              </div>
             </div>
           </div>
-        </div>
-        
-        <p className="text-xs text-muted-foreground">
-          Ready to join Campus Connect?
-        </p>
-        
-        <div className="flex gap-3">
-          <Button
-            onClick={() => navigate('/auth')}
-            className="flex-1 bg-gradient-primary hover:bg-gradient-primary/90"
-          >
-            Sign Up
-          </Button>
-          <Button
-            onClick={() => navigate('/auth')}
-            variant="outline"
-            className="flex-1"
-          >
-            Sign In
-          </Button>
+          
+          <p className="text-xs text-muted-foreground">
+            Ready to join Campus Connect?
+          </p>
+          
+          <div className="flex gap-3">
+            <Button
+              onClick={() => navigate('/auth')}
+              className="flex-1 bg-gradient-primary hover:bg-gradient-primary/90"
+            >
+              Sign Up
+            </Button>
+            <Button
+              onClick={() => navigate('/auth')}
+              variant="outline"
+              className="flex-1"
+            >
+              Sign In
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* AI Agent College Questions Popup */}
+      {user && (
+        <CollegeQuestionPopup
+          isOpen={showQuestionPopup}
+          onClose={closeQuestionPopup}
+          userId={user.id}
+        />
+      )}
+    </>
   );
 };
 
