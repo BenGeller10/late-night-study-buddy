@@ -44,6 +44,47 @@ export type Database = {
         }
         Relationships: []
       }
+      campus_posts: {
+        Row: {
+          content: string
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          image_url: string | null
+          post_type: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          image_url?: string | null
+          post_type?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          image_url?: string | null
+          post_type?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campus_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       conversations: {
         Row: {
           created_at: string
@@ -122,6 +163,45 @@ export type Database = {
           },
         ]
       }
+      post_reactions: {
+        Row: {
+          created_at: string | null
+          emoji: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          emoji: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          emoji?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_reactions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "campus_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_reactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string
@@ -133,15 +213,23 @@ export type Database = {
           dream_career: string | null
           experience: string | null
           favorite_study_spot: string | null
+          followers_count: number | null
+          following_count: number | null
+          gpa: number | null
+          graduation_year: number | null
           id: string
           is_tutor: boolean | null
           major: string | null
           major_passion: string | null
+          personality_traits: Json | null
           schedule_data: string | null
           semester_goal: string | null
+          show_gpa: boolean | null
           stress_relief: string | null
+          study_preferences: Json | null
           updated_at: string
           user_id: string
+          username: string | null
           venmo_handle: string | null
           year: number | null
         }
@@ -155,15 +243,23 @@ export type Database = {
           dream_career?: string | null
           experience?: string | null
           favorite_study_spot?: string | null
+          followers_count?: number | null
+          following_count?: number | null
+          gpa?: number | null
+          graduation_year?: number | null
           id?: string
           is_tutor?: boolean | null
           major?: string | null
           major_passion?: string | null
+          personality_traits?: Json | null
           schedule_data?: string | null
           semester_goal?: string | null
+          show_gpa?: boolean | null
           stress_relief?: string | null
+          study_preferences?: Json | null
           updated_at?: string
           user_id: string
+          username?: string | null
           venmo_handle?: string | null
           year?: number | null
         }
@@ -177,15 +273,23 @@ export type Database = {
           dream_career?: string | null
           experience?: string | null
           favorite_study_spot?: string | null
+          followers_count?: number | null
+          following_count?: number | null
+          gpa?: number | null
+          graduation_year?: number | null
           id?: string
           is_tutor?: boolean | null
           major?: string | null
           major_passion?: string | null
+          personality_traits?: Json | null
           schedule_data?: string | null
           semester_goal?: string | null
+          show_gpa?: boolean | null
           stress_relief?: string | null
+          study_preferences?: Json | null
           updated_at?: string
           user_id?: string
+          username?: string | null
           venmo_handle?: string | null
           year?: number | null
         }
@@ -478,6 +582,42 @@ export type Database = {
           {
             foreignKeyName: "user_badges_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      user_follows: {
+        Row: {
+          created_at: string | null
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_follows_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_follows_following_id_fkey"
+            columns: ["following_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
