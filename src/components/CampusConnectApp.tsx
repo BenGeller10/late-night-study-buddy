@@ -6,7 +6,7 @@ import ScheduleUpload from "./onboarding/ScheduleUpload";
 import ProfileCreation from "./onboarding/ProfileCreation";
 import TutorProfile from "./onboarding/TutorProfile";
 import RoleSelection from "./onboarding/RoleSelection";
-import CollegeQuestionPopup from "./ai-agent/CollegeQuestionPopup";
+import EnhancedCollegeAgent from "./ai-agent/EnhancedCollegeAgent";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useCollegeAgent } from "@/hooks/useCollegeAgent";
@@ -217,9 +217,9 @@ const CampusConnectApp = () => {
         </div>
       </div>
 
-      {/* AI Agent College Questions Popup */}
+      {/* Enhanced AI Agent College Questions */}
       {user && (
-        <CollegeQuestionPopup
+        <EnhancedCollegeAgent
           isOpen={showQuestionPopup}
           onClose={closeQuestionPopup}
           userId={user.id}
