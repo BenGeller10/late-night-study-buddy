@@ -1,10 +1,8 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
@@ -131,7 +129,7 @@ const EnhancedOnboarding = ({ onComplete, userEmail }: EnhancedOnboardingProps) 
           <div className="flex justify-center mb-4">
             <div className="text-4xl">🎓</div>
           </div>
-          <CardTitle className="bg-gradient-primary bg-clip-text text-transparent">
+          <CardTitle className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
             Welcome to Campus Connect!
           </CardTitle>
           <Progress value={progress} className="mt-4" />
@@ -346,7 +344,7 @@ const EnhancedOnboarding = ({ onComplete, userEmail }: EnhancedOnboardingProps) 
               <Button
                 onClick={handleNext}
                 disabled={!isStepValid()}
-                className="btn-smooth bg-gradient-primary"
+                className="btn-smooth bg-gradient-to-r from-purple-600 to-blue-600"
               >
                 Next
               </Button>
@@ -354,7 +352,7 @@ const EnhancedOnboarding = ({ onComplete, userEmail }: EnhancedOnboardingProps) 
               <Button
                 onClick={handleSubmit}
                 disabled={!isStepValid() || isSubmitting}
-                className="btn-smooth bg-gradient-primary"
+                className="btn-smooth bg-gradient-to-r from-purple-600 to-blue-600"
               >
                 {isSubmitting ? 'Setting up...' : 'Complete Setup! 🚀'}
               </Button>

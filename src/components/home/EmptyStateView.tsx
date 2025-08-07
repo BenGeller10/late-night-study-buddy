@@ -94,7 +94,7 @@ const EmptyStateView = ({ userType, onAction }: EmptyStateViewProps) => {
           <div className="text-6xl mb-4">
             {userType === 'student' ? '📚' : '🧠'}
           </div>
-          <h2 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+          <h2 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
             {currentState.title}
           </h2>
           <p className="text-muted-foreground text-sm">
@@ -139,7 +139,7 @@ const EmptyStateView = ({ userType, onAction }: EmptyStateViewProps) => {
         >
           <Button
             onClick={() => onAction('complete-profile')}
-            className="bg-gradient-primary text-white px-8 py-2 rounded-full font-medium hover:scale-105 transition-transform"
+            className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-2 rounded-full font-medium hover:scale-105 transition-transform"
           >
             Complete Your Profile ✨
           </Button>
