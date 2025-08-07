@@ -87,22 +87,6 @@ const MySessions = () => {
     }
   };
 
-  const getStatusBadge = (status: string, paymentStatus: string) => {
-    if (status === 'pending_payment' || paymentStatus === 'pending') {
-      return <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-700">Pending Payment</Badge>;
-    }
-    if (status === 'confirmed') {
-      return <Badge variant="secondary" className="bg-green-500/20 text-green-700">Confirmed</Badge>;
-    }
-    if (status === 'completed') {
-      return <Badge variant="secondary" className="bg-blue-500/20 text-blue-700">Completed</Badge>;
-    }
-    if (status === 'cancelled') {
-      return <Badge variant="secondary" className="bg-red-500/20 text-red-700">Cancelled</Badge>;
-    }
-    return <Badge variant="outline">{status}</Badge>;
-  };
-
   const filterSessions = (sessions: Session[]) => {
     const now = new Date();
     
@@ -237,6 +221,22 @@ const SessionCard = ({
 }) => {
   const scheduledDate = new Date(session.scheduled_at);
   const isPast = scheduledDate < new Date();
+
+  const getStatusBadge = (status: string, paymentStatus: string) => {
+    if (status === 'pending_payment' || paymentStatus === 'pending') {
+      return <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-700">Pending Payment</Badge>;
+    }
+    if (status === 'confirmed') {
+      return <Badge variant="secondary" className="bg-green-500/20 text-green-700">Confirmed</Badge>;
+    }
+    if (status === 'completed') {
+      return <Badge variant="secondary" className="bg-blue-500/20 text-blue-700">Completed</Badge>;
+    }
+    if (status === 'cancelled') {
+      return <Badge variant="secondary" className="bg-red-500/20 text-red-700">Cancelled</Badge>;
+    }
+    return <Badge variant="outline">{status}</Badge>;
+  };
 
   return (
     <Card>
