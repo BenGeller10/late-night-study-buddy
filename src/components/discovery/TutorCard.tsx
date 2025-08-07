@@ -1,9 +1,11 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Eye, Star } from "lucide-react";
+import BookingDialog from "@/components/booking/BookingDialog";
 
 interface TutorCardProps {
   tutor: {
@@ -48,6 +50,12 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
       }
       setIsAnimating(null);
     }, 300);
+  };
+
+  const handleBookingSuccess = (sessionId: string) => {
+    console.log('Booking successful:', sessionId);
+    // You can add additional logic here, like showing a success message
+    // or navigating to the sessions page
   };
 
   return (
@@ -181,8 +189,6 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
             </div>
           </div>
 
-          {/* View Profile Button - Moved to top right */}
-
           {/* Classes */}
           <div className="space-y-2">
             <div className="flex flex-wrap gap-2">
@@ -218,14 +224,19 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
             >
               💬 Chat
             </Button>
-            <Button
-              variant="campus"
-              size="lg"
-              className="flex-1 btn-smooth"
-              onClick={onBook}
-            >
-              📅 Book
-            </Button>
+            <BookingDialog
+              tutor={tutor}
+              onBookingSuccess={handleBookingSuccess}
+              triggerButton={
+                <Button
+                  variant="campus"
+                  size="lg"
+                  className="flex-1 btn-smooth"
+                >
+                  📅 Book
+                </Button>
+              }
+            />
           </div>
         </div>
 

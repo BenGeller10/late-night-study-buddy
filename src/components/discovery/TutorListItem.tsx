@@ -1,6 +1,8 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import BookingDialog from "@/components/booking/BookingDialog";
 
 interface TutorListItemProps {
   tutor: {
@@ -21,6 +23,12 @@ interface TutorListItemProps {
 
 const TutorListItem = ({ tutor, onChat, onBook, className }: TutorListItemProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  const handleBookingSuccess = (sessionId: string) => {
+    console.log('Booking successful:', sessionId);
+    // Call the original onBook callback
+    onBook();
+  };
 
   return (
     <div className={`glass-card rounded-2xl overflow-hidden shadow-card hover:shadow-glow transition-all duration-300 ${className}`}>
@@ -94,14 +102,19 @@ const TutorListItem = ({ tutor, onChat, onBook, className }: TutorListItemProps)
             >
               💬 Chat
             </Button>
-            <Button
-              variant="campus"
-              size="sm"
-              className="flex-1 btn-smooth"
-              onClick={onBook}
-            >
-              📅 Book
-            </Button>
+            <BookingDialog
+              tutor={tutor}
+              onBookingSuccess={handleBookingSuccess}
+              triggerButton={
+                <Button
+                  variant="campus"
+                  size="sm"
+                  className="flex-1 btn-smooth"
+                >
+                  📅 Book
+                </Button>
+              }
+            />
           </div>
         </div>
       </div>

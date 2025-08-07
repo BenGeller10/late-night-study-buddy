@@ -1,3 +1,4 @@
+
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -5,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { ArrowLeft, MessageCircle, Calendar, Star, Clock, Award, Users } from "lucide-react";
 import PageTransition from "@/components/layout/PageTransition";
 import { useToast } from "@/hooks/use-toast";
+import BookingDialog from "@/components/booking/BookingDialog";
 
 // Mock data - same as SwipeView for consistency
 const mockTutors = [
@@ -85,13 +87,12 @@ const TutorProfile = () => {
     navigate(`/chat/${tutor.id}`);
   };
 
-  const handleBook = () => {
-    const calendlyUrl = `https://calendly.com/campus-connect-tutor/${tutor.id}`;
-    window.open(calendlyUrl, '_blank');
+  const handleBookingSuccess = (sessionId: string) => {
     toast({
-      title: "Opening calendar...",
-      description: `Book a session with ${tutor.name}`,
+      title: "Session Booked!",
+      description: `Your session with ${tutor.name} has been scheduled. Check your sessions page for details.`,
     });
+    navigate('/my-sessions');
   };
 
   return (
@@ -244,15 +245,20 @@ const TutorProfile = () => {
               <MessageCircle className="w-4 h-4 mr-2" />
               Start Chat
             </Button>
-            <Button
-              variant="campus"
-              size="lg"
-              className="flex-1 btn-smooth"
-              onClick={handleBook}
-            >
-              <Calendar className="w-4 h-4 mr-2" />
-              Book Session
-            </Button>
+            <BookingDialog
+              tutor={tutor}
+              onBookingSuccess={handleBookingSuccess}
+              triggerButton={
+                <Button
+                  variant="campus"
+                  size="lg"
+                  className="flex-1 btn-smooth"
+                >
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Book Session
+                </Button>
+              }
+            />
           </div>
         </div>
       </div>
