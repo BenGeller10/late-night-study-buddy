@@ -24,9 +24,10 @@ interface TutorCardProps {
   onChat: () => void;
   onBook: () => void;
   onViewProfile: () => void;
+  className?: string;
 }
 
-const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewProfile }: TutorCardProps) => {
+const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewProfile, className }: TutorCardProps) => {
   const [isAnimating, setIsAnimating] = useState<'left' | 'right' | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
@@ -62,7 +63,7 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
     <div className={`relative w-full max-w-sm mx-auto transition-all duration-300 ${
       isAnimating === 'right' ? 'animate-swipe-right' : 
       isAnimating === 'left' ? 'animate-swipe-left' : 'animate-fade-in-up'
-    }`}>
+    } ${className || ''}`}>
       <div className="glass-card rounded-3xl overflow-hidden shadow-card hover:shadow-glow transition-all duration-300">
         {/* Profile Image */}
         <div className="relative aspect-[4/3] bg-gradient-card overflow-hidden">

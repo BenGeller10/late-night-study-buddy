@@ -101,6 +101,8 @@ const SwipeView = ({
           <TutorCard
             key={currentTutor.id}
             tutor={currentTutor}
+            onSwipeRight={handleLike}
+            onSwipeLeft={handlePass}
             onChat={() => onChat(currentTutor.id)}
             onBook={() => onBook(currentTutor.id)}
             onViewProfile={() => onViewProfile(currentTutor.id)}

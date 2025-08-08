@@ -21,7 +21,12 @@ interface BookingDialogProps {
     profilePicture: string;
     hourlyRate?: number;
     isFree?: boolean;
-    subjects?: string[];
+    subjects?: Array<{
+      id: string;
+      name: string;
+      code: string;
+      hourly_rate: number;
+    }>;
   };
   triggerButton: React.ReactNode;
   onBookingSuccess?: (sessionId: string) => void;
