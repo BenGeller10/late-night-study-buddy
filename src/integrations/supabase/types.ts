@@ -85,6 +85,36 @@ export type Database = {
           },
         ]
       }
+      campus_stories: {
+        Row: {
+          content: string
+          created_at: string | null
+          expires_at: string
+          id: string
+          image_url: string | null
+          user_id: string
+          view_count: number | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          image_url?: string | null
+          user_id: string
+          view_count?: number | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          image_url?: string | null
+          user_id?: string
+          view_count?: number | null
+        }
+        Relationships: []
+      }
       conversations: {
         Row: {
           created_at: string
@@ -221,12 +251,15 @@ export type Database = {
           is_tutor: boolean | null
           major: string | null
           major_passion: string | null
+          onboarding_completed: boolean | null
           personality_traits: Json | null
+          role_preference: string | null
           schedule_data: string | null
           semester_goal: string | null
           show_gpa: boolean | null
           stress_relief: string | null
           study_preferences: Json | null
+          study_preferences_completed: boolean | null
           updated_at: string
           user_id: string
           username: string | null
@@ -251,12 +284,15 @@ export type Database = {
           is_tutor?: boolean | null
           major?: string | null
           major_passion?: string | null
+          onboarding_completed?: boolean | null
           personality_traits?: Json | null
+          role_preference?: string | null
           schedule_data?: string | null
           semester_goal?: string | null
           show_gpa?: boolean | null
           stress_relief?: string | null
           study_preferences?: Json | null
+          study_preferences_completed?: boolean | null
           updated_at?: string
           user_id: string
           username?: string | null
@@ -281,12 +317,15 @@ export type Database = {
           is_tutor?: boolean | null
           major?: string | null
           major_passion?: string | null
+          onboarding_completed?: boolean | null
           personality_traits?: Json | null
+          role_preference?: string | null
           schedule_data?: string | null
           semester_goal?: string | null
           show_gpa?: boolean | null
           stress_relief?: string | null
           study_preferences?: Json | null
+          study_preferences_completed?: boolean | null
           updated_at?: string
           user_id?: string
           username?: string | null
@@ -403,6 +442,35 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      story_views: {
+        Row: {
+          id: string
+          story_id: string
+          viewed_at: string | null
+          viewer_id: string
+        }
+        Insert: {
+          id?: string
+          story_id: string
+          viewed_at?: string | null
+          viewer_id: string
+        }
+        Update: {
+          id?: string
+          story_id?: string
+          viewed_at?: string | null
+          viewer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "story_views_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "campus_stories"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -623,6 +691,48 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
+      }
+      user_preferences: {
+        Row: {
+          academic_goals: Json | null
+          collaboration_preference: string | null
+          created_at: string | null
+          favorite_subjects: Json | null
+          id: string
+          learning_style: string | null
+          stress_management: Json | null
+          study_environment: string | null
+          study_schedule: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          academic_goals?: Json | null
+          collaboration_preference?: string | null
+          created_at?: string | null
+          favorite_subjects?: Json | null
+          id?: string
+          learning_style?: string | null
+          stress_management?: Json | null
+          study_environment?: string | null
+          study_schedule?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          academic_goals?: Json | null
+          collaboration_preference?: string | null
+          created_at?: string | null
+          favorite_subjects?: Json | null
+          id?: string
+          learning_style?: string | null
+          stress_management?: Json | null
+          study_environment?: string | null
+          study_schedule?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {

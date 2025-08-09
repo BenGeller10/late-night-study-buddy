@@ -1,111 +1,133 @@
-
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { User } from "@supabase/supabase-js";
 
-export const useCleanUserInit = (userId: string | null) => {
-  const [isNewUser, setIsNewUser] = useState(false);
-  const [needsOnboarding, setNeedsOnboarding] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
+interface UserProfile {
+  username: string | null;
+  onboarding_completed: boolean;
+  study_preferences_completed: boolean;
+  role_preference: string;
+  followers_count: number;
+  following_count: number;
+}
+
+export const useCleanUserInit = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [needsUsername, setNeedsUsername] = useState(false);
+  const [needsPersonalization, setNeedsPersonalization] = useState(false);
 
   useEffect(() => {
-    if (!userId) return;
-
-    const checkUserStatus = async () => {
-      try {
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('user_id', userId)
-          .single();
-
-        if (error) {
-          console.error('Error checking user profile:', error);
-          setIsLoading(false);
-          return;
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session?.user) {
+          setUser(session.user);
+          await checkUserProfile(session.user);
+        } else {
+          setUser(null);
+          setProfile(null);
+          setNeedsUsername(false);
+          setNeedsPersonalization(false);
         }
-
-        // Check if user needs onboarding
-        const needsSetup = !profile?.completed_intro_questions || 
-                          !profile?.username ||
-                          (profile?.followers_count === null || profile?.following_count === null);
-        
-        setNeedsOnboarding(needsSetup);
-        setIsNewUser(needsSetup);
-        setIsLoading(false);
-
-        // Initialize clean stats if needed
-        if (needsSetup) {
-          await initializeCleanStats(userId);
-        }
-      } catch (error) {
-        console.error('Error in useCleanUserInit:', error);
-        setIsLoading(false);
+        setLoading(false);
       }
-    };
+    );
 
-    checkUserStatus();
-  }, [userId]);
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setUser(session.user);
+        checkUserProfile(session.user);
+      } else {
+        setLoading(false);
+      }
+    });
 
-  const initializeCleanStats = async (userId: string) => {
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const checkUserProfile = async (user: User) => {
     try {
-      const { error } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
-        .update({
-          followers_count: 0,
-          following_count: 0,
-          completed_intro_questions: false,
-          study_preferences: {},
-          personality_traits: {}
-        })
-        .eq('user_id', userId);
+        .select(`
+          username,
+          onboarding_completed,
+          study_preferences_completed,
+          role_preference,
+          followers_count,
+          following_count
+        `)
+        .eq('user_id', user.id)
+        .single();
 
       if (error) {
-        console.error('Error initializing clean stats:', error);
+        console.error('Error fetching profile:', error);
+        return;
+      }
+
+      setProfile(profile);
+
+      // Determine what onboarding steps are needed
+      if (!profile.username) {
+        setNeedsUsername(true);
+      } else if (!profile.study_preferences_completed) {
+        setNeedsPersonalization(true);
+      } else {
+        // Mark onboarding as completed if all steps are done
+        if (!profile.onboarding_completed) {
+          await supabase
+            .from('profiles')
+            .update({ onboarding_completed: true })
+            .eq('user_id', user.id);
+        }
       }
     } catch (error) {
-      console.error('Error in initializeCleanStats:', error);
+      console.error('Error checking user profile:', error);
     }
   };
 
-  const completeOnboarding = async (updates: any) => {
-    if (!userId) return false;
+  const completeUsernameStep = async (username: string) => {
+    if (!user) return;
 
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          ...updates,
-          completed_intro_questions: true
-        })
-        .eq('user_id', userId);
+    // Update local state
+    setProfile(prev => prev ? { ...prev, username } : null);
+    setNeedsUsername(false);
 
-      if (error) throw error;
-
-      setNeedsOnboarding(false);
-      setIsNewUser(false);
-      
-      toast({
-        title: "Welcome to Campus Connect! 🎉",
-        description: "Your profile is all set up. Let's find you some amazing tutors!",
-      });
-      
-      return true;
-    } catch (error: any) {
-      toast({
-        title: "Setup Error",
-        description: error.message,
-        variant: "destructive"
-      });
-      return false;
+    // Check if we need personalization next
+    if (profile && !profile.study_preferences_completed) {
+      setNeedsPersonalization(true);
     }
   };
+
+  const completePersonalizationStep = async () => {
+    if (!user) return;
+
+    // Update local state
+    setProfile(prev => prev ? { ...prev, study_preferences_completed: true } : null);
+    setNeedsPersonalization(false);
+
+    // Mark onboarding as completed
+    await supabase
+      .from('profiles')
+      .update({ onboarding_completed: true })
+      .eq('user_id', user.id);
+  };
+
+  const isOnboardingComplete = profile?.onboarding_completed || 
+    (profile?.username && profile?.study_preferences_completed);
 
   return {
-    isNewUser,
-    needsOnboarding,
-    isLoading,
-    completeOnboarding
+    user,
+    profile,
+    loading,
+    needsUsername,
+    needsPersonalization,
+    isOnboardingComplete,
+    completeUsernameStep,
+    completePersonalizationStep,
+    refetchProfile: () => user && checkUserProfile(user)
   };
 };
