@@ -4,9 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, X, User as UserIcon, MessageCircle, BookOpen, Users } from "lucide-react";
+import { Search, X, User as UserIcon } from "lucide-react";
 import SwipeView from "@/components/discovery/SwipeView";
-import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 
 interface StudentHomeProps {
@@ -92,41 +91,8 @@ const StudentHome = ({ user, onRoleSwitch }: StudentHomeProps) => {
         </div>
       </div>
 
-      {/* Quick Actions - Connection Focused */}
+      {/* Main Swipe Interface */}
       <div className="p-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-3 gap-3 mb-6"
-        >
-          <Card 
-            className="glass-card border-blue-200 hover:border-blue-300 cursor-pointer hover:scale-105 transition-all"
-            onClick={() => navigate('/chat')}
-          >
-            <CardContent className="p-4 text-center space-y-2">
-              <MessageCircle className="w-6 h-6 mx-auto text-blue-600" />
-              <p className="text-xs font-medium">Messages</p>
-            </CardContent>
-          </Card>
-          <Card 
-            className="glass-card border-green-200 hover:border-green-300 cursor-pointer hover:scale-105 transition-all"
-            onClick={() => navigate('/bookings')}
-          >
-            <CardContent className="p-4 text-center space-y-2">
-              <BookOpen className="w-6 h-6 mx-auto text-green-600" />
-              <p className="text-xs font-medium">Sessions</p>
-            </CardContent>
-          </Card>
-          <Card 
-            className="glass-card border-purple-200 hover:border-purple-300 cursor-pointer hover:scale-105 transition-all"
-            onClick={() => navigate('/study-groups')}
-          >
-            <CardContent className="p-4 text-center space-y-2">
-              <Users className="w-6 h-6 mx-auto text-purple-600" />
-              <p className="text-xs font-medium">Groups</p>
-            </CardContent>
-          </Card>
-        </motion.div>
 
         {/* Main Swipe Interface */}
         <SwipeView

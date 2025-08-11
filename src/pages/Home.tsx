@@ -20,7 +20,7 @@ const Home = () => {
   const [showUsernameSetup, setShowUsernameSetup] = useState(false);
   const { toast } = useToast();
 
-  const { isNewUser, needsOnboarding, completeOnboarding } = useCleanUserInit(user?.id || null);
+  const { needsUsername, needsPersonalization, isOnboardingComplete, completePersonalizationStep } = useCleanUserInit();
   const { showQuestionPopup, closeQuestionPopup } = useCollegeAgent(user?.id || null);
 
   useEffect(() => {
@@ -114,16 +114,19 @@ const Home = () => {
   };
 
   const handleOnboardingComplete = async (data: any) => {
-    const success = await completeOnboarding(data);
-    if (success) {
+    try {
+      await completePersonalizationStep();
       setProfile(prev => ({ ...prev, ...data }));
       
       // Check if username setup is needed
       if (!data.username) {
         setShowUsernameSetup(true);
       }
+      return true;
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+      return false;
     }
-    return success;
   };
 
   const handleUsernameComplete = (username: string) => {
@@ -185,7 +188,7 @@ const Home = () => {
   }
 
   // Show onboarding for new users
-  if (needsOnboarding && user.email) {
+  if (!isOnboardingComplete && user.email) {
     return (
       <PageTransition>
         <EnhancedOnboarding 
