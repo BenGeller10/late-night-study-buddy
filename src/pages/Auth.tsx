@@ -125,12 +125,14 @@ const Auth = () => {
 
       if (data.user) {
         toast({
-          title: "Welcome back!",
+          title: "Welcome back! 🎉",
           description: "You've been signed in successfully.",
         });
         
-        // Force page reload for clean state
-        window.location.href = '/home';
+        // Small delay to let toast show, then redirect
+        setTimeout(() => {
+          window.location.href = '/home';
+        }, 500);
       }
     } catch (error: any) {
       setError('An unexpected error occurred. Please try again.');
