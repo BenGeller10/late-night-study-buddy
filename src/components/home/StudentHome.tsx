@@ -44,7 +44,7 @@ const StudentHome = ({ user, onRoleSwitch }: StudentHomeProps) => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/20">
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-xl border-b border-border/30 shadow-sm">
         <div className="p-4 space-y-4">
           {/* Top bar with title and profile */}
           <div className="flex items-center justify-between">

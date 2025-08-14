@@ -56,8 +56,9 @@ const SwipeView = ({
   if (loading) {
     return (
       <div className="text-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
         <p className="text-muted-foreground">Finding amazing tutors for you...</p>
+        <p className="text-xs text-muted-foreground mt-2">This may take a moment ✨</p>
       </div>
     );
   }
