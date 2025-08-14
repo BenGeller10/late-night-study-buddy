@@ -286,9 +286,9 @@ const EnhancedChatInterface = ({
       </div>
 
       {/* Message Input - Fixed to bottom */}
-      <div className="border-t border-border/20 bg-background p-4">
+      <div className="border-t border-border/20 bg-background p-4 relative z-20 shadow-lg">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="hover:bg-primary/10">
             <Paperclip className="w-5 h-5" />
           </Button>
           
@@ -298,13 +298,13 @@ const EnhancedChatInterface = ({
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Type a message..."
-              className="pr-12 border-primary/20 focus:border-primary"
+              className="pr-12 border-primary/20 focus:border-primary bg-background text-foreground"
               disabled={isSending}
             />
             <Button 
               variant="ghost" 
               size="icon" 
-              className="absolute right-1 top-1/2 transform -translate-y-1/2"
+              className="absolute right-1 top-1/2 transform -translate-y-1/2 hover:bg-primary/10"
             >
               <Smile className="w-4 h-4" />
             </Button>
@@ -313,7 +313,7 @@ const EnhancedChatInterface = ({
           <Button
             onClick={sendMessage}
             disabled={!newMessage.trim() || isSending}
-            className="bg-gradient-primary hover:bg-gradient-primary/90"
+            className="bg-gradient-primary hover:bg-gradient-primary/90 shadow-md"
             size="icon"
           >
             <Send className="w-4 h-4" />

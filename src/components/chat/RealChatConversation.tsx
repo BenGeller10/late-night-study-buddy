@@ -143,7 +143,7 @@ const RealChatConversation = ({
       </div>
 
       {/* Message Input */}
-      <div className="p-4 bg-gray-700 border-t border-gray-600">
+      <div className="p-4 bg-gray-700 border-t border-gray-600 relative z-20">
         <div className="flex gap-2">
           <Input
             value={inputMessage}
@@ -151,13 +151,13 @@ const RealChatConversation = ({
             onKeyPress={handleKeyPress}
             placeholder="Type a message..."
             disabled={sending}
-            className="flex-1 bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+            className="flex-1 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-sky-400 focus:ring-sky-400/20"
           />
           <Button
             onClick={handleSendMessage}
             disabled={sending || !inputMessage.trim()}
             size="icon"
-            className="bg-sky-500 hover:bg-sky-600 text-white"
+            className="bg-sky-500 hover:bg-sky-600 text-white shadow-md"
           >
             {sending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
