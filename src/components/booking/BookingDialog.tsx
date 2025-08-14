@@ -33,8 +33,8 @@ const BookingDialog = ({ tutor, triggerButton, onBookingSuccess }: BookingDialog
   // This is a placeholder URL - in production, you'd have each tutor's individual Calendly URL
   const calendlyUrl = `https://calendly.com/campus-connect-tutor-${tutor.id}`;
   
-  // For demo purposes, we'll use a generic Calendly URL
-  const demoCalendlyUrl = "https://calendly.com/your-tutor-name/tutoring-session";
+  // For demo purposes, we'll use a working demo Calendly URL
+  const demoCalendlyUrl = "https://calendly.com/acmeinc/30min";
 
   const handleCalendlyClick = () => {
     setShowCalendly(true);
@@ -45,7 +45,7 @@ const BookingDialog = ({ tutor, triggerButton, onBookingSuccess }: BookingDialog
       if (e.data.event && e.data.event.indexOf('calendly') === 0) {
         if (e.data.event === 'calendly.event_scheduled') {
           toast({
-            title: "Session Scheduled!",
+            title: "Session Scheduled! 🎉",
             description: `Your session with ${tutor.name} has been scheduled successfully.`,
           });
           setIsOpen(false);
