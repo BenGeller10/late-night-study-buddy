@@ -1,11 +1,12 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Eye, Star } from "lucide-react";
-import BookingDialog from "@/components/booking/BookingDialog";
+import { Eye, Star, Loader2 } from "lucide-react";
+import { useCalendly } from "@/hooks/useCalendly";
+import { addSession } from "@/data/sessions";
+import { useToast } from "@/hooks/use-toast";
 
 interface TutorCardProps {
   tutor: {
@@ -34,6 +35,47 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
   const [reviewRating, setReviewRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
+  const { toast } = useToast();
+
+  const { openCalendly, isReady: isCalendlyReady, isLoading: isCalendlyLoading } = useCalendly((event) => {
+    // Handle successful booking
+    const newSession = {
+      id: `session_${Date.now()}`,
+      tutorId: tutor.id,
+      tutorName: tutor.name,
+      tutorAvatar: tutor.profilePicture,
+      subject: tutor.classes[0] || "General Tutoring",
+      start: event.payload?.event_start_time || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      durationMins: 30,
+      location: "Zoom" as const,
+      price: tutor.hourlyRate,
+      status: "upcoming" as const,
+      zoomLink: "https://zoom.us/j/meeting-room",
+      notes: "Scheduled via Calendly"
+    };
+    
+    addSession(newSession);
+    
+    toast({
+      title: "Session booked! 🎉",
+      description: `Your session with ${tutor.name} has been scheduled successfully.`,
+    });
+  });
+
+  const handleBooking = () => {
+    if (!isCalendlyReady) {
+      toast({
+        title: "Calendly is loading...",
+        description: "Please wait a moment and try again.",
+      });
+      return;
+    }
+
+    // Open Calendly with tutoring session URL
+    openCalendly({
+      url: `https://calendly.com/campus-connect-demo/tutoring-session?hide_gdpr_banner=1&background_color=0F1115&text_color=FFFFFF&primary_color=6C5CE7&prefill_name=${encodeURIComponent(tutor.name)}`
+    });
+  };
 
   const handleSwipe = (direction: 'left' | 'right') => {
     setIsAnimating(direction);
@@ -51,12 +93,6 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
       }
       setIsAnimating(null);
     }, 300);
-  };
-
-  const handleBookingSuccess = (sessionId: string) => {
-    console.log('Booking successful:', sessionId);
-    // You can add additional logic here, like showing a success message
-    // or navigating to the sessions page
   };
 
   return (
@@ -225,19 +261,20 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
             >
               💬 Chat
             </Button>
-            <BookingDialog
-              tutor={tutor}
-              onBookingSuccess={handleBookingSuccess}
-              triggerButton={
-                <Button
-                  variant="campus"
-                  size="lg"
-                  className="flex-1 btn-smooth"
-                >
-                  📅 Book
-                </Button>
-              }
-            />
+            <Button
+              onClick={handleBooking}
+              disabled={!isCalendlyReady || isCalendlyLoading}
+              variant="campus"
+              size="lg"
+              className="flex-1 btn-smooth"
+            >
+              {isCalendlyLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                "📅 "
+              )}
+              Book • ${tutor.hourlyRate}/hr
+            </Button>
           </div>
         </div>
 
