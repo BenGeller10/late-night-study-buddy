@@ -21,6 +21,8 @@ import {
   Award,
   BookOpen
 } from "lucide-react";
+import { mockRequests } from "@/data/mockRequests";
+import { mockSessions } from "@/data/mockSessions";
 
 interface TutorHomeProps {
   user: User;
@@ -45,30 +47,16 @@ const TutorHome = ({ user, onRoleSwitch }: TutorHomeProps) => {
     studentsHelped: 24
   });
 
-  // Mock requests data
+  // Load mock requests data
   useEffect(() => {
-    setRequests([
-      {
-        id: '1',
-        student_name: 'Emma Wilson',
-        subject: 'Calculus II',
-        time_requested: '2 hours ago',
-        message: 'Need help with integration by parts before my exam tomorrow!'
-      },
-      {
-        id: '2', 
-        student_name: 'David Park',
-        subject: 'Organic Chemistry',
-        time_requested: '4 hours ago',
-        message: 'Struggling with reaction mechanisms'
-      },
-      {
-        id: '3',
-        student_name: 'Sarah Johnson',
-        subject: 'Linear Algebra',
-        time_requested: '6 hours ago'
-      }
-    ]);
+    const tutorRequests = mockRequests.map(req => ({
+      id: req.id,
+      student_name: req.studentName,
+      subject: req.subject,
+      time_requested: req.when,
+      message: req.message
+    }));
+    setRequests(tutorRequests);
   }, []);
 
   const handleAcceptRequest = (requestId: string) => {
