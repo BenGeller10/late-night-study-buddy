@@ -279,29 +279,6 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
         </div>
 
       </div>
-
-      {/* Swipe Controls */}
-      <div className="flex justify-center gap-6 mt-6">
-        <Button
-          variant="outline"
-          size="icon"
-          className="w-14 h-14 rounded-full border-2 btn-smooth hover:border-destructive hover:text-destructive"
-          onClick={() => handleSwipe('left')}
-          disabled={isAnimating !== null}
-        >
-          <span className="text-xl">👎</span>
-        </Button>
-        
-        <Button
-          variant="campus"
-          size="icon"
-          className="w-14 h-14 rounded-full btn-smooth hover:scale-110"
-          onClick={() => handleSwipe('right')}
-          disabled={isAnimating !== null}
-        >
-          <span className="text-xl">👍</span>
-        </Button>
-      </div>
     </div>
   );
 };
