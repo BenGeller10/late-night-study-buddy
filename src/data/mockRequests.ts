@@ -64,3 +64,18 @@ export const mockRequests: RequestItem[] = [
     message: "Quantum mechanics problems"
   }
 ];
+
+// Functions to update request status
+export const acceptRequest = (id: string) => {
+  const request = mockRequests.find(r => r.id === id);
+  if (request) {
+    request.status = "accepted";
+  }
+};
+
+export const declineRequest = (id: string) => {
+  const request = mockRequests.find(r => r.id === id);
+  if (request) {
+    request.status = "declined";
+  }
+};

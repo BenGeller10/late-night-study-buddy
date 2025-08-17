@@ -21,8 +21,9 @@ import {
   Award,
   BookOpen
 } from "lucide-react";
-import { mockRequests } from "@/data/mockRequests";
+import { mockRequests, acceptRequest, declineRequest } from "@/data/mockRequests";
 import { mockSessions } from "@/data/mockSessions";
+import { useToast } from "@/hooks/use-toast";
 
 interface TutorHomeProps {
   user: User;
@@ -39,6 +40,7 @@ interface TutorRequest {
 
 const TutorHome = ({ user, onRoleSwitch }: TutorHomeProps) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [requests, setRequests] = useState<TutorRequest[]>([]);
   const [stats, setStats] = useState({
     sessionsThisMonth: 12,
@@ -60,13 +62,35 @@ const TutorHome = ({ user, onRoleSwitch }: TutorHomeProps) => {
   }, []);
 
   const handleAcceptRequest = (requestId: string) => {
-    setRequests(prev => prev.filter(req => req.id !== requestId));
-    // Here you would handle the accept logic
+    acceptRequest(requestId);
+    const updatedRequests = mockRequests.map(req => ({
+      id: req.id,
+      student_name: req.studentName,
+      subject: req.subject,
+      time_requested: req.when,
+      message: req.message
+    }));
+    setRequests(updatedRequests);
+    toast({
+      title: "Request accepted! 🎉",
+      description: "The student has been notified and will receive your contact information.",
+    });
   };
 
   const handleDeclineRequest = (requestId: string) => {
-    setRequests(prev => prev.filter(req => req.id !== requestId));
-    // Here you would handle the decline logic
+    declineRequest(requestId);
+    const updatedRequests = mockRequests.map(req => ({
+      id: req.id,
+      student_name: req.studentName,
+      subject: req.subject,
+      time_requested: req.when,
+      message: req.message
+    }));
+    setRequests(updatedRequests);
+    toast({
+      title: "Request declined",
+      description: "The student has been notified and can look for other tutors.",
+    });
   };
 
   const upcomingSessions = [
@@ -203,12 +227,17 @@ const TutorHome = ({ user, onRoleSwitch }: TutorHomeProps) => {
                 <p className="text-sm">Check back later for new opportunities!</p>
               </div>
             ) : (
-              requests.map((request) => (
+              requests.filter(req => {
+                const originalReq = mockRequests.find(mr => mr.id === req.id);
+                return originalReq?.status === "new";
+              }).map((request) => {
+                const originalReq = mockRequests.find(mr => mr.id === request.id);
+                return (
                 <div key={request.id} className="p-4 bg-muted/30 rounded-lg space-y-3">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <Avatar className="w-10 h-10">
-                        <AvatarImage src="" />
+                        <AvatarImage src={originalReq?.avatar} />
                         <AvatarFallback className="bg-primary/20 text-primary">
                           {request.student_name.split(' ').map(n => n[0]).join('')}
                         </AvatarFallback>
@@ -247,7 +276,8 @@ const TutorHome = ({ user, onRoleSwitch }: TutorHomeProps) => {
                     </Button>
                   </div>
                 </div>
-              ))
+                );
+              })
             )}
           </CardContent>
         </Card>
