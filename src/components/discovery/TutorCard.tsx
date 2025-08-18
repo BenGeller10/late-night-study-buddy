@@ -7,6 +7,7 @@ import { Eye, Star, Loader2 } from "lucide-react";
 import { useCalendly } from "@/hooks/useCalendly";
 import { addSession } from "@/data/sessions";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface TutorCardProps {
   tutor: {
@@ -37,28 +38,93 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
   const [reviewText, setReviewText] = useState("");
   const { toast } = useToast();
 
-  const { openCalendly, isReady: isCalendlyReady, isLoading: isCalendlyLoading } = useCalendly((event) => {
-    // Handle successful booking
-    const newSession = {
-      id: `session_${Date.now()}`,
-      tutorId: tutor.id,
-      tutorName: tutor.name,
-      tutorAvatar: tutor.profilePicture,
-      subject: tutor.classes[0] || "General Tutoring",
-      start: event.payload?.event_start_time || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-      durationMins: 30,
-      location: "Zoom" as const,
-      price: tutor.hourlyRate,
-      status: "upcoming" as const,
-      zoomLink: "https://zoom.us/j/meeting-room",
-      notes: "Scheduled via Calendly"
-    };
+  const { openCalendly, isReady: isCalendlyReady, isLoading: isCalendlyLoading } = useCalendly(async (event) => {
+    // Handle successful booking by creating a real session in Supabase
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to book a session.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Get student profile for email
+    const { data: studentProfile } = await supabase
+      .from('profiles')
+      .select('display_name')
+      .eq('user_id', session.user.id)
+      .single();
+
+    // Find or get tutor profile for the session
+    const { data: tutorProfile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('display_name', tutor.name)
+      .maybeSingle();
+
+    const scheduledAt = event.payload?.event_start_time || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
     
-    addSession(newSession);
+    // Create session in database
+    const { data: newSession, error } = await supabase
+      .from('sessions')
+      .insert({
+        student_id: session.user.id,
+        tutor_id: tutorProfile?.user_id || 'dummy-tutor-id', // In real app, this would be properly mapped
+        subject_id: 'general-tutoring-subject-id', // Would be mapped to actual subject
+        scheduled_at: scheduledAt,
+        duration_minutes: 30,
+        total_amount: tutor.hourlyRate,
+        status: 'pending_payment',
+        location: 'Zoom',
+        notes: `Scheduled via Calendly - ${tutor.classes[0] || "General Tutoring"}`
+      })
+      .select()
+      .single();
+
+    if (error) {
+      if (error.message.includes('not available at the requested time')) {
+        toast({
+          title: "Time slot unavailable ⏰",
+          description: "This tutor is already booked at that time. Please choose a different slot.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Booking failed",
+          description: "There was an error creating your session. Please try again.",
+          variant: "destructive"
+        });
+      }
+      console.error('Session creation error:', error);
+      return;
+    }
+
+    // Send confirmation email
+    try {
+      await supabase.functions.invoke('send-booking-confirmation', {
+        body: {
+          sessionId: newSession.id,
+          studentEmail: session.user.email,
+          studentName: studentProfile?.display_name || session.user.email?.split('@')[0] || 'Student',
+          tutorName: tutor.name,
+          subject: tutor.classes[0] || "General Tutoring",
+          scheduledAt: scheduledAt,
+          durationMinutes: 30,
+          location: "Zoom",
+          zoomLink: "https://zoom.us/j/meeting-room",
+          totalAmount: tutor.hourlyRate
+        }
+      });
+    } catch (emailError) {
+      console.error('Email send error:', emailError);
+      // Don't fail the booking if email fails
+    }
     
     toast({
       title: "Session booked! 🎉",
-      description: `Your session with ${tutor.name} has been scheduled successfully.`,
+      description: `Your session with ${tutor.name} has been scheduled. Check your email for confirmation details.`,
     });
   });
 
