@@ -8,26 +8,37 @@ import AppShell from "@/components/AppShell";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 2,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen bg-background">
-        <BrowserRouter>
-          <TooltipProvider delayDuration={300}>
-            <Toaster />
-            <Sonner />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/*" element={<AppShell />} />
-            </Routes>
-          </TooltipProvider>
-        </BrowserRouter>
-      </div>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <div className="min-h-screen bg-background">
+          <BrowserRouter>
+            <TooltipProvider delayDuration={300}>
+              <Toaster />
+              <Sonner />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/*" element={<AppShell />} />
+              </Routes>
+            </TooltipProvider>
+          </BrowserRouter>
+        </div>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };
 

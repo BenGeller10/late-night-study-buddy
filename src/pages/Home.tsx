@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { User } from "@supabase/supabase-js";
 import StudentHome from "@/components/home/StudentHome";
 import TutorHome from "@/components/home/TutorHome";
 import PageTransition from "@/components/layout/PageTransition";
@@ -11,12 +10,13 @@ import EmptyStateView from "@/components/home/EmptyStateView";
 import { useToast } from "@/hooks/use-toast";
 import { useCleanUserInit } from "@/hooks/useCleanUserInit";
 import { useCollegeAgent } from "@/hooks/useCollegeAgent";
+import useSessionManager from "@/hooks/useSessionManager";
 
 const Home = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const { user, loading, isAuthenticated } = useSessionManager();
   const [profile, setProfile] = useState<any>(null);
   const [isTutor, setIsTutor] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(true);
   const [showUsernameSetup, setShowUsernameSetup] = useState(false);
   const { toast } = useToast();
 
@@ -24,57 +24,41 @@ const Home = () => {
   const { showQuestionPopup, closeQuestionPopup } = useCollegeAgent(user?.id || null);
 
   useEffect(() => {
-    const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        setUser(session.user);
-        await fetchUserProfile(session.user.id);
+    if (user && isAuthenticated) {
+      fetchUserProfile(user.id);
+    } else if (!loading && !isAuthenticated) {
+      setProfileLoading(false);
+    }
+  }, [user, isAuthenticated, loading]);
+
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const { data: profileData, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) throw error;
+      
+      setProfile(profileData);
+      setIsTutor(profileData?.is_tutor || false);
+
+      // Check if user needs username setup
+      if (profileData && !profileData.username && profileData.completed_intro_questions) {
+        setShowUsernameSetup(true);
       }
-      setIsLoading(false);
-    };
-
-    const fetchUserProfile = async (userId: string) => {
-      try {
-        const { data: profileData, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('user_id', userId)
-          .single();
-
-        if (error) throw error;
-        
-        setProfile(profileData);
-        setIsTutor(profileData?.is_tutor || false);
-
-        // Check if user needs username setup
-        if (profileData && !profileData.username && profileData.completed_intro_questions) {
-          setShowUsernameSetup(true);
-        }
-      } catch (error) {
-        console.error('Error fetching user profile:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load user profile",
-          variant: "destructive"
-        });
-      }
-    };
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session?.user) {
-        setUser(session.user);
-        fetchUserProfile(session.user.id);
-      } else {
-        setUser(null);
-        setProfile(null);
-        setIsTutor(false);
-      }
-    });
-
-    getSession();
-
-    return () => subscription.unsubscribe();
-  }, [toast]);
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load user profile",
+        variant: "destructive"
+      });
+    } finally {
+      setProfileLoading(false);
+    }
+  };
 
   const handleRoleSwitch = async (newRole: boolean) => {
     if (!user) return;
@@ -165,7 +149,7 @@ const Home = () => {
     }
   };
 
-  if (isLoading) {
+  if (loading || profileLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-2">
@@ -176,7 +160,7 @@ const Home = () => {
     );
   }
 
-  if (!user) {
+  if (!isAuthenticated || !user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
         <div className="text-center space-y-4">

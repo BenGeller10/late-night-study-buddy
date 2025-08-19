@@ -5,58 +5,54 @@ import StudentInterface from "@/components/interfaces/StudentInterface";
 import TutorInterface from "@/components/interfaces/TutorInterface";
 import PageTransition from "@/components/layout/PageTransition";
 import { useToast } from "@/hooks/use-toast";
+import useSessionManager from "@/hooks/useSessionManager";
+import ErrorBoundary from "./ErrorBoundary";
 
 const AppShell = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [user, setUser] = useState<any>(null);
+  const { user, loading, isAuthenticated } = useSessionManager();
   const [isTutor, setIsTutor] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(true);
 
   useEffect(() => {
-    const getSession = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (!session?.user) {
-          navigate('/');
-          return;
-        }
+    if (!loading && !isAuthenticated) {
+      navigate('/auth');
+      return;
+    }
 
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('user_id', session.user.id)
-          .single();
+    if (user && isAuthenticated) {
+      fetchUserProfile();
+    }
+  }, [loading, isAuthenticated, user, navigate]);
 
-        if (error) {
-          console.error('Error fetching profile:', error);
-          navigate('/');
-          return;
-        }
+  const fetchUserProfile = async () => {
+    if (!user) return;
+    
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
 
-        setUser(session.user);
-        setIsTutor(profile?.is_tutor || false);
-      } catch (error) {
-        console.error('Error in session check:', error);
-        navigate('/');
-      } finally {
-        setIsLoading(false);
+      if (error) {
+        console.error('Error fetching profile:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load user profile",
+          variant: "destructive"
+        });
+        return;
       }
-    };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT' || !session) {
-        navigate('/');
-      } else {
-        getSession();
-      }
-    });
-
-    getSession();
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
+      setIsTutor(profile?.is_tutor || false);
+    } catch (error) {
+      console.error('Profile fetch error:', error);
+    } finally {
+      setProfileLoading(false);
+    }
+  };
 
   const handleRoleSwitch = async (newRole: boolean) => {
     if (!user) return;
@@ -83,7 +79,7 @@ const AppShell = () => {
     }
   };
 
-  if (isLoading) {
+  if (loading || profileLoading) {
     return (
       <PageTransition>
         <div className="min-h-screen bg-background flex items-center justify-center">
@@ -96,20 +92,22 @@ const AppShell = () => {
     );
   }
 
-  if (!user) {
-    return null; // Will redirect to home
+  if (!isAuthenticated || !user) {
+    return null; // Will redirect via useEffect
   }
 
   return (
-    <PageTransition>
-      <div className="min-h-screen bg-background">
-        {isTutor ? (
-          <TutorInterface user={user} onRoleSwitch={handleRoleSwitch} />
-        ) : (
-          <StudentInterface user={user} onRoleSwitch={handleRoleSwitch} />
-        )}
-      </div>
-    </PageTransition>
+    <ErrorBoundary>
+      <PageTransition>
+        <div className="min-h-screen bg-background">
+          {isTutor ? (
+            <TutorInterface user={user} onRoleSwitch={handleRoleSwitch} />
+          ) : (
+            <StudentInterface user={user} onRoleSwitch={handleRoleSwitch} />
+          )}
+        </div>
+      </PageTransition>
+    </ErrorBoundary>
   );
 };
 

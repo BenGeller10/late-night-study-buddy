@@ -129,18 +129,33 @@ const SettingsDialog = ({ user, onUserUpdate }: SettingsDialogProps) => {
 
   const handleSignOut = async () => {
     try {
-      await supabase.auth.signOut();
+      // Clean up local storage
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith('supabase.auth.') || key.includes('sb-') || key.startsWith('campus-connect-')) {
+          localStorage.removeItem(key);
+        }
+      });
+
+      await supabase.auth.signOut({ scope: 'global' });
+      
       toast({
         title: "Signed out",
         description: "You have been successfully signed out.",
       });
-      // Redirect will be handled by auth state change
+      
+      // Force redirect to ensure clean state
+      setTimeout(() => {
+        window.location.href = '/auth';
+      }, 500);
     } catch (error: any) {
+      console.error('Sign out error:', error);
       toast({
         title: "Sign out failed",
         description: error.message || "Please try again.",
         variant: "destructive",
       });
+      // Force redirect even if sign out fails
+      window.location.href = '/auth';
     }
   };
 
