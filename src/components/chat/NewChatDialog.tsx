@@ -18,7 +18,7 @@ interface NewChatDialogProps {
 }
 
 const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
-  const [email, setEmail] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
@@ -102,7 +102,7 @@ const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
   };
 
   const handleCreateChat = async () => {
-    if (!email.trim()) {
+    if (!searchTerm.trim()) {
       toast({
         title: "Error",
         description: "Please enter a username or name",
@@ -113,13 +113,24 @@ const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
 
     setIsLoading(true);
     try {
-      // Find user by email/name
-      const user = await findUserByEmail(email.trim());
+      // Find user by username/name
+      const user = await findUserByEmail(searchTerm.trim());
       
       if (!user) {
         toast({
           title: "User not found",
           description: "No user found with that username or name",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Check if user is trying to message themselves
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user && user.user_id === session.user.id) {
+        toast({
+          title: "Error",
+          description: "You cannot start a conversation with yourself",
           variant: "destructive",
         });
         return;
@@ -135,7 +146,7 @@ const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
         });
         
         setIsOpen(false);
-        setEmail('');
+        setSearchTerm('');
         onConversationCreated(participantId);
       } else {
         toast({
@@ -170,13 +181,13 @@ const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Username or Name</Label>
+            <Label htmlFor="searchTerm">Username or Name</Label>
             <Input
-              id="email"
+              id="searchTerm"
               type="text"
               placeholder="Enter username or display name..."
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               onKeyPress={(e) => {
                 if (e.key === 'Enter') {
                   handleCreateChat();
@@ -184,7 +195,7 @@ const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
               }}
             />
             <p className="text-xs text-muted-foreground">
-              Enter the username or display name of the person you want to chat with
+              Enter the username or display name of the person you want to chat with. Try searching for other users who have signed up for the app.
             </p>
           </div>
           
@@ -199,7 +210,7 @@ const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
             <Button
               type="button"
               onClick={handleCreateChat}
-              disabled={isLoading || !email.trim()}
+              disabled={isLoading || !searchTerm.trim()}
               className="bg-sky-500 hover:bg-sky-600 text-white"
             >
               {isLoading ? (
