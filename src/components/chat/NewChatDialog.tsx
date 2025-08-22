@@ -23,28 +23,47 @@ const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
 
-  const findUserByEmail = async (email: string) => {
-    // First, try to find user in auth.users by email (this requires admin access which we don't have)
-    // So we'll search profiles by a different approach - we need to get creative here
-    
-    // Since we can't directly query auth.users, we'll need to search profiles
-    // But profiles don't have email. We need to think of another approach.
-    
-    // For now, let's assume the user enters an existing user_id or we implement email lookup differently
-    // Let's search by display_name first as a workaround, but ideally this should be email
-    
-    const { data: profiles, error } = await supabase
-      .from('profiles')
-      .select('user_id, display_name, avatar_url, is_tutor')
-      .ilike('display_name', `%${email}%`) // This is a workaround - searching by name
-      .limit(1);
+  const findUserByEmail = async (searchTerm: string) => {
+    try {
+      // Search by multiple criteria: display_name, username, or exact email match
+      const { data: profiles, error } = await supabase
+        .from('profiles')
+        .select('user_id, display_name, avatar_url, is_tutor, username')
+        .or(`display_name.ilike.%${searchTerm}%,username.ilike.%${searchTerm}%`);
 
-    if (error) {
-      console.error('Error searching for user:', error);
+      if (error) {
+        console.error('Error searching for user:', error);
+        return null;
+      }
+
+      if (profiles && profiles.length > 0) {
+        // If multiple matches, prefer exact username match first
+        const exactUsernameMatch = profiles.find(p => 
+          p.username?.toLowerCase() === searchTerm.toLowerCase()
+        );
+        
+        if (exactUsernameMatch) {
+          return exactUsernameMatch;
+        }
+
+        // Then prefer exact display name match
+        const exactDisplayMatch = profiles.find(p => 
+          p.display_name?.toLowerCase() === searchTerm.toLowerCase()
+        );
+        
+        if (exactDisplayMatch) {
+          return exactDisplayMatch;
+        }
+
+        // Otherwise return first match
+        return profiles[0];
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error in findUserByEmail:', error);
       return null;
     }
-
-    return profiles?.[0] || null;
   };
 
   const createConversation = async (otherUserId: string) => {
@@ -86,7 +105,7 @@ const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
     if (!email.trim()) {
       toast({
         title: "Error",
-        description: "Please enter an email or name",
+        description: "Please enter a username or name",
         variant: "destructive",
       });
       return;
@@ -100,7 +119,7 @@ const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
       if (!user) {
         toast({
           title: "User not found",
-          description: "No user found with that email or name",
+          description: "No user found with that username or name",
           variant: "destructive",
         });
         return;
@@ -151,11 +170,11 @@ const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email or Name</Label>
+            <Label htmlFor="email">Username or Name</Label>
             <Input
               id="email"
               type="text"
-              placeholder="Enter email address or name..."
+              placeholder="Enter username or display name..."
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onKeyPress={(e) => {
@@ -165,7 +184,7 @@ const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
               }}
             />
             <p className="text-xs text-muted-foreground">
-              Enter the email address or name of the person you want to chat with
+              Enter the username or display name of the person you want to chat with
             </p>
           </div>
           
