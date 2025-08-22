@@ -14,6 +14,7 @@ import {
   Search, 
   Calendar, 
   Users, 
+  MessageCircle,
   HelpCircle,
   User as UserIcon 
 } from "lucide-react";
@@ -41,6 +42,12 @@ const StudentInterface = ({ user, onRoleSwitch }: StudentInterfaceProps) => {
       icon: Calendar,
       label: "My Sessions",
       activeColor: "text-purple-500"
+    },
+    {
+      to: "/chat",
+      icon: MessageCircle,
+      label: "Messages",
+      activeColor: "text-pink-500"
     },
     {
       to: "/study-groups", 
