@@ -7,8 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Search, X, User as UserIcon } from "lucide-react";
 import SwipeView from "@/components/discovery/SwipeView";
 import { motion } from "framer-motion";
-import { mockSessions } from "@/data/mockSessions";
-import { mockConversations } from "@/data/mockConversations";
 
 interface StudentHomeProps {
   user: User;

@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Heart, RotateCcw, Users } from "lucide-react";
 import TutorCard from "./TutorCard";
 import { useTutors, type Tutor } from "@/hooks/useTutors";
-import { mockTutors } from "@/data/mockTutors";
 
 interface SwipeViewProps {
   onTutorMatch: (tutorId: string) => void;
@@ -23,21 +22,8 @@ const SwipeView = ({
   onViewLikedTutors,
   searchQuery 
 }: SwipeViewProps) => {
-  const { tutors: supabaseTutors, loading, error } = useTutors(searchQuery);
+  const { tutors, loading, error } = useTutors(searchQuery);
   
-  // Combine Supabase tutors with mock data for a richer demo experience
-  const tutors = [...(supabaseTutors || []), ...mockTutors.map(mockTutor => ({
-    id: mockTutor.id,
-    name: mockTutor.name,
-    profilePicture: mockTutor.profilePicture || `https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face`,
-    classes: mockTutor.subjects,
-    tutorStyle: mockTutor.bio || "Experienced tutor",
-    hourlyRate: mockTutor.price,
-    isFree: mockTutor.nextAvailable === "Available now",
-    rating: mockTutor.rating,
-    totalSessions: Math.floor(Math.random() * 50) + 10,
-    subjects: mockTutor.subjects
-  }))];
   const [currentIndex, setCurrentIndex] = useState(0);
   const [likedTutors, setLikedTutors] = useState<string[]>([]);
 
