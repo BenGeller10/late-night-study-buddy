@@ -15,11 +15,12 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { Settings, Star, BookOpen, Users, DollarSign, Clock, Calendar, Target, TrendingUp, Award, Search, MessageCircle, FileText, GraduationCap, Calendar as CalendarIcon } from "lucide-react";
+import { Settings, Star, BookOpen, Users, DollarSign, Clock, Calendar, Target, TrendingUp, Award, Search, MessageCircle, FileText, GraduationCap, Calendar as CalendarIcon, AlertCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useProfileStats } from "@/hooks/useProfileStats";
 
 type SubPage = 'hub' | 'my-sessions' | 'study-materials' | 'study-groups' | 'earnings' | 'my-subjects' | 'students' | 'set-availability';
 
@@ -30,6 +31,7 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { stats, loading: statsLoading } = useProfileStats(user?.id, isTutor);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -55,7 +57,10 @@ const Profile = () => {
               bio: profile.bio,
               campus: profile.campus,
               major: profile.major,
-              year: profile.year
+              year: profile.year,
+              username: profile.username,
+              gpa: profile.gpa,
+              graduation_year: profile.graduation_year
             });
           }
         }
@@ -150,18 +155,18 @@ const Profile = () => {
     );
   }
 
-  const mockData = {
-    major: user?.major || "Computer Science",
-    year: user?.year || "Junior",
-    sessionsAttended: 18,
-    subjectsStudied: 4,
-    hoursLearned: 45,
-    sessionsTaught: 24,
-    studentsHelped: 12,
-    hoursTeaching: 68,
-    earnings: 1420,
-    rating: 4.8
+  const getYearDisplay = (year: number) => {
+    const yearNames = {
+      1: 'Freshman',
+      2: 'Sophomore', 
+      3: 'Junior',
+      4: 'Senior',
+      5: 'Graduate'
+    };
+    return yearNames[year as keyof typeof yearNames] || 'Student';
   };
+
+  const hasMissingInfo = !user?.major || !user?.campus || !user?.year;
 
   return (
     <PageTransition>
@@ -200,6 +205,32 @@ const Profile = () => {
 
         {/* Content */}
         <div className="p-4 space-y-6">
+          {/* Missing Profile Info Warning */}
+          {hasMissingInfo && (
+            <Card className="glass-card border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5" />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-yellow-800 dark:text-yellow-200">
+                      Complete Your Profile
+                    </h3>
+                    <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                      Add your {!user?.major && 'major'}{!user?.major && !user?.campus && ', '}{!user?.campus && 'campus'}{(!user?.major || !user?.campus) && !user?.year && ', and '}{!user?.year && 'academic year'} to help others find and connect with you better.
+                    </p>
+                    <Button 
+                      size="sm" 
+                      className="mt-2 bg-yellow-600 hover:bg-yellow-700 text-white"
+                      onClick={() => toast({ title: "Profile settings", description: "Click the settings icon in the top right to update your profile!" })}
+                    >
+                      Complete Profile
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* User Info Card */}
           <Card className="glass-card">
             <CardContent className="p-6">
@@ -218,12 +249,24 @@ const Profile = () => {
                   </div>
                   
                   <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline" className="text-xs">
-                      📚 {mockData.major}
-                    </Badge>
-                    <Badge variant="outline" className="text-xs">
-                      🎓 {mockData.year}
-                    </Badge>
+                    {user?.major ? (
+                      <Badge variant="outline" className="text-xs">
+                        📚 {user.major}
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-xs text-muted-foreground border-dashed">
+                        📚 Add Major
+                      </Badge>
+                    )}
+                    {user?.year ? (
+                      <Badge variant="outline" className="text-xs">
+                        🎓 {getYearDisplay(user.year)}
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-xs text-muted-foreground border-dashed">
+                        🎓 Add Year
+                      </Badge>
+                    )}
                     <Badge variant="secondary" className="text-xs">
                       {isTutor ? 'Tutor' : 'Student'}
                     </Badge>
@@ -234,37 +277,37 @@ const Profile = () => {
               {isTutor ? (
                 <div className="grid grid-cols-4 gap-4 mt-6 pt-4 border-t border-border/50">
                   <div className="text-center">
-                    <div className="text-lg font-bold text-primary">{mockData.sessionsTaught}</div>
+                    <div className="text-lg font-bold text-primary">{statsLoading ? '...' : stats.sessionsTaught}</div>
                     <div className="text-xs text-muted-foreground">Sessions</div>
                   </div>
                   <div className="text-center">
                     <div className="flex items-center justify-center gap-1">
                       <Star className="w-3 h-3 fill-current text-yellow-500" />
-                      <span className="text-lg font-bold">{mockData.rating}</span>
+                      <span className="text-lg font-bold">{statsLoading ? '...' : (stats.rating || 'N/A')}</span>
                     </div>
                     <div className="text-xs text-muted-foreground">Rating</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-bold text-accent">{mockData.studentsHelped}</div>
+                    <div className="text-lg font-bold text-accent">{statsLoading ? '...' : stats.studentsHelped}</div>
                     <div className="text-xs text-muted-foreground">Students</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-bold text-green-500">${mockData.earnings}</div>
+                    <div className="text-lg font-bold text-green-500">${statsLoading ? '...' : stats.earnings}</div>
                     <div className="text-xs text-muted-foreground">Earned</div>
                   </div>
                 </div>
               ) : (
                 <div className="grid grid-cols-3 gap-4 mt-6 pt-4 border-t border-border/50">
                   <div className="text-center">
-                    <div className="text-lg font-bold text-primary">{mockData.sessionsAttended}</div>
+                    <div className="text-lg font-bold text-primary">{statsLoading ? '...' : stats.sessionsAttended}</div>
                     <div className="text-xs text-muted-foreground">Sessions</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-bold text-accent">{mockData.subjectsStudied}</div>
+                    <div className="text-lg font-bold text-accent">{statsLoading ? '...' : stats.subjectsStudied}</div>
                     <div className="text-xs text-muted-foreground">Subjects</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-bold text-blue-500">{mockData.hoursLearned}h</div>
+                    <div className="text-lg font-bold text-blue-500">{statsLoading ? '...' : stats.hoursLearned}h</div>
                     <div className="text-xs text-muted-foreground">Learned</div>
                   </div>
                 </div>
@@ -321,13 +364,29 @@ const Profile = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Calculus II</span>
-                      <span className="text-muted-foreground">85%</span>
+                  {stats.currentSubject && stats.currentProgress ? (
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>{stats.currentSubject}</span>
+                        <span className="text-muted-foreground">{stats.currentProgress}%</span>
+                      </div>
+                      <Progress value={stats.currentProgress} className="h-2" />
                     </div>
-                    <Progress value={85} className="h-2" />
-                  </div>
+                  ) : (
+                    <div className="text-center py-4">
+                      <p className="text-sm text-muted-foreground">
+                        Start your first tutoring session to track progress!
+                      </p>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="mt-2"
+                        onClick={() => navigate('/discover')}
+                      >
+                        Find Tutors
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 

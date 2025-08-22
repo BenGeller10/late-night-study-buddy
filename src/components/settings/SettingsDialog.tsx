@@ -57,6 +57,7 @@ const SettingsDialog = ({ user, onUserUpdate }: SettingsDialogProps) => {
   const [displayName, setDisplayName] = useState(user?.display_name || "");
   const [bio, setBio] = useState(user?.bio || "");
   const [major, setMajor] = useState(user?.major || "");
+  const [campus, setCampus] = useState(user?.campus || "");
   const [gradYear, setGradYear] = useState(user?.year || "");
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || "");
   const [venmoHandle, setVenmoHandle] = useState(user?.venmo_handle || "");
@@ -90,6 +91,7 @@ const SettingsDialog = ({ user, onUserUpdate }: SettingsDialogProps) => {
           display_name: displayName.trim(),
           bio: bio.trim(),
           major: major.trim(),
+          campus: campus.trim(),
           year: gradYear ? parseInt(gradYear) : null,
           avatar_url: avatarUrl,
           venmo_handle: venmoHandle.trim() || null,
@@ -262,26 +264,39 @@ const SettingsDialog = ({ user, onUserUpdate }: SettingsDialogProps) => {
                 </div>
 
                 {/* Academic Info */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="major">Major</Label>
-                    <Input
-                      id="major"
-                      value={major}
-                      onChange={(e) => setMajor(e.target.value)}
-                      placeholder="e.g., Computer Science"
-                    />
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="major">Major</Label>
+                      <Input
+                        id="major"
+                        value={major}
+                        onChange={(e) => setMajor(e.target.value)}
+                        placeholder="e.g., Computer Science"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="campus">Campus</Label>
+                      <Input
+                        id="campus"
+                        value={campus}
+                        onChange={(e) => setCampus(e.target.value)}
+                        placeholder="e.g., UC Berkeley"
+                      />
+                    </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="grad-year">Graduation Year</Label>
+                    <Label htmlFor="grad-year">Academic Year</Label>
                     <Select value={gradYear} onValueChange={setGradYear}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select graduation year" />
+                        <SelectValue placeholder="Select your year" />
                       </SelectTrigger>
                       <SelectContent>
-                        {gradYearOptions.map(year => (
-                          <SelectItem key={year} value={year}>{year}</SelectItem>
-                        ))}
+                        <SelectItem value="1">Freshman</SelectItem>
+                        <SelectItem value="2">Sophomore</SelectItem>
+                        <SelectItem value="3">Junior</SelectItem>
+                        <SelectItem value="4">Senior</SelectItem>
+                        <SelectItem value="5">Graduate</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
