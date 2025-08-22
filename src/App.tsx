@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppShell from "@/components/AppShell";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
@@ -32,6 +33,7 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/payment-success" element={<PaymentSuccess />} />
                 <Route path="/*" element={<AppShell />} />
               </Routes>
             </TooltipProvider>

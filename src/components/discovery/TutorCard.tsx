@@ -3,15 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Eye, Star, Loader2 } from "lucide-react";
-import { useCalendly } from "@/hooks/useCalendly";
-import { addSession } from "@/data/sessions";
+import { Eye, Star, Loader2, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 interface TutorCardProps {
   tutor: {
     id: string;
+    user_id?: string;
     name: string;
     profilePicture: string;
     classes: string[];
@@ -20,6 +19,12 @@ interface TutorCardProps {
     isFree: boolean;
     rating: number;
     totalSessions: number;
+    subjects?: Array<{
+      id: string;
+      name: string;
+      code: string;
+      hourly_rate: number;
+    }>;
   };
   onSwipeRight: () => void;
   onSwipeLeft: () => void;
@@ -36,111 +41,89 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
   const [reviewRating, setReviewRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
+  const [isBooking, setIsBooking] = useState(false);
   const { toast } = useToast();
 
-  const { openCalendly, isReady: isCalendlyReady, isLoading: isCalendlyLoading } = useCalendly(async (event) => {
-    // Handle successful booking by creating a real session in Supabase
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.user) {
-      toast({
-        title: "Authentication required",
-        description: "Please sign in to book a session.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Get student profile for email
-    const { data: studentProfile } = await supabase
-      .from('profiles')
-      .select('display_name')
-      .eq('user_id', session.user.id)
-      .single();
-
-    // Find or get tutor profile for the session
-    const { data: tutorProfile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('display_name', tutor.name)
-      .maybeSingle();
-
-    const scheduledAt = event.payload?.event_start_time || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+  const handleBooking = async () => {
+    setIsBooking(true);
     
-    // Create session in database
-    const { data: newSession, error } = await supabase
-      .from('sessions')
-      .insert({
-        student_id: session.user.id,
-        tutor_id: tutorProfile?.user_id || 'dummy-tutor-id', // In real app, this would be properly mapped
-        subject_id: 'general-tutoring-subject-id', // Would be mapped to actual subject
-        scheduled_at: scheduledAt,
-        duration_minutes: 30,
-        total_amount: tutor.hourlyRate,
-        status: 'pending_payment',
-        location: 'Zoom',
-        notes: `Scheduled via Calendly - ${tutor.classes[0] || "General Tutoring"}`
-      })
-      .select()
-      .single();
-
-    if (error) {
-      if (error.message.includes('not available at the requested time')) {
-        toast({
-          title: "Time slot unavailable ⏰",
-          description: "This tutor is already booked at that time. Please choose a different slot.",
-          variant: "destructive"
-        });
-      } else {
-        toast({
-          title: "Booking failed",
-          description: "There was an error creating your session. Please try again.",
-          variant: "destructive"
-        });
-      }
-      console.error('Session creation error:', error);
-      return;
-    }
-
-    // Send confirmation email
     try {
-      await supabase.functions.invoke('send-booking-confirmation', {
+      const { data: { session }, error: authError } = await supabase.auth.getSession();
+      if (authError || !session?.user) {
+        toast({
+          title: "Authentication required",
+          description: "Please sign in to book a session.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Create a session record first
+      const scheduledAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // Tomorrow
+      const subject = tutor.subjects?.[0] || { id: 'general', name: 'General Tutoring', code: 'GEN' };
+      
+      const { data: newSession, error: sessionError } = await supabase
+        .from('sessions')
+        .insert({
+          student_id: session.user.id,
+          tutor_id: tutor.user_id || tutor.id,
+          subject_id: subject.id,
+          scheduled_at: scheduledAt.toISOString(),
+          duration_minutes: 60,
+          total_amount: tutor.hourlyRate,
+          status: 'pending_payment',
+          location: 'Online (Zoom)',
+          notes: `Session for ${subject.name}`,
+          payment_method: 'stripe',
+          payment_status: 'pending'
+        })
+        .select()
+        .single();
+
+      if (sessionError) {
+        console.error('Session creation error:', sessionError);
+        throw new Error('Failed to create session');
+      }
+
+      // Create Stripe payment session
+      const { data: paymentData, error: paymentError } = await supabase.functions.invoke('create-payment-session', {
         body: {
-          sessionId: newSession.id,
-          studentEmail: session.user.email,
-          studentName: studentProfile?.display_name || session.user.email?.split('@')[0] || 'Student',
-          tutorName: tutor.name,
-          subject: tutor.classes[0] || "General Tutoring",
-          scheduledAt: scheduledAt,
-          durationMinutes: 30,
-          location: "Zoom",
-          zoomLink: "https://zoom.us/j/meeting-room",
-          totalAmount: tutor.hourlyRate
+          session_id: newSession.id,
+          tutor_id: tutor.user_id || tutor.id,
+          amount: tutor.hourlyRate,
+          subject: subject.name,
+          duration_minutes: 60,
+          scheduled_at: scheduledAt.toISOString()
         }
       });
-    } catch (emailError) {
-      console.error('Email send error:', emailError);
-      // Don't fail the booking if email fails
-    }
-    
-    toast({
-      title: "Session booked! 🎉",
-      description: `Your session with ${tutor.name} has been scheduled. Check your email for confirmation details.`,
-    });
-  });
 
-  const handleBooking = () => {
-    if (!isCalendlyReady) {
+      if (paymentError) {
+        console.error('Payment creation error:', paymentError);
+        throw new Error('Failed to create payment session');
+      }
+
       toast({
-        title: "Calendly is loading...",
-        description: "Please wait a moment and try again.",
+        title: "Redirecting to payment...",
+        description: "You'll be redirected to complete your booking payment.",
       });
-      return;
-    }
 
-    // Open Calendly with tutoring session URL
-    openCalendly({
-      url: `https://calendly.com/campus-connect-demo/tutoring-session?hide_gdpr_banner=1&background_color=0F1115&text_color=FFFFFF&primary_color=6C5CE7&prefill_name=${encodeURIComponent(tutor.name)}`
-    });
+      // Redirect to Stripe Checkout
+      if (paymentData.checkout_url) {
+        window.open(paymentData.checkout_url, '_blank');
+      } else {
+        throw new Error('No payment URL received');
+      }
+
+    } catch (error: any) {
+      console.error('Booking error:', error);
+      toast({
+        title: "Booking failed",
+        description: error.message || "There was an error booking your session. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsBooking(false);
+    }
   };
 
   const handleSwipe = (direction: 'left' | 'right') => {
@@ -329,17 +312,17 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
             </Button>
             <Button
               onClick={handleBooking}
-              disabled={!isCalendlyReady || isCalendlyLoading}
+              disabled={isBooking}
               variant="campus"
               size="lg"
               className="flex-1 btn-smooth"
             >
-              {isCalendlyLoading ? (
+              {isBooking ? (
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
               ) : (
-                "📅 "
+                <CreditCard className="h-4 w-4 mr-2" />
               )}
-              Book • ${tutor.hourlyRate}/hr
+              {isBooking ? 'Processing...' : `Book • $${tutor.hourlyRate}/hr`}
             </Button>
           </div>
         </div>
