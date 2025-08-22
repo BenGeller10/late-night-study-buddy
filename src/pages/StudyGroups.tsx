@@ -130,6 +130,14 @@ const StudyGroups = () => {
     ));
   };
 
+  const handleLeaveGroup = (groupId: string) => {
+    setGroups(prev => prev.map(group => 
+      group.id === groupId 
+        ? { ...group, is_joined: false, member_count: group.member_count - 1 }
+        : group
+    ));
+  };
+
   const handleOpenGroupChat = (groupId: string) => {
     navigate(`/chat/group/${groupId}`);
   };
@@ -236,14 +244,23 @@ const StudyGroups = () => {
                             </div>
                           </div>
                           
-                          <Button
-                            size="sm"
-                            onClick={() => handleOpenGroupChat(group.id)}
-                            className="w-full mt-3"
-                          >
-                            <MessageCircle className="w-4 h-4 mr-2" />
-                            Open Group Chat
-                          </Button>
+                          <div className="grid grid-cols-2 gap-2 mt-3">
+                            <Button
+                              size="sm"
+                              onClick={() => handleOpenGroupChat(group.id)}
+                            >
+                              <MessageCircle className="w-4 h-4 mr-2" />
+                              Chat
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleLeaveGroup(group.id)}
+                              className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950"
+                            >
+                              Leave Group
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
