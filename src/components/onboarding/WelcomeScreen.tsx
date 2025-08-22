@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAppStats } from "@/hooks/useAppStats";
+import { Skeleton } from "@/components/ui/skeleton";
 import campusLogo from "@/assets/campus-connect-logo.png";
 import heroImage from "@/assets/campus-hero-image.jpg";
 
 const WelcomeScreen = ({ onSignUp, onSignIn }: { onSignUp: () => void; onSignIn: () => void }) => {
+  const { stats, loading, formatNumber, formatRating } = useAppStats();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-card flex flex-col">
@@ -63,15 +66,33 @@ const WelcomeScreen = ({ onSignUp, onSignIn }: { onSignUp: () => void; onSignIn:
       <div className="glass-card mx-6 mb-6 p-4 rounded-2xl">
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
-            <div className="text-2xl font-bold text-primary">2.1k</div>
+            {loading ? (
+              <Skeleton className="h-8 w-16 mx-auto mb-1" />
+            ) : (
+              <div className="text-2xl font-bold text-primary">
+                {formatNumber(stats.activeTutors)}
+              </div>
+            )}
             <div className="text-xs text-muted-foreground">Active Tutors</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-accent">15k</div>
+            {loading ? (
+              <Skeleton className="h-8 w-16 mx-auto mb-1" />
+            ) : (
+              <div className="text-2xl font-bold text-accent">
+                {formatNumber(stats.sessionsBooked)}
+              </div>
+            )}
             <div className="text-xs text-muted-foreground">Sessions Booked</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-success">4.9</div>
+            {loading ? (
+              <Skeleton className="h-8 w-12 mx-auto mb-1" />
+            ) : (
+              <div className="text-2xl font-bold text-success">
+                {formatRating(stats.averageRating)}
+              </div>
+            )}
             <div className="text-xs text-muted-foreground">Average Rating</div>
           </div>
         </div>
