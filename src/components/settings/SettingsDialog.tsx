@@ -272,12 +272,83 @@ const SettingsDialog = ({ user, onUserUpdate, isOpen: externalIsOpen, onOpenChan
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="major">Major</Label>
-                      <Input
-                        id="major"
-                        value={major}
-                        onChange={(e) => setMajor(e.target.value)}
-                        placeholder="e.g., Computer Science"
-                      />
+                      <Select value={major} onValueChange={setMajor}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select your major" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Accounting">Accounting</SelectItem>
+                          <SelectItem value="Acting">Acting</SelectItem>
+                          <SelectItem value="Aerospace Engineering">Aerospace Engineering</SelectItem>
+                          <SelectItem value="African American Studies">African American Studies</SelectItem>
+                          <SelectItem value="American Studies">American Studies</SelectItem>
+                          <SelectItem value="Anthropology">Anthropology</SelectItem>
+                          <SelectItem value="Applied Mathematics">Applied Mathematics</SelectItem>
+                          <SelectItem value="Architecture">Architecture</SelectItem>
+                          <SelectItem value="Art Education">Art Education</SelectItem>
+                          <SelectItem value="Art History">Art History</SelectItem>
+                          <SelectItem value="Audio Arts">Audio Arts</SelectItem>
+                          <SelectItem value="Biochemistry">Biochemistry</SelectItem>
+                          <SelectItem value="Bioengineering">Bioengineering</SelectItem>
+                          <SelectItem value="Biology">Biology</SelectItem>
+                          <SelectItem value="Broadcast and Digital Journalism">Broadcast and Digital Journalism</SelectItem>
+                          <SelectItem value="Business Administration">Business Administration</SelectItem>
+                          <SelectItem value="Chemical Engineering">Chemical Engineering</SelectItem>
+                          <SelectItem value="Chemistry">Chemistry</SelectItem>
+                          <SelectItem value="Child and Family Studies">Child and Family Studies</SelectItem>
+                          <SelectItem value="Civil Engineering">Civil Engineering</SelectItem>
+                          <SelectItem value="Communication and Rhetorical Studies">Communication and Rhetorical Studies</SelectItem>
+                          <SelectItem value="Computer Art">Computer Art</SelectItem>
+                          <SelectItem value="Computer Engineering">Computer Engineering</SelectItem>
+                          <SelectItem value="Computer Science">Computer Science</SelectItem>
+                          <SelectItem value="Economics">Economics</SelectItem>
+                          <SelectItem value="Electrical Engineering">Electrical Engineering</SelectItem>
+                          <SelectItem value="Elementary Education">Elementary Education</SelectItem>
+                          <SelectItem value="English">English</SelectItem>
+                          <SelectItem value="Entrepreneurship">Entrepreneurship</SelectItem>
+                          <SelectItem value="Environmental Engineering">Environmental Engineering</SelectItem>
+                          <SelectItem value="Exercise Science">Exercise Science</SelectItem>
+                          <SelectItem value="Fashion Design">Fashion Design</SelectItem>
+                          <SelectItem value="Film">Film</SelectItem>
+                          <SelectItem value="Finance">Finance</SelectItem>
+                          <SelectItem value="French">French</SelectItem>
+                          <SelectItem value="Geography">Geography</SelectItem>
+                          <SelectItem value="Geology">Geology</SelectItem>
+                          <SelectItem value="Graphic Design">Graphic Design</SelectItem>
+                          <SelectItem value="Health and Exercise Science">Health and Exercise Science</SelectItem>
+                          <SelectItem value="History">History</SelectItem>
+                          <SelectItem value="Industrial Design">Industrial Design</SelectItem>
+                          <SelectItem value="Information Management">Information Management</SelectItem>
+                          <SelectItem value="International Relations">International Relations</SelectItem>
+                          <SelectItem value="Italian">Italian</SelectItem>
+                          <SelectItem value="Journalism">Journalism</SelectItem>
+                          <SelectItem value="Latin American Studies">Latin American Studies</SelectItem>
+                          <SelectItem value="Management">Management</SelectItem>
+                          <SelectItem value="Marketing">Marketing</SelectItem>
+                          <SelectItem value="Mathematics">Mathematics</SelectItem>
+                          <SelectItem value="Mechanical Engineering">Mechanical Engineering</SelectItem>
+                          <SelectItem value="Music">Music</SelectItem>
+                          <SelectItem value="Music Education">Music Education</SelectItem>
+                          <SelectItem value="Nursing">Nursing</SelectItem>
+                          <SelectItem value="Nutrition">Nutrition</SelectItem>
+                          <SelectItem value="Philosophy">Philosophy</SelectItem>
+                          <SelectItem value="Photography">Photography</SelectItem>
+                          <SelectItem value="Physics">Physics</SelectItem>
+                          <SelectItem value="Political Science">Political Science</SelectItem>
+                          <SelectItem value="Psychology">Psychology</SelectItem>
+                          <SelectItem value="Public Health">Public Health</SelectItem>
+                          <SelectItem value="Public Relations">Public Relations</SelectItem>
+                          <SelectItem value="Religion">Religion</SelectItem>
+                          <SelectItem value="Social Work">Social Work</SelectItem>
+                          <SelectItem value="Sociology">Sociology</SelectItem>
+                          <SelectItem value="Spanish">Spanish</SelectItem>
+                          <SelectItem value="Sport Management">Sport Management</SelectItem>
+                          <SelectItem value="Supply Chain Management">Supply Chain Management</SelectItem>
+                          <SelectItem value="Theatre">Theatre</SelectItem>
+                          <SelectItem value="Writing">Writing</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="campus">Campus</Label>
