@@ -11,6 +11,7 @@ import GroupChatInterface from "@/components/chat/GroupChatInterface";
 import MessagingPage from "@/components/chat/MessagingPage";
 import TutorProfile from "@/pages/TutorProfile";
 import LikedTutors from "@/pages/LikedTutors";
+import UserDirectory from "@/components/users/UserDirectory";
 import { Link } from "react-router-dom";
 import { 
   Search, 
@@ -52,6 +53,12 @@ const StudentInterface = ({ user, onRoleSwitch }: StudentInterfaceProps) => {
       activeColor: "text-pink-500"
     },
     {
+      to: "/users", 
+      icon: UserIcon,
+      label: "Directory",
+      activeColor: "text-blue-600"
+    },
+    {
       to: "/study-groups", 
       icon: Users,
       label: "Study Groups",
@@ -78,6 +85,7 @@ const StudentInterface = ({ user, onRoleSwitch }: StudentInterfaceProps) => {
       <Routes>
         <Route path="/home" element={<StudentHome user={user} onRoleSwitch={onRoleSwitch} />} />
         <Route path="/my-sessions" element={<MySessions />} />
+        <Route path="/users" element={<UserDirectory />} />
         <Route path="/study-groups" element={<StudyGroups />} />
         <Route path="/support" element={<Support />} />
         <Route path="/profile" element={<Profile />} />

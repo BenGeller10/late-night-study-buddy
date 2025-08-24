@@ -10,13 +10,15 @@ import Profile from "@/pages/Profile";
 import Chat from "@/pages/Chat";
 import GroupChatInterface from "@/components/chat/GroupChatInterface";
 import MessagingPage from "@/components/chat/MessagingPage";
+import UserDirectory from "@/components/users/UserDirectory";
 import { Link } from "react-router-dom";
 import { 
   Heart, 
   Calendar, 
   Clock, 
   HelpCircle,
-  MessageCircle
+  MessageCircle,
+  Users
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -36,6 +38,12 @@ const TutorInterface = ({ user, onRoleSwitch }: TutorInterfaceProps) => {
       icon: Heart,
       label: "Students",
       activeColor: "text-blue-600"
+    },
+    {
+      to: "/users",
+      icon: Users,
+      label: "Directory",
+      activeColor: "text-green-600"
     },
     {
       to: "/chat",
@@ -75,6 +83,7 @@ const TutorInterface = ({ user, onRoleSwitch }: TutorInterfaceProps) => {
       {/* Tutor Routes */}
       <Routes>
         <Route path="/liked-students" element={<LikedStudents />} />
+        <Route path="/users" element={<UserDirectory />} />
         <Route path="/bookings" element={<Bookings />} />
         <Route path="/set-availability" element={<SetAvailability />} />
         <Route path="/support" element={<Support />} />
