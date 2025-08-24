@@ -29,6 +29,7 @@ const Profile = () => {
   const [isTutor, setIsTutor] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { stats, loading: statsLoading } = useProfileStats(user?.id, isTutor);
@@ -182,7 +183,12 @@ const Profile = () => {
                 Your campus persona
               </p>
             </div>
-            <SettingsDialog user={user} onUserUpdate={setUser} />
+            <SettingsDialog 
+              user={user} 
+              onUserUpdate={setUser} 
+              isOpen={isSettingsOpen}
+              onOpenChange={setIsSettingsOpen}
+            />
           </div>
           
           {/* Role Toggle */}
@@ -221,7 +227,7 @@ const Profile = () => {
                     <Button 
                       size="sm" 
                       className="mt-2 bg-yellow-600 hover:bg-yellow-700 text-white"
-                      onClick={() => toast({ title: "Profile settings", description: "Click the settings icon in the top right to update your profile!" })}
+                      onClick={() => setIsSettingsOpen(true)}
                     >
                       Complete Profile
                     </Button>

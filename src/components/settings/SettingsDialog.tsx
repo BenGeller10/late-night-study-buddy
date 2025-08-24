@@ -45,10 +45,14 @@ import {
 interface SettingsDialogProps {
   user: any;
   onUserUpdate: (updatedUser: any) => void;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-const SettingsDialog = ({ user, onUserUpdate }: SettingsDialogProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+const SettingsDialog = ({ user, onUserUpdate, isOpen: externalIsOpen, onOpenChange }: SettingsDialogProps) => {
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
+  const setIsOpen = onOpenChange || setInternalIsOpen;
   const [isLoading, setIsLoading] = useState(false);
   const [showVenmo, setShowVenmo] = useState(false);
   const { toast } = useToast();
