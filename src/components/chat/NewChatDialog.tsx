@@ -12,6 +12,7 @@ import {
 import { UserPlus, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface NewChatDialogProps {
   onConversationCreated: (participantId: string) => void;
@@ -22,6 +23,7 @@ const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const findUserByEmail = async (searchTerm: string) => {
     try {
@@ -79,7 +81,7 @@ const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
         .maybeSingle();
 
       if (existingConversation) {
-        return otherUserId; // Return the other user's ID for navigation
+        return { conversationId: existingConversation.id, otherUserId };
       }
 
       // Create new conversation
@@ -94,7 +96,7 @@ const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
 
       if (error) throw error;
 
-      return otherUserId; // Return the other user's ID for navigation
+      return { conversationId: newConversation.id, otherUserId };
     } catch (error) {
       console.error('Error creating conversation:', error);
       return null;
@@ -137,9 +139,9 @@ const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
       }
 
       // Create conversation
-      const participantId = await createConversation(user.user_id);
+      const conversationData = await createConversation(user.user_id);
       
-      if (participantId) {
+      if (conversationData) {
         toast({
           title: "Success",
           description: `Started conversation with ${user.display_name}`,
@@ -147,7 +149,9 @@ const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
         
         setIsOpen(false);
         setSearchTerm('');
-        onConversationCreated(participantId);
+        
+        // Navigate to messaging interface
+        navigate(`/chat/conversation/${conversationData.conversationId}?otherUserId=${conversationData.otherUserId}`);
       } else {
         toast({
           title: "Error",

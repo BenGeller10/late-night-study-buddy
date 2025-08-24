@@ -9,6 +9,7 @@ import Support from "@/pages/Support";
 import Profile from "@/pages/Profile";
 import Chat from "@/pages/Chat";
 import GroupChatInterface from "@/components/chat/GroupChatInterface";
+import MessagingPage from "@/components/chat/MessagingPage";
 import { Link } from "react-router-dom";
 import { 
   Heart, 
@@ -80,6 +81,7 @@ const TutorInterface = ({ user, onRoleSwitch }: TutorInterfaceProps) => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/chat/:studentId" element={<Chat />} />
+        <Route path="/chat/conversation/:conversationId" element={<MessagingPage />} />
         <Route path="/chat/group/:groupId" element={<GroupChatInterface />} />
         <Route path="*" element={<LikedStudents />} />
       </Routes>
