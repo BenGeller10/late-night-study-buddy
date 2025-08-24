@@ -434,7 +434,7 @@ const Profile = () => {
             </>
           )}
 
-          <StudyStreak />
+          <StudyStreak userId={user?.id} />
         </div>
       </div>
     </PageTransition>

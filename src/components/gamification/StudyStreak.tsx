@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Flame, Zap } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar, Flame, Zap, RotateCcw } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 interface StudyStreakProps {
@@ -10,13 +13,84 @@ interface StudyStreakProps {
 }
 
 const StudyStreak = ({ userId, compact = false }: StudyStreakProps) => {
+  const { toast } = useToast();
   const [streakData, setStreakData] = useState({
-    currentStreak: 3,
-    longestStreak: 7,
+    currentStreak: 0,
+    longestStreak: 0,
     weeklyGoal: 2,
-    completedThisWeek: 3,
-    isOnFire: true
+    completedThisWeek: 0,
+    isOnFire: false
   });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStreakData = async () => {
+      if (!userId) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('study_streaks')
+          .select('*')
+          .eq('user_id', userId)
+          .single();
+          
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error fetching streak data:', error);
+          return;
+        }
+        
+        if (data) {
+          setStreakData(prev => ({
+            ...prev,
+            currentStreak: data.current_streak || 0,
+            longestStreak: data.longest_streak || 0,
+            isOnFire: (data.current_streak || 0) >= 3
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching streak data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchStreakData();
+  }, [userId]);
+
+  const resetStreak = async () => {
+    if (!userId) return;
+    
+    try {
+      const { error } = await supabase
+        .from('study_streaks')
+        .update({
+          current_streak: 0,
+          last_session_week: null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', userId);
+        
+      if (error) throw error;
+      
+      setStreakData(prev => ({
+        ...prev,
+        currentStreak: 0,
+        isOnFire: false
+      }));
+      
+      toast({
+        title: "Streak Reset",
+        description: "Your study streak has been reset to 0.",
+      });
+    } catch (error) {
+      console.error('Error resetting streak:', error);
+      toast({
+        title: "Error",
+        description: "Failed to reset streak. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Mock streak calendar data (last 7 days)
   const streakCalendar = [
@@ -143,6 +217,19 @@ const StudyStreak = ({ userId, compact = false }: StudyStreakProps) => {
               <span className="text-muted-foreground">Best streak</span>
               <span className="font-medium">{streakData.longestStreak} weeks</span>
             </div>
+          </div>
+
+          {/* Reset Button */}
+          <div className="pt-2 border-t border-border/50">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={resetStreak}
+              className="w-full text-xs gap-1"
+            >
+              <RotateCcw className="w-3 h-3" />
+              Reset Streak
+            </Button>
           </div>
         </div>
       </CardContent>
