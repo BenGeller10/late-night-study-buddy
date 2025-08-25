@@ -37,9 +37,6 @@ import {
   Mail,
   MapPin,
   BookOpen,
-  DollarSign,
-  Eye,
-  EyeOff,
 } from "lucide-react";
 
 interface SettingsDialogProps {
@@ -54,7 +51,6 @@ const SettingsDialog = ({ user, onUserUpdate, isOpen: externalIsOpen, onOpenChan
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
   const setIsOpen = onOpenChange || setInternalIsOpen;
   const [isLoading, setIsLoading] = useState(false);
-  const [showVenmo, setShowVenmo] = useState(false);
   const { toast } = useToast();
 
   // Profile states
@@ -64,7 +60,6 @@ const SettingsDialog = ({ user, onUserUpdate, isOpen: externalIsOpen, onOpenChan
   const [campus, setCampus] = useState(user?.campus || "");
   const [gradYear, setGradYear] = useState(user?.year || "");
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || "");
-  const [venmoHandle, setVenmoHandle] = useState(user?.venmo_handle || "");
 
   // Notification preferences
   const [emailNotifications, setEmailNotifications] = useState(true);
@@ -98,7 +93,6 @@ const SettingsDialog = ({ user, onUserUpdate, isOpen: externalIsOpen, onOpenChan
           campus: campus.trim(),
           year: gradYear ? parseInt(gradYear) : null,
           avatar_url: avatarUrl,
-          venmo_handle: venmoHandle.trim() || null,
         })
         .eq('user_id', user.id)
         .select()
@@ -114,7 +108,6 @@ const SettingsDialog = ({ user, onUserUpdate, isOpen: externalIsOpen, onOpenChan
         major: major.trim(),
         year: gradYear ? parseInt(gradYear) : null,
         avatar_url: avatarUrl,
-        venmo_handle: venmoHandle.trim() || null,
       });
 
       toast({
@@ -387,32 +380,6 @@ const SettingsDialog = ({ user, onUserUpdate, isOpen: externalIsOpen, onOpenChan
                     placeholder="Tell others about yourself..."
                     className="min-h-20"
                   />
-                </div>
-
-                {/* Venmo Handle */}
-                <div className="space-y-2">
-                  <Label htmlFor="venmo" className="flex items-center gap-2">
-                    <DollarSign className="w-4 h-4" />
-                    Venmo Handle
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowVenmo(!showVenmo)}
-                    >
-                      {showVenmo ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </Button>
-                  </Label>
-                  <Input
-                    id="venmo"
-                    type={showVenmo ? "text" : "password"}
-                    value={venmoHandle}
-                    onChange={(e) => setVenmoHandle(e.target.value)}
-                    placeholder="@your-venmo-username"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {user?.is_tutor ? "Students will use this to pay you" : "Used for paying tutors"}
-                  </p>
                 </div>
 
                 <Button onClick={handleSaveProfile} disabled={isLoading} className="w-full">
