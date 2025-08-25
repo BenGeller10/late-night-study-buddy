@@ -84,6 +84,31 @@ const handleCalendlyClick = () => {
     setShowBookingForm(true);
   };
 
+  const [availableSubjects, setAvailableSubjects] = useState<Array<{
+    id: string;
+    name: string;
+    code: string;
+  }>>([]);
+
+  // Load subjects from database
+  useEffect(() => {
+    const loadSubjects = async () => {
+      try {
+        const { data: subjects, error } = await supabase
+          .from('subjects')
+          .select('id, name, code')
+          .order('name');
+        
+        if (error) throw error;
+        setAvailableSubjects(subjects || []);
+      } catch (error) {
+        console.error('Error loading subjects:', error);
+      }
+    };
+
+    loadSubjects();
+  }, []);
+
   const createSession = async () => {
     if (!selectedDate || !selectedTime || !selectedSubject) {
       toast({
@@ -101,8 +126,8 @@ const handleCalendlyClick = () => {
       if (!user) throw new Error("Please log in to book a session");
 
       const scheduledAt = new Date(`${selectedDate}T${selectedTime}:00`);
-      const subject = tutor.subjects?.find(s => s.id === selectedSubject);
-      const hourlyRate = subject?.hourly_rate || tutor.hourlyRate || 25;
+      const selectedSubjectData = availableSubjects.find(s => s.id === selectedSubject);
+      const hourlyRate = tutor.subjects?.find(s => s.id === selectedSubject)?.hourly_rate || tutor.hourlyRate || 25;
       const durationMinutes = parseInt(duration);
       const totalAmount = (hourlyRate * durationMinutes) / 60;
 
@@ -130,7 +155,7 @@ const handleCalendlyClick = () => {
           session_id: sessionData.id,
           tutor_id: tutor.id,
           amount: totalAmount,
-          subject: subject?.name || 'General Tutoring',
+          subject: selectedSubjectData?.name || 'General Tutoring',
           duration_minutes: durationMinutes,
           scheduled_at: scheduledAt.toISOString()
         }
@@ -140,8 +165,8 @@ const handleCalendlyClick = () => {
 
       // Create calendar event for adding to personal calendar
       const calendarEvent: CalendarEvent = {
-        title: `Tutoring Session - ${subject?.name || 'General'}`,
-        description: `Tutoring session with ${tutor.name}\nSubject: ${subject?.name || 'General Tutoring'}\nDuration: ${durationMinutes} minutes\n\nJoin link will be provided via email.`,
+        title: `Tutoring Session - ${selectedSubjectData?.name || 'General'}`,
+        description: `Tutoring session with ${tutor.name}\nSubject: ${selectedSubjectData?.name || 'General Tutoring'}\nDuration: ${durationMinutes} minutes\n\nJoin link will be provided via email.`,
         start: scheduledAt,
         end: new Date(scheduledAt.getTime() + durationMinutes * 60 * 1000),
         location: 'Online (Zoom link will be provided)'
@@ -300,21 +325,14 @@ const handleCalendlyClick = () => {
                       <SelectValue placeholder="Choose a subject" />
                     </SelectTrigger>
                     <SelectContent>
-                      {tutor.subjects?.map((subject) => (
+                      {availableSubjects.map((subject) => (
                         <SelectItem key={subject.id} value={subject.id}>
                           <div className="flex justify-between items-center w-full">
-                            <span>{subject.name}</span>
-                            <span className="text-muted-foreground ml-2">${subject.hourly_rate}/hr</span>
-                          </div>
-                        </SelectItem>
-                      )) || (
-                        <SelectItem value="general">
-                          <div className="flex justify-between items-center w-full">
-                            <span>General Tutoring</span>
+                            <span>{subject.code} - {subject.name}</span>
                             <span className="text-muted-foreground ml-2">${tutor.hourlyRate || 25}/hr</span>
                           </div>
                         </SelectItem>
-                      )}
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
