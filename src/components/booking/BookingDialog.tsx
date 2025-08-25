@@ -344,15 +344,23 @@ const handleCalendlyClick = () => {
                     <SelectTrigger>
                       <SelectValue placeholder="Choose a subject" />
                     </SelectTrigger>
-                    <SelectContent>
-                      {availableSubjects.map((subject) => (
-                        <SelectItem key={subject.id} value={subject.id}>
-                          <div className="flex justify-between items-center w-full">
-                            <span>{subject.code} - {subject.name}</span>
-                            <span className="text-muted-foreground ml-2">${subject.hourly_rate}/hr</span>
-                          </div>
+                    <SelectContent className="bg-popover border border-border shadow-lg z-50">
+                      {availableSubjects.length > 0 ? (
+                        availableSubjects.map((subject) => (
+                          <SelectItem key={subject.id} value={subject.id} className="bg-popover hover:bg-accent">
+                            <div className="flex justify-between items-center w-full">
+                              <span className="font-medium">{subject.code} - {subject.name}</span>
+                              <Badge variant="secondary" className="ml-2 text-xs">
+                                ${subject.hourly_rate}/hr
+                              </Badge>
+                            </div>
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="" disabled className="text-muted-foreground">
+                          No subjects available for this tutor
                         </SelectItem>
-                      ))}
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
