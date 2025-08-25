@@ -177,11 +177,20 @@ const Earnings = ({ user, onBack }: EarningsProps) => {
         });
       }
     } catch (error: any) {
-      toast({
-        title: "Setup failed",
-        description: error.message,
-        variant: "destructive",
-      });
+      // Check for Connect not enabled error
+      if (error.message?.includes('signed up for Connect')) {
+        toast({
+          title: "Stripe Connect Required",
+          description: "Please enable Stripe Connect in your Stripe dashboard first. Visit stripe.com/docs/connect for setup instructions.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Setup failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
     } finally {
       setPayoutLoading(false);
     }
