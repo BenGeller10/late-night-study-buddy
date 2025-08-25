@@ -366,6 +366,42 @@ export const mockMessagingService: MessagingService = {
 
   async leaveGroup(conversationId: string, userId: string) {
     await this.removeMember(conversationId, userId);
+  },
+
+  async deleteConversation(conversationId: string, userId: string) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Remove the conversation from user's conversation list
+    const conversationIndex = mockConversations.findIndex(c => c.id === conversationId);
+    if (conversationIndex > -1) {
+      mockConversations.splice(conversationIndex, 1);
+    }
+    
+    // Remove all members from this conversation
+    const memberIndices = mockConversationMembers
+      .map((member, index) => member.conversationId === conversationId ? index : -1)
+      .filter(index => index !== -1)
+      .reverse(); // Reverse to remove from end to avoid index shifting
+    
+    memberIndices.forEach(index => {
+      mockConversationMembers.splice(index, 1);
+    });
+    
+    // Remove all messages from this conversation
+    const messageIndices = mockMessages
+      .map((message, index) => message.conversationId === conversationId ? index : -1)
+      .filter(index => index !== -1)
+      .reverse();
+    
+    messageIndices.forEach(index => {
+      mockMessages.splice(index, 1);
+    });
+    
+    // Emit event for real-time updates
+    eventSystem.emit(`conversations:${userId}`, {
+      type: 'conversation_deleted',
+      data: { conversationId }
+    });
   }
 };
 

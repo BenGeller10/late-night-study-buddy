@@ -63,6 +63,7 @@ export interface TypingIndicator {
 // Event types for mock WebSocket
 export type MessageEvent = 
   | { type: 'conversation_updated'; data: Conversation }
+  | { type: 'conversation_deleted'; data: { conversationId: string } }
   | { type: 'message_created'; data: Message }
   | { type: 'message_updated'; data: Message }
   | { type: 'reaction_added'; data: MessageReaction }
@@ -96,4 +97,5 @@ export interface MessagingService {
   addMember(conversationId: string, userId: string): Promise<void>;
   removeMember(conversationId: string, userId: string): Promise<void>;
   leaveGroup(conversationId: string, userId: string): Promise<void>;
+  deleteConversation(conversationId: string, userId: string): Promise<void>;
 }

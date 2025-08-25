@@ -52,6 +52,19 @@ export default function ConversationList({ onConversationSelect, onNewChat }: Co
     }
   };
 
+  const handleDeleteConversation = async (conversationId: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent conversation selection
+    
+    try {
+      await mockMessagingService.deleteConversation(conversationId, currentUserId);
+      
+      // Remove from local state immediately for better UX
+      setConversations(prev => prev.filter(conv => conv.id !== conversationId));
+    } catch (error) {
+      console.error('Error deleting conversation:', error);
+    }
+  };
+
   const filteredConversations = conversations.filter(conv => {
     if (!searchQuery) return true;
     
@@ -238,7 +251,10 @@ export default function ConversationList({ onConversationSelect, onNewChat }: Co
                                 </>
                               )}
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive">
+                            <DropdownMenuItem 
+                              className="text-destructive"
+                              onClick={(e) => handleDeleteConversation(conv.id, e)}
+                            >
                               <Trash2 className="w-4 h-4 mr-2" />
                               Delete
                             </DropdownMenuItem>
