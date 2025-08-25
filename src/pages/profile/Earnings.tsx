@@ -36,63 +36,41 @@ const Earnings = ({ user, onBack }: EarningsProps) => {
     if (!user?.id) return;
 
     try {
-      // In a real app, this would fetch from sessions table with payment info
-      // For now, using mock data
-      const mockEarnings: Earning[] = [
-        {
-          id: "1",
-          session_id: "sess_1",
-          amount: 45,
-          date: "2024-01-15",
-          student_name: "Alex Johnson",
-          subject: "Calculus II",
-          status: "paid"
-        },
-        {
-          id: "2",
-          session_id: "sess_2", 
-          amount: 60,
-          date: "2024-01-14",
-          student_name: "Sarah Chen",
-          subject: "Organic Chemistry",
-          status: "paid"
-        },
-        {
-          id: "3",
-          session_id: "sess_3",
-          amount: 30,
-          date: "2024-01-13",
-          student_name: "Mike Davis",
-          subject: "Physics I",
-          status: "completed"
-        },
-        {
-          id: "4",
-          session_id: "sess_4",
-          amount: 75,
-          date: "2024-01-12",
-          student_name: "Emma Wilson",
-          subject: "Computer Science II",
-          status: "paid"
-        },
-        {
-          id: "5",
-          session_id: "sess_5",
-          amount: 45,
-          date: "2024-01-10",
-          student_name: "James Brown",
-          subject: "Statistics",
-          status: "pending"
-        }
-      ];
+      // Fetch real earnings from sessions table
+      const { data: sessions, error } = await supabase
+        .from('sessions')
+        .select(`
+          id,
+          total_amount,
+          created_at,
+          payment_status,
+          status,
+          profiles!sessions_student_id_fkey(display_name),
+          subjects(name)
+        `)
+        .eq('tutor_id', user.id)
+        .in('payment_status', ['paid', 'pending'])
+        .order('created_at', { ascending: false });
 
-      setEarnings(mockEarnings);
+      if (error) throw error;
+
+      const earningsData: Earning[] = (sessions || []).map(session => ({
+        id: session.id,
+        session_id: session.id,
+        amount: session.total_amount || 0,
+        date: session.created_at.split('T')[0],
+        student_name: session.profiles?.display_name || 'Unknown Student',
+        subject: session.subjects?.name || 'Unknown Subject',
+        status: session.payment_status === 'paid' ? 'paid' : (session.status === 'completed' ? 'completed' : 'pending')
+      }));
+
+      setEarnings(earningsData);
       
-      const total = mockEarnings
+      const total = earningsData
         .filter(e => e.status === 'paid')
         .reduce((sum, e) => sum + e.amount, 0);
       
-      const thisMonth = mockEarnings
+      const thisMonth = earningsData
         .filter(e => e.status === 'paid' && new Date(e.date).getMonth() === new Date().getMonth())
         .reduce((sum, e) => sum + e.amount, 0);
 
@@ -139,9 +117,9 @@ const Earnings = ({ user, onBack }: EarningsProps) => {
   }
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in h-screen flex flex-col">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/20 p-4">
+      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/20 p-4 flex-shrink-0">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" onClick={onBack}>
             ← Back
@@ -156,7 +134,7 @@ const Earnings = ({ user, onBack }: EarningsProps) => {
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-6">
+      <div className="flex-1 overflow-y-auto p-4 space-y-6 pb-20">
         {/* Earnings Overview */}
         <div className="grid grid-cols-2 gap-4">
           <Card className="glass-card border-green-200 dark:border-green-800">
