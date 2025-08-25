@@ -142,30 +142,23 @@ const handleCalendlyClick = () => {
       // Create calendar event for adding to personal calendar
       const calendarEvent: CalendarEvent = {
         title: `Tutoring Session - ${subject?.name || 'General'}`,
-        description: `Tutoring session with ${tutor.name}\nSubject: ${subject?.name || 'General Tutoring'}\nDuration: ${durationMinutes} minutes`,
+        description: `Tutoring session with ${tutor.name}\nSubject: ${subject?.name || 'General Tutoring'}\nDuration: ${durationMinutes} minutes\n\nJoin link will be provided via email.`,
         start: scheduledAt,
         end: new Date(scheduledAt.getTime() + durationMinutes * 60 * 1000),
-        location: 'Online'
-      };
-
-      // Show calendar options
-      const addToCalendar = (type: 'google' | 'outlook' | 'download') => {
-        if (type === 'google') {
-          window.open(createGoogleCalendarUrl(calendarEvent), '_blank');
-        } else if (type === 'outlook') {
-          window.open(createOutlookCalendarUrl(calendarEvent), '_blank');
-        } else {
-          downloadCalendarEvent(calendarEvent);
-        }
+        location: 'Online (Zoom link will be provided)'
       };
 
       toast({
         title: "Session Created! 📅",
-        description: "Redirecting to payment...",
+        description: "Redirecting to payment. After payment, you can add this to your calendar!",
       });
 
       // Redirect to Stripe checkout
       window.open(paymentData.checkout_url, '_blank');
+      
+      // Store calendar event in localStorage for post-payment calendar addition
+      localStorage.setItem('pendingCalendarEvent', JSON.stringify(calendarEvent));
+      
       setIsOpen(false);
       onBookingSuccess?.(sessionData.id);
 
@@ -214,8 +207,8 @@ const handleCalendlyClick = () => {
               className="w-10 h-10 rounded-full object-cover"
             />
             <div>
-              <div>Book a Session</div>
-              <div className="text-sm font-normal text-muted-foreground">with {tutor.name}</div>
+              <div>📅 Book a Session</div>
+              <div className="text-sm font-normal text-muted-foreground">with {tutor.name} • Google Calendar Ready</div>
             </div>
           </DialogTitle>
         </DialogHeader>
@@ -284,7 +277,10 @@ const handleCalendlyClick = () => {
               {/* Info */}
               <div className="bg-muted/50 rounded-lg p-4 text-sm text-center">
                 <p className="text-muted-foreground">
-                  Choose "Book & Pay Now" for instant booking with Google Calendar integration, or use the calendar widget for more flexibility.
+                  📅 <strong>Google Calendar Integration:</strong> After booking and payment, you'll receive calendar invites and can easily add this session to Google Calendar, Outlook, or Apple Calendar.
+                </p>
+                <p className="text-muted-foreground mt-2">
+                  🔒 <strong>Secure Payment:</strong> All payments are processed securely through Stripe.
                 </p>
               </div>
             </>

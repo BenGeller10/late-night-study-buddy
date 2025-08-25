@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Eye, Star, Loader2, CreditCard } from "lucide-react";
+import { Eye, Star, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import BookingDialog from "@/components/booking/BookingDialog";
 
 interface TutorCardProps {
   tutor: {
@@ -41,89 +41,14 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
   const [reviewRating, setReviewRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
-  const [isBooking, setIsBooking] = useState(false);
   const { toast } = useToast();
 
-  const handleBooking = async () => {
-    setIsBooking(true);
-    
-    try {
-      const { data: { session }, error: authError } = await supabase.auth.getSession();
-      if (authError || !session?.user) {
-        toast({
-          title: "Authentication required",
-          description: "Please sign in to book a session.",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      // Create a session record first
-      const scheduledAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // Tomorrow
-      const subject = tutor.subjects?.[0] || { id: 'general', name: 'General Tutoring', code: 'GEN' };
-      
-      const { data: newSession, error: sessionError } = await supabase
-        .from('sessions')
-        .insert({
-          student_id: session.user.id,
-          tutor_id: tutor.user_id || tutor.id,
-          subject_id: subject.id,
-          scheduled_at: scheduledAt.toISOString(),
-          duration_minutes: 60,
-          total_amount: tutor.hourlyRate,
-          status: 'pending_payment',
-          location: 'Online (Zoom)',
-          notes: `Session for ${subject.name}`,
-          payment_method: 'stripe',
-          payment_status: 'pending'
-        })
-        .select()
-        .single();
-
-      if (sessionError) {
-        console.error('Session creation error:', sessionError);
-        throw new Error('Failed to create session');
-      }
-
-      // Create Stripe payment session
-      const { data: paymentData, error: paymentError } = await supabase.functions.invoke('create-payment-session', {
-        body: {
-          session_id: newSession.id,
-          tutor_id: tutor.user_id || tutor.id,
-          amount: tutor.hourlyRate,
-          subject: subject.name,
-          duration_minutes: 60,
-          scheduled_at: scheduledAt.toISOString()
-        }
-      });
-
-      if (paymentError) {
-        console.error('Payment creation error:', paymentError);
-        throw new Error('Failed to create payment session');
-      }
-
-      toast({
-        title: "Redirecting to payment...",
-        description: "You'll be redirected to complete your booking payment.",
-      });
-
-      // Redirect to Stripe Checkout
-      if (paymentData.checkout_url) {
-        window.open(paymentData.checkout_url, '_blank');
-      } else {
-        throw new Error('No payment URL received');
-      }
-
-    } catch (error: any) {
-      console.error('Booking error:', error);
-      toast({
-        title: "Booking failed",
-        description: error.message || "There was an error booking your session. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsBooking(false);
-    }
+  const handleBookingSuccess = (sessionId: string) => {
+    toast({
+      title: "Session Booked Successfully! 🎉",
+      description: "Your tutoring session has been scheduled and payment processed.",
+    });
+    onBook(); // Call the original onBook callback
   };
 
   const handleSwipe = (direction: 'left' | 'right') => {
@@ -310,20 +235,27 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
             >
               💬 Chat
             </Button>
-            <Button
-              onClick={handleBooking}
-              disabled={isBooking}
-              variant="campus"
-              size="lg"
-              className="flex-1 btn-smooth"
-            >
-              {isBooking ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              ) : (
-                <CreditCard className="h-4 w-4 mr-2" />
-              )}
-              {isBooking ? 'Processing...' : `Book • $${tutor.hourlyRate}/hr`}
-            </Button>
+            <BookingDialog
+              tutor={{
+                id: tutor.id,
+                name: tutor.name,
+                profilePicture: tutor.profilePicture,
+                hourlyRate: tutor.hourlyRate,
+                isFree: tutor.isFree,
+                subjects: tutor.subjects
+              }}
+              triggerButton={
+                <Button
+                  variant="campus"
+                  size="lg"
+                  className="flex-1 btn-smooth"
+                >
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  Book • ${tutor.hourlyRate}/hr
+                </Button>
+              }
+              onBookingSuccess={handleBookingSuccess}
+            />
           </div>
         </div>
 

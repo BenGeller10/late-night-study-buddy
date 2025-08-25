@@ -37,12 +37,8 @@ const Discover = () => {
   };
 
   const handleBook = (tutorId: string) => {
-    const calendlyUrl = `https://calendly.com/campus-connect-tutor/${tutorId}`;
-    window.open(calendlyUrl, '_blank');
-    toast({
-      title: "Opening calendar...",
-      description: "Book a session with your selected tutor",
-    });
+    // The booking is now handled by the BookingDialog component in SwipeView
+    console.log('Booking tutor:', tutorId);
   };
 
   const handleViewProfile = (tutorId: string) => {
