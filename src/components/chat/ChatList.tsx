@@ -1,8 +1,12 @@
+import { useState, useEffect } from "react";
 import { useConversations } from "@/hooks/useConversations";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
 import { mockConversations, type Conversation as MockConversation } from "@/data/mockConversations";
+import { supabase } from "@/integrations/supabase/client";
+import PendingMessagesView from "./PendingMessagesView";
 
 const ChatList = () => {
   const { conversations: liveConversations, loading, currentUser } = useConversations();
@@ -24,10 +28,39 @@ const ChatList = () => {
     );
   }
 
-  // For demo purposes, prioritize mock conversations
-  const allConversations = [...mockConversations, ...(liveConversations || [])];
+  // Filter conversations by status
+  const acceptedConversations = liveConversations?.filter(conv => conv.status === 'accepted') || [];
+  const pendingConversations = liveConversations?.filter(
+    conv => conv.status === 'pending' && conv.participant2_id === currentUser?.id
+  ) || [];
 
-  if (allConversations.length === 0) {
+  // Check if current user is a tutor by looking at their profile
+  const [isCurrentUserTutor, setIsCurrentUserTutor] = useState(false);
+  
+  useEffect(() => {
+    const checkIfTutor = async () => {
+      if (!currentUser?.id) return;
+      
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('is_tutor')
+          .eq('user_id', currentUser.id)
+          .maybeSingle();
+        
+        setIsCurrentUserTutor(profile?.is_tutor || false);
+      } catch (error) {
+        console.error('Error checking tutor status:', error);
+      }
+    };
+    
+    checkIfTutor();
+  }, [currentUser]);
+
+  // For demo purposes, prioritize mock conversations for accepted tab
+  const allAcceptedConversations = [...mockConversations, ...acceptedConversations];
+
+  if (allAcceptedConversations.length === 0 && pendingConversations.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center text-center p-6">
         <div className="space-y-4 max-w-sm">
@@ -127,9 +160,31 @@ const ChatList = () => {
     }
   };
 
+  // Show tabs only if user is a tutor and has pending messages, or just show accepted conversations
+  if (isCurrentUserTutor && pendingConversations.length > 0) {
+    return (
+      <Tabs defaultValue="messages" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="messages">Messages</TabsTrigger>
+          <TabsTrigger value="pending">
+            Pending ({pendingConversations.length})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="messages" className="space-y-2">
+          {allAcceptedConversations.map((conversation, index) => renderConversation(conversation, index))}
+        </TabsContent>
+
+        <TabsContent value="pending">
+          <PendingMessagesView />
+        </TabsContent>
+      </Tabs>
+    );
+  }
+
   return (
     <div className="space-y-2 p-4">
-      {allConversations.map((conversation, index) => renderConversation(conversation, index))}
+      {allAcceptedConversations.map((conversation, index) => renderConversation(conversation, index))}
     </div>
   );
 };

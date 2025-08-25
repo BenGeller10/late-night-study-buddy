@@ -122,6 +122,7 @@ export type Database = {
           last_message_at: string | null
           participant1_id: string
           participant2_id: string
+          status: string
         }
         Insert: {
           created_at?: string
@@ -129,6 +130,7 @@ export type Database = {
           last_message_at?: string | null
           participant1_id: string
           participant2_id: string
+          status?: string
         }
         Update: {
           created_at?: string
@@ -136,6 +138,7 @@ export type Database = {
           last_message_at?: string | null
           participant1_id?: string
           participant2_id?: string
+          status?: string
         }
         Relationships: [
           {

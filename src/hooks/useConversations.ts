@@ -6,6 +6,7 @@ interface Conversation {
   participant1_id: string;
   participant2_id: string;
   last_message_at: string;
+  status: 'pending' | 'accepted' | 'declined' | 'blocked';
   other_participant: {
     id: string;
     display_name: string;
@@ -55,6 +56,7 @@ export const useConversations = () => {
           participant1_id,
           participant2_id,
           last_message_at,
+          status,
           created_at
         `)
         .or(`participant1_id.eq.${currentUser.id},participant2_id.eq.${currentUser.id}`)
@@ -87,6 +89,7 @@ export const useConversations = () => {
 
           return {
             ...conv,
+            status: conv.status as 'pending' | 'accepted' | 'declined' | 'blocked',
             other_participant: profileData || {
               id: otherParticipantId,
               display_name: 'Unknown User',
@@ -94,7 +97,7 @@ export const useConversations = () => {
               is_tutor: false
             },
             last_message: lastMessageData
-          };
+          } as Conversation;
         })
       );
 
@@ -149,12 +152,46 @@ export const useConversations = () => {
     }
   };
 
+  const acceptConversation = async (conversationId: string) => {
+    try {
+      const { error } = await supabase
+        .from('conversations')
+        .update({ status: 'accepted' })
+        .eq('id', conversationId);
+
+      if (error) throw error;
+      await fetchConversations();
+      return true;
+    } catch (error) {
+      console.error('Error accepting conversation:', error);
+      return false;
+    }
+  };
+
+  const declineConversation = async (conversationId: string) => {
+    try {
+      const { error } = await supabase
+        .from('conversations')
+        .update({ status: 'declined' })
+        .eq('id', conversationId);
+
+      if (error) throw error;
+      await fetchConversations();
+      return true;
+    } catch (error) {
+      console.error('Error declining conversation:', error);
+      return false;
+    }
+  };
+
   return {
     conversations,
     loading,
     currentUser,
     refetchConversations: fetchConversations,
-    createConversation
+    createConversation,
+    acceptConversation,
+    declineConversation
   };
 };
 
