@@ -111,7 +111,7 @@ const StudentInterface = ({ user, onRoleSwitch }: StudentInterfaceProps) => {
                 key={to}
                 to={to}
                 className={cn(
-                  "flex flex-col items-center gap-1 p-2 rounded-xl transition-all duration-200",
+                  "flex flex-col items-center justify-center gap-1 p-1 px-2 rounded-xl transition-all duration-200 min-w-0 flex-1 max-w-[80px]",
                   "hover:bg-muted/50 active:scale-95",
                   isActive && "bg-muted/30 scale-105"
                 )}
@@ -124,7 +124,7 @@ const StudentInterface = ({ user, onRoleSwitch }: StudentInterfaceProps) => {
                 />
                 <span 
                   className={cn(
-                    "text-xs font-medium transition-colors duration-200",
+                    "text-xs font-medium transition-colors duration-200 whitespace-nowrap text-center leading-tight",
                     isActive ? "text-foreground" : "text-muted-foreground"
                   )}
                 >
