@@ -10,7 +10,9 @@ const corsHeaders = {
 interface PaymentRequest {
   session_id: string;
   tutor_id: string;
-  amount: number;
+  tutor_amount: number;
+  platform_fee: number;
+  total_amount: number;
   subject: string;
   duration_minutes: number;
   scheduled_at: string;
@@ -40,9 +42,16 @@ serve(async (req) => {
     }
 
     // Parse request body
-    const { session_id, tutor_id, amount, subject, duration_minutes, scheduled_at }: PaymentRequest = await req.json();
+    const { session_id, tutor_id, tutor_amount, platform_fee, total_amount, subject, duration_minutes, scheduled_at }: PaymentRequest = await req.json();
 
-    console.log('Creating payment session for:', { session_id, tutor_id, amount, subject });
+    console.log('Creating payment session for:', { 
+      session_id, 
+      tutor_id, 
+      tutor_amount, 
+      platform_fee, 
+      total_amount, 
+      subject 
+    });
 
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
@@ -96,10 +105,10 @@ serve(async (req) => {
             currency: "usd",
             product_data: {
               name: `Tutoring Session - ${subject}`,
-              description: `${duration_minutes}-minute session with ${tutorProfile.data.display_name}`,
+              description: `${duration_minutes}-minute session with ${tutorProfile.data.display_name} (includes 8% platform fee)`,
               images: tutorProfile.data?.avatar_url ? [tutorProfile.data.avatar_url] : undefined,
             },
-            unit_amount: Math.round(amount * 100), // Convert to cents
+            unit_amount: Math.round(total_amount * 100), // Convert to cents
           },
           quantity: 1,
         },
@@ -114,6 +123,9 @@ serve(async (req) => {
         subject: subject,
         duration_minutes: String(duration_minutes),
         scheduled_at: scheduled_at,
+        tutor_amount: String(tutor_amount),
+        platform_fee: String(platform_fee),
+        total_amount: String(total_amount),
       },
     });
 

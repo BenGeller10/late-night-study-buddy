@@ -149,7 +149,9 @@ const handleCalendlyClick = () => {
       const selectedSubjectData = availableSubjects.find(s => s.id === selectedSubject);
       const hourlyRate = selectedSubjectData?.hourly_rate || tutor.hourlyRate || 25;
       const durationMinutes = parseInt(duration);
-      const totalAmount = (hourlyRate * durationMinutes) / 60;
+      const tutorAmount = (hourlyRate * durationMinutes) / 60;
+      const platformFee = tutorAmount * 0.08; // 8% commission
+      const totalAmount = tutorAmount + platformFee;
 
       // Create session in database
       const { data: sessionData, error: sessionError } = await supabase
@@ -174,7 +176,9 @@ const handleCalendlyClick = () => {
         body: {
           session_id: sessionData.id,
           tutor_id: tutor.id,
-          amount: totalAmount,
+          tutor_amount: tutorAmount,
+          platform_fee: platformFee,
+          total_amount: totalAmount,
           subject: selectedSubjectData?.name || 'General Tutoring',
           duration_minutes: durationMinutes,
           scheduled_at: scheduledAt.toISOString()
@@ -412,20 +416,25 @@ const handleCalendlyClick = () => {
                         <span className="text-sm font-medium">Total Cost</span>
                       </div>
                       <div className="text-right">
-                        {(() => {
-                          const subject = tutor.subjects?.find(s => s.id === selectedSubject);
-                          const hourlyRate = subject?.hourly_rate || tutor.hourlyRate || 25;
-                          const durationMinutes = parseInt(duration);
-                          const totalAmount = (hourlyRate * durationMinutes) / 60;
-                          return (
-                            <div>
-                              <div className="font-semibold text-primary">${totalAmount.toFixed(2)}</div>
-                              <div className="text-xs text-muted-foreground">
-                                ${hourlyRate}/hr × {durationMinutes}min
-                              </div>
-                            </div>
-                          );
-                        })()}
+                         {(() => {
+                           const subject = tutor.subjects?.find(s => s.id === selectedSubject);
+                           const hourlyRate = subject?.hourly_rate || tutor.hourlyRate || 25;
+                           const durationMinutes = parseInt(duration);
+                           const tutorAmount = (hourlyRate * durationMinutes) / 60;
+                           const platformFee = tutorAmount * 0.08;
+                           const totalAmount = tutorAmount + platformFee;
+                           return (
+                             <div>
+                               <div className="font-semibold text-primary">${totalAmount.toFixed(2)}</div>
+                               <div className="text-xs text-muted-foreground">
+                                 ${tutorAmount.toFixed(2)} + ${platformFee.toFixed(2)} fee
+                               </div>
+                               <div className="text-xs text-muted-foreground">
+                                 ${hourlyRate}/hr × {durationMinutes}min + 8% platform fee
+                               </div>
+                             </div>
+                           );
+                         })()}
                       </div>
                     </div>
                   </div>
