@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Clock, Star, MessageCircle } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import ChatDialog from "@/components/chat/ChatDialog";
 
 interface MatchedTutor {
   name: string;
@@ -186,14 +187,29 @@ const AIMatchmaking = ({ studentId, className, onChat, onBook }: AIMatchmakingPr
                       </div>
                       
                       <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => onChat('mock-tutor-id')}
-                        >
-                          <MessageCircle className="h-4 w-4 mr-1" />
-                          Chat
-                        </Button>
+                        <ChatDialog
+                          tutor={{
+                            id: `ai-match-${index}`,
+                            name: match.name,
+                            profilePicture: `https://images.unsplash.com/photo-${1500000000000 + index}?w=400&h=400&fit=crop&crop=face`,
+                            classes: [className],
+                            subjects: [{
+                              id: 'ai-subject',
+                              name: className,
+                              code: className.toUpperCase().replace(/\s+/g, ''),
+                              hourly_rate: 35
+                            }]
+                          }}
+                          triggerButton={
+                            <Button
+                              size="sm"
+                              variant="outline"
+                            >
+                              <MessageCircle className="h-4 w-4 mr-1" />
+                              Chat
+                            </Button>
+                          }
+                        />
                         <Button
                           size="sm"
                           onClick={() => onBook('mock-tutor-id')}

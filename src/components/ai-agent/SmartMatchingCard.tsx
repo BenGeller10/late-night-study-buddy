@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star, MessageCircle, Calendar, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import ChatDialog from "@/components/chat/ChatDialog";
 
 interface MatchedTutor {
   id: string;
@@ -84,14 +85,29 @@ const SmartMatchingCard = ({ tutor, onChat, onBook }: SmartMatchingCardProps) =>
             </div>
 
             <div className="flex gap-2">
-              <Button 
-                size="sm" 
-                onClick={() => onChat(tutor.id)}
-                className="flex-1 h-8 text-xs"
-              >
-                <MessageCircle className="w-3 h-3 mr-1" />
-                Message
-              </Button>
+              <ChatDialog
+                tutor={{
+                  id: tutor.id,
+                  name: tutor.name,
+                  profilePicture: tutor.profilePicture,
+                  classes: tutor.subjects,
+                  subjects: tutor.subjects.map((subject, index) => ({
+                    id: `subject-${index}`,
+                    name: subject,
+                    code: subject.toUpperCase().replace(/\s+/g, ''),
+                    hourly_rate: tutor.hourlyRate
+                  }))
+                }}
+                triggerButton={
+                  <Button 
+                    size="sm" 
+                    className="flex-1 h-8 text-xs"
+                  >
+                    <MessageCircle className="w-3 h-3 mr-1" />
+                    Message
+                  </Button>
+                }
+              />
               <Button 
                 size="sm" 
                 variant="outline" 

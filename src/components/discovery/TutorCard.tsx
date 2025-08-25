@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Eye, Star, CreditCard } from "lucide-react";
+import { Eye, Star, CreditCard, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import BookingDialog from "@/components/booking/BookingDialog";
+import ChatDialog from "@/components/chat/ChatDialog";
 
 interface TutorCardProps {
   tutor: {
@@ -227,14 +228,25 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
 
           {/* Action Buttons */}
           <div className="flex gap-3 pt-2">
-            <Button
-              variant="ghost"
-              size="lg"
-              className="flex-1 btn-smooth"
-              onClick={onChat}
-            >
-              💬 Chat
-            </Button>
+            <ChatDialog
+              tutor={{
+                id: tutor.id,
+                name: tutor.name,
+                profilePicture: tutor.profilePicture,
+                classes: tutor.classes,
+                subjects: tutor.subjects
+              }}
+              triggerButton={
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  className="flex-1 btn-smooth"
+                >
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  Chat
+                </Button>
+              }
+            />
             <BookingDialog
               tutor={{
                 id: tutor.id,

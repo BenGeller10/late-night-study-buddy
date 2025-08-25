@@ -76,14 +76,40 @@ const ChatConversation = ({ tutor, onBack }: ChatConversationProps) => {
   };
 
   const getTutorResponse = (userMessage: string): string => {
+    const lowerMessage = userMessage.toLowerCase();
+    
+    // More contextual responses based on keywords
+    if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
+      return `Hey there! I'm excited to help you with ${tutor.classes[0]}. What specific topic are you working on? 👋`;
+    }
+    
+    if (lowerMessage.includes('book') || lowerMessage.includes('schedule') || lowerMessage.includes('session')) {
+      return "Great! I'd love to set up a tutoring session. You can book directly through the app - I have availability most afternoons and evenings. What works best for you? 📅";
+    }
+    
+    if (lowerMessage.includes('help') || lowerMessage.includes('stuck') || lowerMessage.includes('confused')) {
+      return "No worries at all! That's what I'm here for. Can you tell me exactly where you're getting stuck? I'll walk you through it step by step. 🤝";
+    }
+    
+    if (lowerMessage.includes('exam') || lowerMessage.includes('test') || lowerMessage.includes('quiz')) {
+      return "Test prep is my specialty! I can help you create a study plan, review key concepts, and practice problems. When is your exam? Let's get you ready! 📚";
+    }
+    
+    if (lowerMessage.includes('homework') || lowerMessage.includes('assignment') || lowerMessage.includes('problem')) {
+      return "I'd be happy to help with your homework! I can guide you through problems without just giving you answers. What specific assignment are you working on? 📝";
+    }
+    
+    // Fallback responses
     const responses = [
-      "Great question! Let me break that down for you step by step. 🤔",
+      "That's a great question! Let me break that down for you step by step. 🤔",
       "I can definitely help with that! Here's how I'd approach it...",
       "That's a common issue students face. Let me explain it clearly 💡",
       "Perfect timing! I just helped another student with something similar.",
-      "Let's work through this together. Do you have your notes ready? 📝",
+      "Let's work through this together. Do you have your notes ready? 📖",
       "I love that question! It shows you're really thinking about the material.",
-      "No worries, we've all been there. Let me show you a simple way to understand this."
+      "No worries, we've all been there. Let me show you a simple way to understand this.",
+      "Great topic! This is actually one of my favorite things to teach. Here's the key insight...",
+      "I can see why that would be confusing. Let me clarify that concept for you! ✨"
     ];
     return responses[Math.floor(Math.random() * responses.length)];
   };

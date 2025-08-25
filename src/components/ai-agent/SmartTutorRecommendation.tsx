@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Sparkles, MessageCircle, Calendar } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import ChatDialog from "@/components/chat/ChatDialog";
 
 interface TutorMatch {
   id: string;
@@ -195,15 +196,30 @@ const SmartTutorRecommendation = ({
               </div>
               
               <div className="flex flex-col gap-2 ml-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => onChat(tutor.id)}
-                  className="flex items-center gap-1"
-                >
-                  <MessageCircle className="w-3 h-3" />
-                  Message
-                </Button>
+                <ChatDialog
+                  tutor={{
+                    id: tutor.id,
+                    name: tutor.name,
+                    profilePicture: tutor.avatar_url,
+                    classes: tutor.subjects || [tutor.major || 'General'],
+                    subjects: (tutor.subjects || [tutor.major || 'General']).map((subject, index) => ({
+                      id: `subject-${index}`,
+                      name: subject,
+                      code: subject.toUpperCase().replace(/\s+/g, ''),
+                      hourly_rate: tutor.hourly_rate
+                    }))
+                  }}
+                  triggerButton={
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex items-center gap-1"
+                    >
+                      <MessageCircle className="w-3 h-3" />
+                      Message
+                    </Button>
+                  }
+                />
                 <Button
                   size="sm"
                   onClick={() => onBook(tutor.id)}
