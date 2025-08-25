@@ -105,21 +105,21 @@ export default function MessageBubble({
         {showReactions && (
           <div 
             className={cn(
-              "absolute z-10 bg-popover border rounded-full p-2 shadow-lg mb-2",
+              "absolute z-20 bg-popover border rounded-full p-2 shadow-lg mb-2 animate-in fade-in-0 zoom-in-95 duration-200",
               "flex gap-1",
               isOwn ? "right-0 bottom-full" : "left-0 bottom-full"
             )}
-            onMouseLeave={() => setShowReactions(false)}
+            onPointerLeave={() => setShowReactions(false)}
           >
             {REACTION_EMOJIS.map((emoji) => (
               <Button
                 key={emoji}
                 variant="ghost"
                 size="sm"
-                className="w-8 h-8 p-0 hover:bg-muted"
+                className="w-8 h-8 p-0 hover:bg-muted hover:scale-110 transition-all duration-150"
                 onClick={() => handleReactionClick(emoji)}
               >
-                {emoji}
+                <span className="text-lg">{emoji}</span>
               </Button>
             ))}
           </div>
@@ -137,10 +137,10 @@ export default function MessageBubble({
           onDoubleClick={() => setShowReactions(true)}
           onContextMenu={(e) => {
             e.preventDefault();
-            handleLongPress();
+            setShowReactions(true);
           }}
           onTouchStart={(e) => {
-            const timer = setTimeout(handleLongPress, 500);
+            const timer = setTimeout(() => setShowReactions(true), 500);
             const cleanup = () => clearTimeout(timer);
             
             e.currentTarget.addEventListener('touchend', cleanup, { once: true });

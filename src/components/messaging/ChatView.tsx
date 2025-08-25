@@ -194,6 +194,14 @@ export default function ChatView({ conversationId, onBack }: ChatViewProps) {
            new Date(nextMessage.createdAt).getTime() - new Date(message.createdAt).getTime() > 60000;
   };
 
+  const shouldShowName = (message: Message, index: number, messages: Message[]) => {
+    if (message.senderId === currentUserId || conversation?.type !== 'group') return false;
+    
+    const prevMessage = messages[index - 1];
+    return !prevMessage || prevMessage.senderId !== message.senderId ||
+           new Date(message.createdAt).getTime() - new Date(prevMessage.createdAt).getTime() > 60000;
+  };
+
   const display = getConversationDisplay();
   const groupedMessages = groupMessagesByDate(messages);
 
@@ -288,14 +296,23 @@ export default function ChatView({ conversationId, onBack }: ChatViewProps) {
               {/* Messages for this date */}
               <div className="space-y-2">
                 {dateMessages.map((message, index) => (
-                  <MessageBubble
-                    key={message.id}
-                    message={message}
-                    isOwn={message.senderId === currentUserId}
-                    showAvatar={shouldShowAvatar(message, index, dateMessages)}
-                    onReactionAdd={handleReactionAdd}
-                    onReply={setReplyTo}
-                  />
+                  <div key={message.id}>
+                    {/* Show sender name for group messages */}
+                    {shouldShowName(message, index, dateMessages) && (
+                      <div className="flex items-center gap-2 mb-1 ml-10">
+                        <span className="text-xs font-medium text-primary">
+                          {getMockUser(message.senderId)?.name || 'Unknown User'}
+                        </span>
+                      </div>
+                    )}
+                    <MessageBubble
+                      message={message}
+                      isOwn={message.senderId === currentUserId}
+                      showAvatar={shouldShowAvatar(message, index, dateMessages)}
+                      onReactionAdd={handleReactionAdd}
+                      onReply={setReplyTo}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
