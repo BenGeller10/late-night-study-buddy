@@ -84,7 +84,6 @@ const TutorProfile = () => {
         bio: profile.bio,
         experience: profile.experience,
         major: profile.major,
-        venmo_handle: profile.venmo_handle,
         subjects
       };
 

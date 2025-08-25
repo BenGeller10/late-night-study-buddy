@@ -193,7 +193,6 @@ const Auth = () => {
             full_name: fullName.trim(),
             avatar_url: profileImage,
             is_tutor: isTutor,
-            venmo_handle: isTutor ? venmoHandle.trim() : null,
             schedule_data: scheduleData,
             bio: tutorData?.bio || "",
             experience: tutorData?.experience || "",

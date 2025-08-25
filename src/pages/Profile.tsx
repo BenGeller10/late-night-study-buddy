@@ -54,7 +54,6 @@ const Profile = () => {
               display_name: profile.display_name,
               avatar_url: profile.avatar_url,
               is_tutor: profile.is_tutor,
-              venmo_handle: profile.venmo_handle,
               bio: profile.bio,
               campus: profile.campus,
               major: profile.major,

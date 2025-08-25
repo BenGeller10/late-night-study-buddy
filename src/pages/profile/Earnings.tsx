@@ -222,9 +222,10 @@ const Earnings = ({ user, onBack }: EarningsProps) => {
           </CardHeader>
           <CardContent>
             <div className="space-y-2 text-sm">
-              <p>• Payments are processed within 24-48 hours after session completion</p>
-              <p>• Students pay via Venmo to: <span className="font-mono bg-muted px-1 rounded">{user?.venmo_handle || '@your-venmo'}</span></p>
-              <p>• You'll receive a notification when payment is confirmed</p>
+              <p>• Payments are processed securely through Stripe within 24-48 hours</p>
+              <p>• Students pay with credit/debit cards during booking</p>
+              <p>• Platform takes 8% commission, you receive 92% of session fee</p>
+              <p>• Earnings are automatically transferred to your bank account</p>
             </div>
           </CardContent>
         </Card>
