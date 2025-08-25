@@ -206,7 +206,7 @@ export default function ChatView({ conversationId, onBack }: ChatViewProps) {
   }
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex flex-col h-screen bg-background">
       {/* Header */}
       <div className="flex items-center gap-3 p-4 border-b border-border/20 bg-background/95 backdrop-blur-sm">
         <Button variant="ghost" size="sm" onClick={onBack} className="p-0 w-8 h-8">

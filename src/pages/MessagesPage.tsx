@@ -21,7 +21,7 @@ export default function MessagesPage() {
 
   return (
     <PageTransition>
-      <div className="h-screen bg-background overflow-hidden">
+      <div className="h-screen bg-background overflow-hidden pb-20">
         {selectedConversationId ? (
           <ChatView 
             conversationId={selectedConversationId} 
