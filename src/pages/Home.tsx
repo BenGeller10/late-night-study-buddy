@@ -11,6 +11,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useCleanUserInit } from "@/hooks/useCleanUserInit";
 import { useCollegeAgent } from "@/hooks/useCollegeAgent";
 import useSessionManager from "@/hooks/useSessionManager";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { TrendingUp, Users } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const { user, loading, isAuthenticated } = useSessionManager();
@@ -19,6 +23,7 @@ const Home = () => {
   const [profileLoading, setProfileLoading] = useState(true);
   const [showUsernameSetup, setShowUsernameSetup] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const { needsUsername, needsPersonalization, isOnboardingComplete, completePersonalizationStep } = useCleanUserInit();
   const { showQuestionPopup, closeQuestionPopup } = useCollegeAgent(user?.id || null);
@@ -214,6 +219,31 @@ const Home = () => {
 
   return (
     <PageTransition>
+      {/* Investor Demo Banner */}
+      <div className="bg-gradient-to-r from-primary/10 to-purple-600/10 border-b border-primary/20">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <Badge className="bg-primary text-primary-foreground">
+                <TrendingUp className="w-3 h-3 mr-1" />
+                Investor Demo
+              </Badge>
+              <p className="text-sm font-medium">
+                See Campus Connect's growth metrics and platform overview
+              </p>
+            </div>
+            <Button 
+              onClick={() => navigate('/investor-demo')}
+              size="sm"
+              className="bg-gradient-to-r from-primary to-purple-600"
+            >
+              <Users className="w-4 h-4 mr-2" />
+              View Demo
+            </Button>
+          </div>
+        </div>
+      </div>
+
       <div className="transition-all duration-500 ease-in-out">
         {isTutor ? (
           <TutorHome user={user} onRoleSwitch={handleRoleSwitch} />

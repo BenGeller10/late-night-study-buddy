@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Loader2, Calendar, MessageCircle } from "lucide-react";
+import { CheckCircle, Loader2, Calendar, MessageCircle, Download, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import PageTransition from "@/components/layout/PageTransition";
+import { createGoogleCalendarUrl, createOutlookCalendarUrl, downloadCalendarEvent, CalendarEvent } from "@/lib/calendar-utils";
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
@@ -157,49 +158,115 @@ const PaymentSuccess = () => {
             </div>
 
             {session && (
-              <div className="bg-muted/30 p-4 rounded-lg space-y-3">
-                <h3 className="font-semibold">Session Details</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Tutor:</span>
-                    <span className="font-medium">
-                      {session.tutor_profile?.display_name || 'Unknown'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Subject:</span>
-                    <span className="font-medium">
-                      {session.subject?.name || 'General Tutoring'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Date:</span>
-                    <span className="font-medium">
-                      {new Date(session.scheduled_at).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Time:</span>
-                    <span className="font-medium">
-                      {new Date(session.scheduled_at).toLocaleTimeString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Duration:</span>
-                    <span className="font-medium">{session.duration_minutes} minutes</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Amount:</span>
-                    <span className="font-medium">${session.total_amount}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Status:</span>
-                    <span className="font-medium text-green-600 capitalize">
-                      {session.status.replace('_', ' ')}
-                    </span>
+              <>
+                <div className="bg-muted/30 p-4 rounded-lg space-y-3">
+                  <h3 className="font-semibold">Session Details</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Tutor:</span>
+                      <span className="font-medium">
+                        {session.tutor_profile?.display_name || 'Unknown'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Subject:</span>
+                      <span className="font-medium">
+                        {session.subject?.name || 'General Tutoring'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Date:</span>
+                      <span className="font-medium">
+                        {new Date(session.scheduled_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Time:</span>
+                      <span className="font-medium">
+                        {new Date(session.scheduled_at).toLocaleTimeString()}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Duration:</span>
+                      <span className="font-medium">{session.duration_minutes} minutes</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Amount:</span>
+                      <span className="font-medium">${session.total_amount}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Status:</span>
+                      <span className="font-medium text-green-600 capitalize">
+                        {session.status.replace('_', ' ')}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
+
+                {/* Add to Calendar Section */}
+                <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                  <h3 className="font-semibold mb-3 flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    Add to Your Calendar
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const calendarEvent: CalendarEvent = {
+                          title: `Tutoring Session - ${session.subject?.name || 'General'}`,
+                          description: `Tutoring session with ${session.tutor_profile?.display_name}\nSubject: ${session.subject?.name || 'General Tutoring'}\nAmount: $${session.total_amount}`,
+                          start: new Date(session.scheduled_at),
+                          end: new Date(new Date(session.scheduled_at).getTime() + session.duration_minutes * 60 * 1000),
+                          location: session.location || 'Online'
+                        };
+                        window.open(createGoogleCalendarUrl(calendarEvent), '_blank');
+                      }}
+                      className="w-full"
+                    >
+                      <ExternalLink className="w-3 h-3 mr-1" />
+                      Google
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const calendarEvent: CalendarEvent = {
+                          title: `Tutoring Session - ${session.subject?.name || 'General'}`,
+                          description: `Tutoring session with ${session.tutor_profile?.display_name}\nSubject: ${session.subject?.name || 'General Tutoring'}\nAmount: $${session.total_amount}`,
+                          start: new Date(session.scheduled_at),
+                          end: new Date(new Date(session.scheduled_at).getTime() + session.duration_minutes * 60 * 1000),
+                          location: session.location || 'Online'
+                        };
+                        window.open(createOutlookCalendarUrl(calendarEvent), '_blank');
+                      }}
+                      className="w-full"
+                    >
+                      <ExternalLink className="w-3 h-3 mr-1" />
+                      Outlook
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const calendarEvent: CalendarEvent = {
+                          title: `Tutoring Session - ${session.subject?.name || 'General'}`,
+                          description: `Tutoring session with ${session.tutor_profile?.display_name}\nSubject: ${session.subject?.name || 'General Tutoring'}\nAmount: $${session.total_amount}`,
+                          start: new Date(session.scheduled_at),
+                          end: new Date(new Date(session.scheduled_at).getTime() + session.duration_minutes * 60 * 1000),
+                          location: session.location || 'Online'
+                        };
+                        downloadCalendarEvent(calendarEvent);
+                      }}
+                      className="w-full"
+                    >
+                      <Download className="w-3 h-3 mr-1" />
+                      Download
+                    </Button>
+                  </div>
+                </div>
+              </>
             )}
 
             <div className="space-y-3">

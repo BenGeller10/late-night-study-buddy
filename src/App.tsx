@@ -8,6 +8,7 @@ import AppShell from "@/components/AppShell";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import InvestorDemo from "./pages/InvestorDemo";
 import NotFound from "./pages/NotFound";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
@@ -34,6 +35,7 @@ const App = () => {
                 <Route path="/" element={<Index />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/payment-success" element={<PaymentSuccess />} />
+                <Route path="/investor-demo" element={<InvestorDemo />} />
                 <Route path="/*" element={<AppShell />} />
               </Routes>
             </TooltipProvider>
