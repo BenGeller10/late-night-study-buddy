@@ -88,26 +88,46 @@ const handleCalendlyClick = () => {
     id: string;
     name: string;
     code: string;
+    hourly_rate: number;
   }>>([]);
 
-  // Load subjects from database
+  // Load subjects that this tutor teaches
   useEffect(() => {
-    const loadSubjects = async () => {
+    const loadTutorSubjects = async () => {
+      if (!tutor?.id) return;
+      
       try {
-        const { data: subjects, error } = await supabase
-          .from('subjects')
-          .select('id, name, code')
-          .order('name');
+        const { data: tutorSubjects, error } = await supabase
+          .from('tutor_subjects')
+          .select(`
+            subject_id,
+            hourly_rate,
+            subjects!inner (
+              id,
+              name,
+              code
+            )
+          `)
+          .eq('tutor_id', tutor.id);
         
         if (error) throw error;
-        setAvailableSubjects(subjects || []);
+        
+        // Transform the data to include hourly rate with subject info
+        const subjects = tutorSubjects?.map(ts => ({
+          id: ts.subjects.id,
+          name: ts.subjects.name,
+          code: ts.subjects.code,
+          hourly_rate: ts.hourly_rate
+        })) || [];
+        
+        setAvailableSubjects(subjects);
       } catch (error) {
-        console.error('Error loading subjects:', error);
+        console.error('Error loading tutor subjects:', error);
       }
     };
 
-    loadSubjects();
-  }, []);
+    loadTutorSubjects();
+  }, [tutor?.id]);
 
   const createSession = async () => {
     if (!selectedDate || !selectedTime || !selectedSubject) {
@@ -127,7 +147,7 @@ const handleCalendlyClick = () => {
 
       const scheduledAt = new Date(`${selectedDate}T${selectedTime}:00`);
       const selectedSubjectData = availableSubjects.find(s => s.id === selectedSubject);
-      const hourlyRate = tutor.subjects?.find(s => s.id === selectedSubject)?.hourly_rate || tutor.hourlyRate || 25;
+      const hourlyRate = selectedSubjectData?.hourly_rate || tutor.hourlyRate || 25;
       const durationMinutes = parseInt(duration);
       const totalAmount = (hourlyRate * durationMinutes) / 60;
 
@@ -329,7 +349,7 @@ const handleCalendlyClick = () => {
                         <SelectItem key={subject.id} value={subject.id}>
                           <div className="flex justify-between items-center w-full">
                             <span>{subject.code} - {subject.name}</span>
-                            <span className="text-muted-foreground ml-2">${tutor.hourlyRate || 25}/hr</span>
+                            <span className="text-muted-foreground ml-2">${subject.hourly_rate}/hr</span>
                           </div>
                         </SelectItem>
                       ))}
