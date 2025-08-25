@@ -9,6 +9,7 @@ import Profile from "@/pages/Profile";
 import Chat from "@/pages/Chat";
 import GroupChatInterface from "@/components/chat/GroupChatInterface";
 import MessagingPage from "@/components/chat/MessagingPage";
+import MessagesPage from "@/pages/MessagesPage";
 import TutorProfile from "@/pages/TutorProfile";
 import LikedTutors from "@/pages/LikedTutors";
 import UserDirectory from "@/components/users/UserDirectory";
@@ -89,8 +90,9 @@ const StudentInterface = ({ user, onRoleSwitch }: StudentInterfaceProps) => {
         <Route path="/study-groups" element={<StudyGroups />} />
         <Route path="/support" element={<Support />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route path="/chat/:tutorId" element={<Chat />} />
+        <Route path="/chat" element={<MessagesPage />} />
+        <Route path="/chat/legacy" element={<Chat />} />
+        <Route path="/chat/legacy/:tutorId" element={<Chat />} />
         <Route path="/chat/conversation/:conversationId" element={<MessagingPage />} />
         <Route path="/chat/group/:groupId" element={<GroupChatInterface />} />
         <Route path="/tutor/:tutorId" element={<TutorProfile />} />
