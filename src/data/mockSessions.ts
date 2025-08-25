@@ -16,7 +16,7 @@ export interface Session {
 export const mockSessions: Session[] = [
   {
     id: "s1",
-    tutorId: "t1",
+    tutorId: "11111111-1111-1111-1111-111111111111",
     tutorName: "Sarah Chen",
     tutorAvatar: "https://images.unsplash.com/photo-1494790108755-2616c367fb0c?w=100&h=100&fit=crop&crop=face",
     subject: "Calculus",
@@ -30,7 +30,7 @@ export const mockSessions: Session[] = [
   },
   {
     id: "s2",
-    tutorId: "t3",
+    tutorId: "33333333-3333-3333-3333-333333333333",
     tutorName: "Emily Johnson",
     tutorAvatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
     subject: "Organic Chemistry",
@@ -44,7 +44,7 @@ export const mockSessions: Session[] = [
   },
   {
     id: "s3",
-    tutorId: "t2",
+    tutorId: "22222222-2222-2222-2222-222222222222",
     tutorName: "Mike Rodriguez",
     tutorAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
     subject: "Data Structures",
@@ -66,15 +66,15 @@ export interface Availability {
 }
 
 export const mockAvailability: Availability[] = [
-  // Sarah Chen (t1)
-  { tutorId: "t1", start: "2024-08-17T09:00:00.000Z", end: "2024-08-17T10:00:00.000Z" },
-  { tutorId: "t1", start: "2024-08-17T15:00:00.000Z", end: "2024-08-17T16:00:00.000Z", isBooked: true },
-  { tutorId: "t1", start: "2024-08-18T10:00:00.000Z", end: "2024-08-18T11:30:00.000Z" },
-  { tutorId: "t1", start: "2024-08-18T14:00:00.000Z", end: "2024-08-18T15:00:00.000Z" },
+  // Sarah Chen (11111111-1111-1111-1111-111111111111)
+  { tutorId: "11111111-1111-1111-1111-111111111111", start: "2024-08-17T09:00:00.000Z", end: "2024-08-17T10:00:00.000Z" },
+  { tutorId: "11111111-1111-1111-1111-111111111111", start: "2024-08-17T15:00:00.000Z", end: "2024-08-17T16:00:00.000Z", isBooked: true },
+  { tutorId: "11111111-1111-1111-1111-111111111111", start: "2024-08-18T10:00:00.000Z", end: "2024-08-18T11:30:00.000Z" },
+  { tutorId: "11111111-1111-1111-1111-111111111111", start: "2024-08-18T14:00:00.000Z", end: "2024-08-18T15:00:00.000Z" },
   
-  // Mike Rodriguez (t2)
-  { tutorId: "t2", start: "2024-08-17T10:00:00.000Z", end: "2024-08-17T11:00:00.000Z" },
-  { tutorId: "t2", start: "2024-08-17T16:00:00.000Z", end: "2024-08-17T17:30:00.000Z" },
-  { tutorId: "t2", start: "2024-08-18T13:00:00.000Z", end: "2024-08-18T14:00:00.000Z" },
-  { tutorId: "t2", start: "2024-08-19T09:00:00.000Z", end: "2024-08-19T10:30:00.000Z" }
+  // Mike Rodriguez (22222222-2222-2222-2222-222222222222)
+  { tutorId: "22222222-2222-2222-2222-222222222222", start: "2024-08-17T10:00:00.000Z", end: "2024-08-17T11:00:00.000Z" },
+  { tutorId: "22222222-2222-2222-2222-222222222222", start: "2024-08-17T16:00:00.000Z", end: "2024-08-17T17:30:00.000Z" },
+  { tutorId: "22222222-2222-2222-2222-222222222222", start: "2024-08-18T13:00:00.000Z", end: "2024-08-18T14:00:00.000Z" },
+  { tutorId: "22222222-2222-2222-2222-222222222222", start: "2024-08-19T09:00:00.000Z", end: "2024-08-19T10:30:00.000Z" }
 ];

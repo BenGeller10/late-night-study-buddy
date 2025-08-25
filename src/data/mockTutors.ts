@@ -14,7 +14,7 @@ export interface MockTutor {
 
 export const mockTutors: MockTutor[] = [
   {
-    id: "t1",
+    id: "11111111-1111-1111-1111-111111111111",
     name: "Sarah Chen",
     rating: 4.9,
     price: 45,
@@ -27,8 +27,8 @@ export const mockTutors: MockTutor[] = [
     major: "Mathematics PhD"
   },
   {
-    id: "t2",
-    name: "Marcus Johnson", 
+    id: "22222222-2222-2222-2222-222222222222",
+    name: "Marcus Johnson",
     rating: 4.8,
     price: 38,
     school: "Syracuse University",
@@ -40,7 +40,7 @@ export const mockTutors: MockTutor[] = [
     major: "Computer Science MS"
   },
   {
-    id: "t3",
+    id: "33333333-3333-3333-3333-333333333333",
     name: "Emma Rodriguez",
     rating: 5.0,
     price: 42,
@@ -53,7 +53,7 @@ export const mockTutors: MockTutor[] = [
     major: "Biology/Pre-Med"
   },
   {
-    id: "t4",
+    id: "44444444-4444-4444-4444-444444444444",
     name: "David Kim",
     rating: 4.7,
     price: 35,
@@ -66,7 +66,7 @@ export const mockTutors: MockTutor[] = [
     major: "Economics & Finance"
   },
   {
-    id: "t5",
+    id: "55555555-5555-5555-5555-555555555555",
     name: "Jessica Park",
     rating: 4.6,
     price: 40,
@@ -79,7 +79,7 @@ export const mockTutors: MockTutor[] = [
     major: "Psychology PhD"
   },
   {
-    id: "t6", 
+    id: "66666666-6666-6666-6666-666666666666", 
     name: "Michael Thompson",
     rating: 4.9,
     price: 30,
@@ -92,7 +92,7 @@ export const mockTutors: MockTutor[] = [
     major: "English Literature"
   },
   {
-    id: "t7",
+    id: "77777777-7777-7777-7777-777777777777",
     name: "Aisha Patel",
     rating: 4.8,
     price: 48,
@@ -105,7 +105,7 @@ export const mockTutors: MockTutor[] = [
     major: "Chemical Engineering"
   },
   {
-    id: "t8",
+    id: "88888888-8888-8888-8888-888888888888",
     name: "Ryan Mitchell",
     rating: 4.5,
     price: 32,

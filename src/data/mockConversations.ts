@@ -23,7 +23,7 @@ export const mockConversations: Conversation[] = [
   {
     id: "conv1",
     participant: {
-      id: "t1",
+      id: "11111111-1111-1111-1111-111111111111",
       name: "Sarah Chen",
       avatar: "https://images.unsplash.com/photo-1494790108755-2616c367fb0c?w=100&h=100&fit=crop&crop=face",
       status: "online"
@@ -54,7 +54,7 @@ export const mockConversations: Conversation[] = [
   {
     id: "conv2",
     participant: {
-      id: "t2",
+      id: "22222222-2222-2222-2222-222222222222",
       name: "Mike Rodriguez",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
       status: "away"
