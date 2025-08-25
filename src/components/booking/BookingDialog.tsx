@@ -117,8 +117,7 @@ const handleCalendlyClick = () => {
           duration_minutes: durationMinutes,
           total_amount: totalAmount,
           status: 'pending_payment',
-          location: 'Online',
-          session_type: 'tutoring'
+          location: 'Online'
         })
         .select()
         .single();
