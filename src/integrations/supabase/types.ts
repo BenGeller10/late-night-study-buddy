@@ -83,13 +83,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
           },
-          {
-            foreignKeyName: "campus_posts_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "public_tutor_profiles"
-            referencedColumns: ["user_id"]
-          },
         ]
       }
       campus_stories: {
@@ -156,24 +149,10 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "conversations_participant1_id_fkey"
-            columns: ["participant1_id"]
-            isOneToOne: false
-            referencedRelation: "public_tutor_profiles"
-            referencedColumns: ["user_id"]
-          },
-          {
             foreignKeyName: "conversations_participant2_id_fkey"
             columns: ["participant2_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "conversations_participant2_id_fkey"
-            columns: ["participant2_id"]
-            isOneToOne: false
-            referencedRelation: "public_tutor_profiles"
             referencedColumns: ["user_id"]
           },
         ]
@@ -215,13 +194,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
           },
-          {
-            foreignKeyName: "messages_sender_id_fkey"
-            columns: ["sender_id"]
-            isOneToOne: false
-            referencedRelation: "public_tutor_profiles"
-            referencedColumns: ["user_id"]
-          },
         ]
       }
       post_reactions: {
@@ -259,13 +231,6 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "post_reactions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "public_tutor_profiles"
             referencedColumns: ["user_id"]
           },
         ]
@@ -402,13 +367,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
           },
-          {
-            foreignKeyName: "search_queries_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "public_tutor_profiles"
-            referencedColumns: ["user_id"]
-          },
         ]
       }
       sessions: {
@@ -475,13 +433,6 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "sessions_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "public_tutor_profiles"
-            referencedColumns: ["user_id"]
-          },
-          {
             foreignKeyName: "sessions_subject_id_fkey"
             columns: ["subject_id"]
             isOneToOne: false
@@ -493,13 +444,6 @@ export type Database = {
             columns: ["tutor_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "sessions_tutor_id_fkey"
-            columns: ["tutor_id"]
-            isOneToOne: false
-            referencedRelation: "public_tutor_profiles"
             referencedColumns: ["user_id"]
           },
         ]
@@ -567,13 +511,6 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: true
             referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "study_streaks_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "public_tutor_profiles"
             referencedColumns: ["user_id"]
           },
         ]
@@ -684,13 +621,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
           },
-          {
-            foreignKeyName: "tutor_subjects_tutor_id_fkey"
-            columns: ["tutor_id"]
-            isOneToOne: false
-            referencedRelation: "public_tutor_profiles"
-            referencedColumns: ["user_id"]
-          },
         ]
       }
       user_badges: {
@@ -727,13 +657,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
           },
-          {
-            foreignKeyName: "user_badges_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "public_tutor_profiles"
-            referencedColumns: ["user_id"]
-          },
         ]
       }
       user_follows: {
@@ -764,24 +687,10 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "user_follows_follower_id_fkey"
-            columns: ["follower_id"]
-            isOneToOne: false
-            referencedRelation: "public_tutor_profiles"
-            referencedColumns: ["user_id"]
-          },
-          {
             foreignKeyName: "user_follows_following_id_fkey"
             columns: ["following_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "user_follows_following_id_fkey"
-            columns: ["following_id"]
-            isOneToOne: false
-            referencedRelation: "public_tutor_profiles"
             referencedColumns: ["user_id"]
           },
         ]
@@ -830,69 +739,7 @@ export type Database = {
       }
     }
     Views: {
-      public_tutor_profiles: {
-        Row: {
-          avatar_url: string | null
-          bio: string | null
-          created_at: string | null
-          display_name: string | null
-          experience: string | null
-          followers_count: number | null
-          following_count: number | null
-          gpa: string | null
-          graduation_year: number | null
-          id: string | null
-          is_tutor: boolean | null
-          major: string | null
-          onboarding_completed: boolean | null
-          show_gpa: boolean | null
-          updated_at: string | null
-          user_id: string | null
-          venmo_handle: string | null
-          year: number | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          bio?: string | null
-          created_at?: string | null
-          display_name?: string | null
-          experience?: string | null
-          followers_count?: number | null
-          following_count?: number | null
-          gpa?: never
-          graduation_year?: number | null
-          id?: string | null
-          is_tutor?: boolean | null
-          major?: string | null
-          onboarding_completed?: boolean | null
-          show_gpa?: never
-          updated_at?: string | null
-          user_id?: string | null
-          venmo_handle?: never
-          year?: number | null
-        }
-        Update: {
-          avatar_url?: string | null
-          bio?: string | null
-          created_at?: string | null
-          display_name?: string | null
-          experience?: string | null
-          followers_count?: number | null
-          following_count?: number | null
-          gpa?: never
-          graduation_year?: number | null
-          id?: string | null
-          is_tutor?: boolean | null
-          major?: string | null
-          onboarding_completed?: boolean | null
-          show_gpa?: never
-          updated_at?: string | null
-          user_id?: string | null
-          venmo_handle?: never
-          year?: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       check_tutor_availability: {
