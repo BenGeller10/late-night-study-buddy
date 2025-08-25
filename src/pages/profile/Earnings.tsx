@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { DollarSign, Calendar, TrendingUp, Clock, User } from "lucide-react";
+import { DollarSign, Calendar, TrendingUp, Clock, User, CreditCard, ArrowUpRight, AlertCircle, CheckCircle } from "lucide-react";
 
 interface Earning {
   id: string;
@@ -16,6 +17,20 @@ interface Earning {
   status: 'completed' | 'pending' | 'paid';
 }
 
+interface Payout {
+  id: string;
+  amount: number;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  requested_at: string;
+  processed_at?: string;
+}
+
+interface ConnectStatus {
+  has_account: boolean;
+  onboarding_completed: boolean;
+  payouts_enabled: boolean;
+}
+
 interface EarningsProps {
   user: any;
   onBack: () => void;
@@ -23,13 +38,26 @@ interface EarningsProps {
 
 const Earnings = ({ user, onBack }: EarningsProps) => {
   const [earnings, setEarnings] = useState<Earning[]>([]);
+  const [payouts, setPayouts] = useState<Payout[]>([]);
+  const [connectStatus, setConnectStatus] = useState<ConnectStatus>({
+    has_account: false,
+    onboarding_completed: false,
+    payouts_enabled: false,
+  });
   const [loading, setLoading] = useState(true);
   const [totalEarnings, setTotalEarnings] = useState(0);
   const [thisMonthEarnings, setThisMonthEarnings] = useState(0);
+  const [availableBalance, setAvailableBalance] = useState(0);
+  const [payoutAmount, setPayoutAmount] = useState('');
+  const [payoutLoading, setPayoutLoading] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchEarnings();
+    if (user?.id) {
+      fetchEarnings();
+      fetchPayouts();
+      checkConnectStatus();
+    }
   }, [user]);
 
   const fetchEarnings = async () => {
@@ -76,6 +104,11 @@ const Earnings = ({ user, onBack }: EarningsProps) => {
 
       setTotalEarnings(total);
       setThisMonthEarnings(thisMonth);
+      
+      // Calculate available balance after payouts
+      const totalPayouts = payouts.reduce((sum, payout) => 
+        payout.status === 'completed' || payout.status === 'processing' ? sum + payout.amount : sum, 0);
+      setAvailableBalance(total - totalPayouts);
     } catch (error: any) {
       console.error('Error fetching earnings:', error);
       toast({
@@ -88,11 +121,117 @@ const Earnings = ({ user, onBack }: EarningsProps) => {
     }
   };
 
+  const fetchPayouts = async () => {
+    if (!user?.id) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('payouts')
+        .select('*')
+        .eq('tutor_id', user.id)
+        .order('requested_at', { ascending: false });
+
+      if (error) throw error;
+      
+      // Map and type cast the payouts data
+      const payoutsData: Payout[] = (data || []).map(payout => ({
+        id: payout.id,
+        amount: payout.amount,
+        status: payout.status as 'pending' | 'processing' | 'completed' | 'failed',
+        requested_at: payout.requested_at,
+        processed_at: payout.processed_at,
+      }));
+      
+      setPayouts(payoutsData);
+    } catch (error) {
+      console.error('Error fetching payouts:', error);
+    }
+  };
+
+  const checkConnectStatus = async () => {
+    if (!user?.id) return;
+
+    try {
+      const { data, error } = await supabase.functions.invoke('check-connect-status');
+      
+      if (error) throw error;
+      setConnectStatus(data);
+    } catch (error) {
+      console.error('Error checking connect status:', error);
+    }
+  };
+
+  const handleSetupAccount = async () => {
+    try {
+      setPayoutLoading(true);
+      const { data, error } = await supabase.functions.invoke('create-connect-account');
+      
+      if (error) throw error;
+      
+      // Open Stripe Connect onboarding in new tab
+      if (data.url) {
+        window.open(data.url, '_blank');
+        toast({
+          title: "Opening Stripe setup",
+          description: "Complete your account setup to start receiving payouts.",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Setup failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setPayoutLoading(false);
+    }
+  };
+
+  const handleRequestPayout = async () => {
+    const amount = parseFloat(payoutAmount);
+    if (!amount || amount < 10) {
+      toast({
+        title: "Invalid amount",
+        description: "Minimum payout amount is $10.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setPayoutLoading(true);
+      const { data, error } = await supabase.functions.invoke('request-payout', {
+        body: { amount }
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Payout requested!",
+        description: `$${amount} payout is being processed.`,
+      });
+      
+      setPayoutAmount('');
+      fetchPayouts();
+      fetchEarnings(); // Refresh to update available balance
+    } catch (error: any) {
+      toast({
+        title: "Payout failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setPayoutLoading(false);
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'paid': return 'bg-green-100 text-green-800';
       case 'completed': return 'bg-blue-100 text-blue-800';
       case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'processing': return 'bg-purple-100 text-purple-800';
+      case 'failed': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -149,14 +288,14 @@ const Earnings = ({ user, onBack }: EarningsProps) => {
             </CardContent>
           </Card>
 
-          <Card className="glass-card border-blue-200 dark:border-blue-800">
+          <Card className="glass-card border-purple-200 dark:border-purple-800">
             <CardContent className="p-6 text-center">
-              <TrendingUp className="w-8 h-8 text-blue-500 mx-auto mb-2" />
-              <div className="text-3xl font-bold text-blue-600">
-                ${thisMonthEarnings}
+              <ArrowUpRight className="w-8 h-8 text-purple-500 mx-auto mb-2" />
+              <div className="text-3xl font-bold text-purple-600">
+                ${availableBalance.toFixed(2)}
               </div>
               <div className="text-sm text-muted-foreground">
-                This Month
+                Available to Withdraw
               </div>
             </CardContent>
           </Card>
@@ -190,7 +329,86 @@ const Earnings = ({ user, onBack }: EarningsProps) => {
           </Card>
         </div>
 
-        {/* Payment Status Info */}
+        {/* Payout Setup & Request */}
+        <Card className="glass-card border-blue-200 dark:border-blue-800">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+              <CreditCard className="w-5 h-5" />
+              Withdraw Earnings
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {!connectStatus.has_account ? (
+              <div className="text-center py-4">
+                <AlertCircle className="w-12 h-12 text-blue-500 mx-auto mb-4" />
+                <h3 className="font-medium mb-2">Set up payouts</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Connect your bank account to receive your earnings via direct deposit.
+                </p>
+                <Button 
+                  onClick={handleSetupAccount}
+                  disabled={payoutLoading}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  {payoutLoading ? 'Setting up...' : 'Set up payouts'}
+                </Button>
+              </div>
+            ) : !connectStatus.onboarding_completed ? (
+              <div className="text-center py-4">
+                <Clock className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
+                <h3 className="font-medium mb-2">Complete account setup</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Finish setting up your account to start receiving payouts.
+                </p>
+                <Button 
+                  onClick={handleSetupAccount}
+                  disabled={payoutLoading}
+                  variant="outline"
+                >
+                  {payoutLoading ? 'Opening...' : 'Complete setup'}
+                </Button>
+              </div>
+            ) : connectStatus.payouts_enabled && availableBalance >= 10 ? (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-green-600">
+                  <CheckCircle className="w-5 h-5" />
+                  <span className="font-medium">Ready to receive payouts</span>
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Amount to withdraw"
+                    value={payoutAmount}
+                    onChange={(e) => setPayoutAmount(e.target.value)}
+                    min="10"
+                    max={availableBalance}
+                    step="0.01"
+                  />
+                  <Button 
+                    onClick={handleRequestPayout}
+                    disabled={payoutLoading || !payoutAmount || parseFloat(payoutAmount) < 10}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    {payoutLoading ? 'Processing...' : 'Withdraw'}
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Minimum withdrawal: $10 • Available: ${availableBalance.toFixed(2)}
+                </p>
+              </div>
+            ) : (
+              <div className="text-center py-4">
+                <DollarSign className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
+                <h3 className="font-medium mb-2">Insufficient balance</h3>
+                <p className="text-sm text-muted-foreground">
+                  You need at least $10 to request a payout.
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Payment Information */}
         <Card className="glass-card border-yellow-200 dark:border-yellow-800">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-yellow-700 dark:text-yellow-300">
@@ -200,13 +418,54 @@ const Earnings = ({ user, onBack }: EarningsProps) => {
           </CardHeader>
           <CardContent>
             <div className="space-y-2 text-sm">
-              <p>• Payments are processed securely through Stripe within 24-48 hours</p>
+              <p>• Payouts are processed securely through Stripe within 1-2 business days</p>
               <p>• Students pay with credit/debit cards during booking</p>
               <p>• Platform takes 8% commission, you receive 92% of session fee</p>
-              <p>• Earnings are automatically transferred to your bank account</p>
+              <p>• Direct deposits go straight to your connected bank account</p>
             </div>
           </CardContent>
         </Card>
+
+        {/* Payout History */}
+        {payouts.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold">Payout History</h2>
+            {payouts.map(payout => (
+              <Card key={payout.id} className="glass-card hover-scale">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center">
+                        <ArrowUpRight className="w-5 h-5 text-purple-600" />
+                      </div>
+                      
+                      <div className="space-y-1">
+                        <div className="font-medium">Payout Request</div>
+                        <div className="text-sm text-muted-foreground">
+                          Requested {formatDate(payout.requested_at)}
+                        </div>
+                        {payout.processed_at && (
+                          <div className="text-xs text-muted-foreground">
+                            Processed {formatDate(payout.processed_at)}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="text-right space-y-2">
+                      <div className="text-lg font-bold text-purple-600">
+                        ${payout.amount.toFixed(2)}
+                      </div>
+                      <Badge className={getStatusColor(payout.status)}>
+                        {payout.status}
+                      </Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
         {/* Recent Earnings */}
         <div className="space-y-4">

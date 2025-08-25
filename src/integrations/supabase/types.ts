@@ -196,6 +196,45 @@ export type Database = {
           },
         ]
       }
+      payouts: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          processed_at: string | null
+          requested_at: string
+          status: string
+          stripe_connect_account_id: string | null
+          stripe_payout_id: string | null
+          tutor_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          processed_at?: string | null
+          requested_at?: string
+          status?: string
+          stripe_connect_account_id?: string | null
+          stripe_payout_id?: string | null
+          tutor_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          processed_at?: string | null
+          requested_at?: string
+          status?: string
+          stripe_connect_account_id?: string | null
+          stripe_payout_id?: string | null
+          tutor_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       post_reactions: {
         Row: {
           created_at: string | null
@@ -241,6 +280,7 @@ export type Database = {
           bio: string | null
           campus: string | null
           completed_intro_questions: boolean | null
+          connect_onboarding_completed: boolean | null
           created_at: string
           display_name: string | null
           dream_career: string | null
@@ -261,6 +301,7 @@ export type Database = {
           semester_goal: string | null
           show_gpa: boolean | null
           stress_relief: string | null
+          stripe_connect_account_id: string | null
           study_preferences: Json | null
           study_preferences_completed: boolean | null
           updated_at: string
@@ -274,6 +315,7 @@ export type Database = {
           bio?: string | null
           campus?: string | null
           completed_intro_questions?: boolean | null
+          connect_onboarding_completed?: boolean | null
           created_at?: string
           display_name?: string | null
           dream_career?: string | null
@@ -294,6 +336,7 @@ export type Database = {
           semester_goal?: string | null
           show_gpa?: boolean | null
           stress_relief?: string | null
+          stripe_connect_account_id?: string | null
           study_preferences?: Json | null
           study_preferences_completed?: boolean | null
           updated_at?: string
@@ -307,6 +350,7 @@ export type Database = {
           bio?: string | null
           campus?: string | null
           completed_intro_questions?: boolean | null
+          connect_onboarding_completed?: boolean | null
           created_at?: string
           display_name?: string | null
           dream_career?: string | null
@@ -327,6 +371,7 @@ export type Database = {
           semester_goal?: string | null
           show_gpa?: boolean | null
           stress_relief?: string | null
+          stripe_connect_account_id?: string | null
           study_preferences?: Json | null
           study_preferences_completed?: boolean | null
           updated_at?: string
