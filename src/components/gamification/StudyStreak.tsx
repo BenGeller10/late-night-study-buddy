@@ -22,31 +22,173 @@ const StudyStreak = ({ userId, compact = false }: StudyStreakProps) => {
     isOnFire: false
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [weekCalendar, setWeekCalendar] = useState<Array<{date: string, completed: boolean}>>([]);
+
+  // Helper functions for streak calculations
+  const getWeekStart = (date: Date): Date => {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day; // Adjust to start from Sunday
+    return new Date(d.setDate(diff));
+  };
+
+  const getWeekKey = (date: Date): string => {
+    const weekStart = getWeekStart(date);
+    return weekStart.toISOString().split('T')[0];
+  };
+
+  const calculateWeeklyBookings = (sessions: Array<{scheduled_at: string}>): Record<string, number> => {
+    const weeklyBookings: Record<string, number> = {};
+    
+    sessions.forEach(session => {
+      const sessionDate = new Date(session.scheduled_at);
+      const weekKey = getWeekKey(sessionDate);
+      weeklyBookings[weekKey] = (weeklyBookings[weekKey] || 0) + 1;
+    });
+    
+    return weeklyBookings;
+  };
+
+  const calculateCurrentStreak = (weeklyBookings: Record<string, number>): number => {
+    const sortedWeeks = Object.keys(weeklyBookings).sort().reverse();
+    let streak = 0;
+    const currentWeek = getWeekKey(new Date());
+    
+    for (const week of sortedWeeks) {
+      if (weeklyBookings[week] >= 1) { // At least 1 session per week counts as streak
+        streak++;
+      } else {
+        break;
+      }
+    }
+    
+    return streak;
+  };
+
+  const calculateLongestStreak = (weeklyBookings: Record<string, number>): number => {
+    const sortedWeeks = Object.keys(weeklyBookings).sort();
+    let longestStreak = 0;
+    let currentStreak = 0;
+    
+    for (const week of sortedWeeks) {
+      if (weeklyBookings[week] >= 1) {
+        currentStreak++;
+        longestStreak = Math.max(longestStreak, currentStreak);
+      } else {
+        currentStreak = 0;
+      }
+    }
+    
+    return longestStreak;
+  };
+
+  const getThisWeekBookings = (sessions: Array<{scheduled_at: string}>): number => {
+    const currentWeek = getWeekKey(new Date());
+    return sessions.filter(session => 
+      getWeekKey(new Date(session.scheduled_at)) === currentWeek
+    ).length;
+  };
+
+  const generateWeekCalendar = (sessions: Array<{scheduled_at: string}>) => {
+    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const today = new Date();
+    const startOfWeek = getWeekStart(today);
+    
+    const calendar = daysOfWeek.map((dayName, index) => {
+      const date = new Date(startOfWeek);
+      date.setDate(startOfWeek.getDate() + index);
+      
+      // Check if there's a session on this day
+      const hasSession = sessions.some(session => {
+        const sessionDate = new Date(session.scheduled_at);
+        return sessionDate.toDateString() === date.toDateString();
+      });
+      
+      return {
+        date: dayName,
+        completed: hasSession
+      };
+    });
+    
+    setWeekCalendar(calendar);
+  };
+
+  const updateStreakInDatabase = async (userId: string, currentStreak: number, longestStreak: number): Promise<void> => {
+    try {
+      const { error } = await supabase
+        .from('study_streaks')
+        .upsert({
+          user_id: userId,
+          current_streak: currentStreak,
+          longest_streak: longestStreak,
+          last_session_week: getWeekKey(new Date()),
+          updated_at: new Date().toISOString()
+        });
+        
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error updating streak in database:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchStreakData = async () => {
       if (!userId) return;
       
       try {
-        const { data, error } = await supabase
-          .from('study_streaks')
-          .select('*')
-          .eq('user_id', userId)
-          .single();
+        // Fetch sessions data to calculate streak based on actual bookings
+        const { data: sessions, error } = await supabase
+          .from('sessions')
+          .select('scheduled_at, status')
+          .eq('student_id', userId)
+          .in('status', ['confirmed', 'completed'])
+          .order('scheduled_at', { ascending: false });
           
-        if (error && error.code !== 'PGRST116') {
-          console.error('Error fetching streak data:', error);
+        if (error) {
+          console.error('Error fetching sessions data:', error);
           return;
         }
         
-        if (data) {
-          setStreakData(prev => ({
-            ...prev,
-            currentStreak: data.current_streak || 0,
-            longestStreak: data.longest_streak || 0,
-            isOnFire: (data.current_streak || 0) >= 3
-          }));
+        if (!sessions || sessions.length === 0) {
+          // No sessions booked yet - show empty state
+          setStreakData({
+            currentStreak: 0,
+            longestStreak: 0,
+            weeklyGoal: 2,
+            completedThisWeek: 0,
+            isOnFire: false
+          });
+          
+          // Generate empty calendar
+          const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+          const emptyCalendar = daysOfWeek.map(day => ({ date: day, completed: false }));
+          setWeekCalendar(emptyCalendar);
+          
+          setIsLoading(false);
+          return;
         }
+
+        // Calculate streak based on weekly bookings
+        const now = new Date();
+        const weeklyBookings = calculateWeeklyBookings(sessions);
+        const currentStreak = calculateCurrentStreak(weeklyBookings);
+        const longestStreak = calculateLongestStreak(weeklyBookings);
+        const thisWeekBookings = getThisWeekBookings(sessions);
+        
+        setStreakData({
+          currentStreak,
+          longestStreak,
+          weeklyGoal: 2,
+          completedThisWeek: thisWeekBookings,
+          isOnFire: currentStreak >= 3
+        });
+
+        // Generate calendar based on actual sessions
+        generateWeekCalendar(sessions);
+
+        // Update the database with calculated streak
+        await updateStreakInDatabase(userId, currentStreak, longestStreak);
+        
       } catch (error) {
         console.error('Error fetching streak data:', error);
       } finally {
@@ -92,24 +234,15 @@ const StudyStreak = ({ userId, compact = false }: StudyStreakProps) => {
     }
   };
 
-  // Mock streak calendar data (last 7 days)
-  const streakCalendar = [
-    { date: 'Mon', completed: true },
-    { date: 'Tue', completed: true },
-    { date: 'Wed', completed: false },
-    { date: 'Thu', completed: true },
-    { date: 'Fri', completed: true },
-    { date: 'Sat', completed: true },
-    { date: 'Sun', completed: false }
-  ];
-
   const getStreakMessage = () => {
-    if (streakData.currentStreak >= 7) {
-      return "You're on fire! 🔥";
+    if (streakData.currentStreak === 0) {
+      return "Book your first session! 📅";
+    } else if (streakData.currentStreak >= 7) {
+      return "Incredible dedication! 🔥";
     } else if (streakData.currentStreak >= 3) {
-      return "Great momentum! 💪";
+      return "Great consistency! 💪";
     } else if (streakData.currentStreak >= 1) {
-      return "Keep it going! 📚";
+      return "Keep booking! 📚";
     } else {
       return "Ready to start? ✨";
     }
@@ -140,11 +273,10 @@ const StudyStreak = ({ userId, compact = false }: StudyStreakProps) => {
     <Card className="glass-card hover:shadow-lg transition-all duration-300">
       <CardContent className="p-4">
         <div className="space-y-4">
-          {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Flame className={cn("w-5 h-5", getStreakColor())} />
-              <span className="font-semibold">Study Streak</span>
+              <span className="font-semibold">Booking Streak</span>
             </div>
             {streakData.isOnFire && (
               <Badge className="bg-gradient-primary text-xs animate-bounce-in">
@@ -159,7 +291,7 @@ const StudyStreak = ({ userId, compact = false }: StudyStreakProps) => {
               {streakData.currentStreak}
             </div>
             <p className="text-sm text-muted-foreground">
-              {streakData.currentStreak === 1 ? 'week' : 'weeks'} in a row
+              {streakData.currentStreak === 1 ? 'week' : 'weeks'} of sessions
             </p>
             <p className="text-xs font-medium">{getStreakMessage()}</p>
           </div>
@@ -168,10 +300,10 @@ const StudyStreak = ({ userId, compact = false }: StudyStreakProps) => {
           <div className="space-y-2">
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Calendar className="w-3 h-3" />
-              This week
+              Sessions this week
             </div>
             <div className="flex gap-1 justify-between">
-              {streakCalendar.map((day, index) => (
+              {weekCalendar.map((day, index) => (
                 <div key={index} className="flex flex-col items-center gap-1">
                   <div className="text-xs text-muted-foreground">{day.date}</div>
                   <div 
