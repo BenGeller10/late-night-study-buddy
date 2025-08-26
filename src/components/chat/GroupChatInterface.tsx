@@ -105,8 +105,8 @@ const GroupChatInterface = () => {
       <div className="flex items-center justify-center h-screen bg-background">
         <div className="text-center space-y-4">
           <h2 className="text-xl font-semibold">Group not found</h2>
-          <Button onClick={() => navigate('/study-groups')}>
-            Back to Study Groups
+          <Button onClick={() => navigate('/home')}>
+            Back to Home
           </Button>
         </div>
       </div>
@@ -130,7 +130,7 @@ const GroupChatInterface = () => {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => navigate('/study-groups')}
+          onClick={() => navigate('/home')}
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>

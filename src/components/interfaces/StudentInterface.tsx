@@ -3,7 +3,6 @@ import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { User } from "@supabase/supabase-js";
 import StudentHome from "@/components/home/StudentHome";
 import MySessions from "@/pages/MySessions";
-import StudyGroups from "@/pages/StudyGroups";
 import Support from "@/pages/Support";
 import Profile from "@/pages/Profile";
 import Chat from "@/pages/Chat";
@@ -17,7 +16,6 @@ import { Link } from "react-router-dom";
 import { 
   Search, 
   Calendar, 
-  Users, 
   MessageCircle,
   HelpCircle,
   User as UserIcon 
@@ -60,12 +58,6 @@ const StudentInterface = ({ user, onRoleSwitch }: StudentInterfaceProps) => {
       activeColor: "text-blue-600"
     },
     {
-      to: "/study-groups", 
-      icon: Users,
-      label: "Study Groups",
-      activeColor: "text-green-500"
-    },
-    {
       to: "/support",
       icon: HelpCircle,
       label: "Support",
@@ -87,7 +79,6 @@ const StudentInterface = ({ user, onRoleSwitch }: StudentInterfaceProps) => {
         <Route path="/home" element={<StudentHome user={user} onRoleSwitch={onRoleSwitch} />} />
         <Route path="/my-sessions" element={<MySessions />} />
         <Route path="/users" element={<UserDirectory />} />
-        <Route path="/study-groups" element={<StudyGroups />} />
         <Route path="/support" element={<Support />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/chat" element={<MessagesPage />} />

@@ -22,13 +22,6 @@ const EmptyStateView = ({ userType, onAction }: EmptyStateViewProps) => {
         color: "bg-blue-500/10 text-blue-600 border-blue-200"
       },
       {
-        icon: Users,
-        title: "Join Study Groups",
-        description: "Connect with classmates studying the same subjects",
-        action: "study-groups",
-        color: "bg-green-500/10 text-green-600 border-green-200"
-      },
-      {
         icon: BookOpen,
         title: "Share Materials",
         description: "Upload and access study resources",

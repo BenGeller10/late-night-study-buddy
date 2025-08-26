@@ -128,9 +128,6 @@ const Home = () => {
       case 'find-tutors':
         window.location.href = '/discover';
         break;
-      case 'study-groups':
-        window.location.href = '/study-groups';
-        break;
       case 'study-materials':
         window.location.href = '/profile';
         break;

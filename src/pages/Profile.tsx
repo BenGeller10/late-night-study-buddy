@@ -4,7 +4,6 @@ import PageTransition from "@/components/layout/PageTransition";
 import SettingsDialog from "@/components/settings/SettingsDialog";
 import MySessions from "@/pages/profile/MySessions";
 import StudyMaterials from "@/pages/profile/StudyMaterials";
-import StudyGroups from "@/pages/profile/StudyGroups";
 import Earnings from "@/pages/profile/Earnings";
 import MySubjects from "@/pages/profile/MySubjects";
 import Students from "@/pages/profile/Students";
@@ -22,7 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useProfileStats } from "@/hooks/useProfileStats";
 
-type SubPage = 'hub' | 'my-sessions' | 'study-materials' | 'study-groups' | 'earnings' | 'my-subjects' | 'students' | 'set-availability';
+type SubPage = 'hub' | 'my-sessions' | 'study-materials' | 'earnings' | 'my-subjects' | 'students' | 'set-availability';
 
 const Profile = () => {
   const [currentPage, setCurrentPage] = useState<SubPage>('hub');
@@ -119,8 +118,6 @@ const Profile = () => {
         return <MySessions user={user} onBack={handleBackToHub} />;
       case 'study-materials':
         return <StudyMaterials user={user} onBack={handleBackToHub} />;
-      case 'study-groups':
-        return <StudyGroups user={user} onBack={handleBackToHub} />;
       case 'earnings':
         return <Earnings user={user} onBack={handleBackToHub} />;
       case 'my-subjects':
@@ -420,14 +417,6 @@ const Profile = () => {
                 >
                   <FileText className="w-6 h-6 text-orange-600" />
                   <span className="text-sm font-medium">Study Materials</span>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="h-20 flex-col gap-2 border-purple-200 hover:border-purple-300 hover-scale"
-                  onClick={() => handleNavigation('study-groups')}
-                >
-                  <Users className="w-6 h-6 text-purple-600" />
-                  <span className="text-sm font-medium">Study Groups</span>
                 </Button>
               </div>
             </>

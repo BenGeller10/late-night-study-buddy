@@ -97,12 +97,6 @@ const DynamicBottomNavigation = () => {
       activeColor: "text-purple-500"
     },
     {
-      to: "/study-groups", 
-      icon: Users,
-      label: "Study Groups",
-      activeColor: "text-green-500"
-    },
-    {
       to: "/support",
       icon: HelpCircle,
       label: "Support",
