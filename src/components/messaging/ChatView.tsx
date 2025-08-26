@@ -217,8 +217,13 @@ export default function ChatView({ conversationId, onBack }: ChatViewProps) {
     <div className="flex flex-col h-screen bg-background">
       {/* Header */}
       <div className="flex items-center gap-3 p-4 border-b border-border/20 bg-background/95 backdrop-blur-sm">
-        <Button variant="ghost" size="sm" onClick={onBack} className="p-0 w-8 h-8">
-          <ArrowLeft className="w-5 h-5" />
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={onBack} 
+          className="p-2 w-10 h-10 hover:bg-primary/10 rounded-full transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5 text-primary" />
         </Button>
         
         <div className="relative">
