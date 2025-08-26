@@ -214,7 +214,7 @@ const UserDirectory = () => {
             className="w-full"
           >
             <MessageCircle className="w-4 h-4 mr-2" />
-            Message
+            Start Chat
           </Button>
         </div>
       </div>
