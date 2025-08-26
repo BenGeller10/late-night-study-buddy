@@ -362,7 +362,7 @@ const handleCalendlyClick = () => {
                 {/* Subject Selection */}
                 <div className="space-y-2">
                   <label className="text-sm font-semibold">Subject</label>
-                  <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+                  <Select disabled={availableSubjects.length === 0} value={selectedSubject} onValueChange={setSelectedSubject}>
                     <SelectTrigger className="rounded-xl border-border-light">
                       <SelectValue placeholder="Choose a subject" />
                     </SelectTrigger>
@@ -379,7 +379,7 @@ const handleCalendlyClick = () => {
                           </SelectItem>
                         ))
                       ) : (
-                        <SelectItem value="" disabled className="text-muted-foreground">
+                        <SelectItem value="no_subjects" disabled className="text-muted-foreground">
                           No subjects available for this tutor
                         </SelectItem>
                       )}
