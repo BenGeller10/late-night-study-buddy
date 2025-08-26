@@ -393,30 +393,30 @@ const Profile = () => {
               </Card>
 
               {/* Student Navigation Buttons */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-3">
                 <Button 
                   variant="outline" 
-                  className="h-20 flex-col gap-2 border-blue-200 hover:border-blue-300 hover-scale"
+                  className="w-full h-16 flex items-center gap-4 border-blue-200 hover:border-blue-300 hover-scale justify-start px-6"
                   onClick={() => navigate('/discover')}
                 >
                   <Search className="w-6 h-6 text-blue-600" />
-                  <span className="text-sm font-medium">Find Tutors</span>
+                  <span className="text-base font-medium">Find Tutors</span>
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="h-20 flex-col gap-2 border-green-200 hover:border-green-300 hover-scale"
+                  className="w-full h-16 flex items-center gap-4 border-green-200 hover:border-green-300 hover-scale justify-start px-6"
                   onClick={() => handleNavigation('my-sessions')}
                 >
                   <Calendar className="w-6 h-6 text-green-600" />
-                  <span className="text-sm font-medium">My Sessions</span>
+                  <span className="text-base font-medium">My Sessions</span>
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="h-20 flex-col gap-2 border-orange-200 hover:border-orange-300 hover-scale"
+                  className="w-full h-16 flex items-center gap-4 border-orange-200 hover:border-orange-300 hover-scale justify-start px-6"
                   onClick={() => handleNavigation('study-materials')}
                 >
                   <FileText className="w-6 h-6 text-orange-600" />
-                  <span className="text-sm font-medium">Study Materials</span>
+                  <span className="text-base font-medium">Study Materials</span>
                 </Button>
               </div>
             </>
