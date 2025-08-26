@@ -199,7 +199,7 @@ const handleCalendlyClick = () => {
 
       toast({
         title: "Session Created! 📅",
-        description: "Redirecting to payment. After payment, you can add this to your calendar!",
+        description: "Redirecting to secure payment. Session will be added to your calendar after payment.",
       });
 
       // Redirect to Stripe checkout
@@ -413,11 +413,11 @@ const handleCalendlyClick = () => {
 
                 {/* Price Summary */}
                 {selectedSubject && (
-                  <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
+                  <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 shadow-sm">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
                         <DollarSign className="w-4 h-4 text-primary" />
-                        <span className="text-sm font-medium">Total Cost</span>
+                        <span className="text-sm font-semibold">Total Cost</span>
                       </div>
                       <div className="text-right">
                          {(() => {
@@ -429,7 +429,7 @@ const handleCalendlyClick = () => {
                            const totalAmount = tutorAmount + platformFee;
                            return (
                              <div>
-                               <div className="font-semibold text-primary">${totalAmount.toFixed(2)}</div>
+                               <div className="font-bold text-lg text-primary">${totalAmount.toFixed(2)}</div>
                                <div className="text-xs text-muted-foreground">
                                  ${tutorAmount.toFixed(2)} + ${platformFee.toFixed(2)} fee
                                </div>
@@ -444,29 +444,26 @@ const handleCalendlyClick = () => {
                   </div>
                 )}
 
-                <div className="flex gap-2 pt-2">
+                <div className="flex gap-3 pt-2">
                   <Button
                     variant="outline"
                     onClick={() => setShowBookingForm(false)}
-                    className="flex-1"
+                    className="flex-1 rounded-xl border-border-light"
                   >
                     Back
                   </Button>
                   <Button
                     onClick={createSession}
                     disabled={!selectedSubject || !selectedDate || !selectedTime || isCreatingSession}
-                    className="flex-1"
+                    className="flex-[2] rounded-xl"
                   >
                     {isCreatingSession ? (
                       <>
-                        <Clock className="w-4 h-4 mr-2 animate-spin" />
+                        <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin mr-2" />
                         Creating...
                       </>
                     ) : (
-                      <>
-                        <CreditCard className="w-4 h-4 mr-2" />
-                        Book & Pay
-                      </>
+                      'Confirm Booking'
                     )}
                   </Button>
                 </div>

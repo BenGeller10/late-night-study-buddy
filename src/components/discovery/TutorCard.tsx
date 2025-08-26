@@ -45,10 +45,10 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
   const { toast } = useToast();
 
   const handleBookingSuccess = (sessionId: string) => {
-    toast({
-      title: "Session Booked Successfully! 🎉",
-      description: "Your tutoring session has been scheduled and payment processed.",
-    });
+      toast({
+        title: "You're booked for today at 3:00 PM! 🎉",
+        description: "Session confirmed with Sarah Chen. Check your email for the Zoom link!",
+      });
     onBook(); // Call the original onBook callback
   };
 
