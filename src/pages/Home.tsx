@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import StudentHome from "@/components/home/StudentHome";
 import TutorHome from "@/components/home/TutorHome";
 import PageTransition from "@/components/layout/PageTransition";
-import EnhancedOnboarding from "@/components/onboarding/EnhancedOnboarding";
+import StreamlinedOnboarding from "@/components/onboarding/StreamlinedOnboarding";
 import UsernameSetup from "@/components/username/UsernameSetup";
 import EmptyStateView from "@/components/home/EmptyStateView";
 import { useToast } from "@/hooks/use-toast";
@@ -180,7 +180,7 @@ const Home = () => {
   if (!isOnboardingComplete && user.email) {
     return (
       <PageTransition>
-        <EnhancedOnboarding 
+        <StreamlinedOnboarding 
           onComplete={handleOnboardingComplete}
           userEmail={user.email}
         />
