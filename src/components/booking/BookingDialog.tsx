@@ -122,13 +122,27 @@ const handleCalendlyClick = () => {
         })) || [];
         
         setAvailableSubjects(subjects);
+        
+        // Auto-select first subject if only one available
+        if (subjects.length === 1 && !selectedSubject) {
+          setSelectedSubject(subjects[0].id);
+        }
+        
       } catch (error) {
         console.error('Error loading tutor subjects:', error);
+        
+        // Fallback to tutor.subjects if database query fails
+        if (tutor.subjects && tutor.subjects.length > 0) {
+          setAvailableSubjects(tutor.subjects);
+          if (tutor.subjects.length === 1 && !selectedSubject) {
+            setSelectedSubject(tutor.subjects[0].id);
+          }
+        }
       }
     };
 
     loadTutorSubjects();
-  }, [tutor?.id]);
+  }, [tutor?.id, tutor.subjects, selectedSubject]);
 
   const createSession = async () => {
     if (!selectedDate || !selectedTime || !selectedSubject) {
@@ -419,27 +433,27 @@ const handleCalendlyClick = () => {
                         <DollarSign className="w-4 h-4 text-primary" />
                         <span className="text-sm font-semibold">Total Cost</span>
                       </div>
-                      <div className="text-right">
-                         {(() => {
-                           const subject = tutor.subjects?.find(s => s.id === selectedSubject);
-                           const hourlyRate = subject?.hourly_rate || tutor.hourlyRate || 25;
-                           const durationMinutes = parseInt(duration);
-                           const tutorAmount = (hourlyRate * durationMinutes) / 60;
-                           const platformFee = tutorAmount * 0.08;
-                           const totalAmount = tutorAmount + platformFee;
-                           return (
-                             <div>
-                               <div className="font-bold text-lg text-primary">${totalAmount.toFixed(2)}</div>
-                               <div className="text-xs text-muted-foreground">
-                                 ${tutorAmount.toFixed(2)} + ${platformFee.toFixed(2)} fee
-                               </div>
-                               <div className="text-xs text-muted-foreground">
-                                 ${hourlyRate}/hr × {durationMinutes}min + 8% platform fee
-                               </div>
-                             </div>
-                           );
-                         })()}
-                      </div>
+                       <div className="text-right">
+                          {(() => {
+                            const subject = availableSubjects.find(s => s.id === selectedSubject);
+                            const hourlyRate = subject?.hourly_rate || tutor.hourlyRate || 25;
+                            const durationMinutes = parseInt(duration);
+                            const tutorAmount = (hourlyRate * durationMinutes) / 60;
+                            const platformFee = tutorAmount * 0.08;
+                            const totalAmount = tutorAmount + platformFee;
+                            return (
+                              <div>
+                                <div className="font-bold text-lg text-primary">${totalAmount.toFixed(2)}</div>
+                                <div className="text-xs text-muted-foreground">
+                                  ${tutorAmount.toFixed(2)} + ${platformFee.toFixed(2)} fee
+                                </div>
+                                <div className="text-xs text-muted-foreground">
+                                  ${hourlyRate}/hr × {durationMinutes}min + 8% platform fee
+                                </div>
+                              </div>
+                            );
+                          })()}
+                       </div>
                     </div>
                   </div>
                 )}
