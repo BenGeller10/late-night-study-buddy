@@ -77,9 +77,9 @@ const RealChatConversation = ({
       <div className="flex items-center gap-3 p-4 bg-gray-700 border-b border-gray-600">
         <Button
           variant="ghost"
-          size="icon"
+          size="sm"
           onClick={onBack}
-          className="text-white hover:bg-gray-600"
+          className="p-2 w-10 h-10 hover:bg-sky-500/20 rounded-full transition-colors text-sky-400 hover:text-sky-300"
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
