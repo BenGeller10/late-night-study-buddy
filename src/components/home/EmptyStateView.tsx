@@ -130,20 +130,38 @@ const EmptyStateView = ({ userType, onAction }: EmptyStateViewProps) => {
           })}
         </div>
 
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="text-center"
-        >
-          <Button
-            onClick={() => onAction('complete-profile')}
-            className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-2 rounded-full font-medium hover:scale-105 transition-transform"
-          >
-            Complete Your Profile ✨
-          </Button>
-        </motion.div>
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-center mb-6">Complete Your Profile</h2>
+            <p className="text-center text-muted-foreground mb-8">
+              Help us personalize your Campus Connect experience
+            </p>
+            
+            {/* Progress indicator */}
+            <div className="flex justify-center mb-6">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-primary"></div>
+                <div className="w-8 h-0.5 bg-primary/30"></div>
+                <div className="w-2 h-2 rounded-full bg-primary/30"></div>
+                <div className="w-8 h-0.5 bg-primary/30"></div>
+                <div className="w-2 h-2 rounded-full bg-primary/30"></div>
+              </div>
+            </div>
+            
+            <div className="text-center space-y-2">
+              <p className="text-lg">🎯 Almost there!</p>
+              <p className="text-sm text-muted-foreground">
+                Complete your profile to unlock all features
+              </p>
+            </div>
+
+            <Button
+              onClick={() => onAction('complete-profile')}
+              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:scale-105 transition-transform"
+              size="lg"
+            >
+              Complete Profile ✨
+            </Button>
+          </div>
       </div>
     </div>
   );

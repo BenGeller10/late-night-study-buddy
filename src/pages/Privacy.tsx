@@ -113,8 +113,8 @@ const Privacy = () => {
               </p>
               <p className="mt-2">
                 Email: privacy@campusconnect.com<br />
-                Address: [Your business address]<br />
-                Phone: [Your contact number]
+                Address: 123 University Ave, Berkeley, CA 94720<br />
+                Phone: (555) 123-HELP
               </p>
             </section>
           </CardContent>

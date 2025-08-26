@@ -114,7 +114,11 @@ const EnhancedOnboarding = ({ onComplete, userEmail }: EnhancedOnboardingProps) 
       case 0:
         return formData.username.length >= 8 && formData.display_name.length > 0;
       case 1:
-        return formData.major.length > 0 && formData.campus.length > 0;
+        const baseValid = formData.major.length > 0 && formData.campus.length > 0;
+        if (formData.is_tutor) {
+          return baseValid && formData.gpa && formData.gpa >= 3.6;
+        }
+        return baseValid;
       case 2:
         return Object.keys(formData.personality_traits).length >= 2;
       default:
@@ -266,6 +270,9 @@ const EnhancedOnboarding = ({ onComplete, userEmail }: EnhancedOnboardingProps) 
                         onChange={(e) => setFormData(prev => ({ ...prev, gpa: parseFloat(e.target.value) }))}
                         className="glass-card"
                       />
+                      {formData.gpa && formData.gpa < 3.6 && (
+                        <p className="text-sm text-red-500">Tutors need a minimum GPA of 3.6</p>
+                      )}
                     </div>
                   )}
                 </div>
