@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CalendarIcon, ExternalLink, CreditCard, Clock, DollarSign } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -246,43 +247,44 @@ const handleCalendlyClick = () => {
       <DialogTrigger asChild>
         {triggerButton}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl border-border-light">
+        <DialogHeader className="pb-4">
           <DialogTitle className="flex items-center gap-3">
-            <img
-              src={tutor.profilePicture}
-              alt={tutor.name}
-              className="w-10 h-10 rounded-full object-cover"
-            />
+            <Avatar className="w-10 h-10 border border-border-light">
+              <AvatarImage src={tutor.profilePicture} alt={tutor.name} />
+              <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                {tutor.name[0]?.toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
             <div>
-              <div>📅 Book a Session</div>
-              <div className="text-sm font-normal text-muted-foreground">with {tutor.name} • Google Calendar Ready</div>
+              <div className="text-lg font-bold">📅 Book a Session</div>
+              <div className="text-sm font-normal text-muted-foreground">with {tutor.name}</div>
             </div>
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="space-y-5 py-2">
           {!showCalendly && !showBookingForm ? (
             <>
               {/* Tutor Info */}
-              <div className="text-center space-y-3">
+              <div className="text-center space-y-3 p-4 bg-muted/20 rounded-xl border border-border-light">
                 <p className="text-muted-foreground">
                   Schedule your session with {tutor.name}
                 </p>
                 {tutor.hourlyRate && !tutor.isFree && (
-                  <div className="text-lg font-semibold text-primary">
+                  <div className="text-2xl font-bold text-primary">
                     ${tutor.hourlyRate}/hour
                   </div>
                 )}
                 {tutor.isFree && (
-                  <Badge className="bg-success text-success-foreground">
+                  <Badge className="bg-success text-success-foreground px-3 py-1">
                     Free Session! 🎉
                   </Badge>
                 )}
                 {tutor.subjects && tutor.subjects.length > 0 && (
-                  <div className="flex flex-wrap gap-2 justify-center">
+                  <div className="flex flex-wrap gap-1.5 justify-center">
                     {tutor.subjects.slice(0, 3).map((subject) => (
-                      <Badge key={subject.id} variant="secondary" className="text-xs">
+                      <Badge key={subject.id} variant="outline" className="text-xs px-2 py-1 rounded-full border-border-light">
                         {subject.name} - ${subject.hourly_rate}/hr
                       </Badge>
                     ))}
@@ -294,7 +296,7 @@ const handleCalendlyClick = () => {
               <div className="space-y-3">
                 <Button
                   onClick={handleDirectBooking}
-                  className="w-full"
+                  className="w-full rounded-xl"
                   size="lg"
                 >
                   <CreditCard className="w-4 h-4 mr-2" />
@@ -304,7 +306,7 @@ const handleCalendlyClick = () => {
                 <Button
                   variant="outline"
                   onClick={handleCalendlyClick}
-                  className="w-full"
+                  className="w-full rounded-xl border-border-light"
                   size="lg"
                 >
                   <CalendarIcon className="w-4 h-4 mr-2" />
@@ -314,7 +316,7 @@ const handleCalendlyClick = () => {
                 <Button
                   variant="ghost"
                   onClick={() => window.open(demoCalendlyUrl, '_blank')}
-                  className="w-full"
+                  className="w-full rounded-xl"
                   size="sm"
                 >
                   <ExternalLink className="w-4 h-4 mr-2" />
@@ -323,38 +325,40 @@ const handleCalendlyClick = () => {
               </div>
 
               {/* Info */}
-              <div className="bg-muted/50 rounded-lg p-4 text-sm text-center">
-                <p className="text-muted-foreground">
-                  📅 <strong>Google Calendar Integration:</strong> After booking and payment, you'll receive calendar invites and can easily add this session to Google Calendar, Outlook, or Apple Calendar.
-                </p>
-                <p className="text-muted-foreground mt-2">
-                  🔒 <strong>Secure Payment:</strong> All payments are processed securely through Stripe.
-                </p>
+              <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 text-sm">
+                <div className="space-y-2 text-center">
+                  <p className="text-muted-foreground">
+                    📅 <strong>Calendar Integration:</strong> Automatically adds to your calendar after payment
+                  </p>
+                  <p className="text-muted-foreground">
+                    🔒 <strong>Secure Payment:</strong> Protected by Stripe
+                  </p>
+                </div>
               </div>
             </>
           ) : showBookingForm ? (
             <>
               {/* Direct Booking Form */}
               <div className="space-y-4">
-                <div className="text-center mb-4">
-                  <h3 className="font-semibold">Book Your Session</h3>
+                <div className="text-center mb-4 p-3 bg-muted/20 rounded-xl border border-border-light">
+                  <h3 className="font-bold text-lg">Book Your Session</h3>
                   <p className="text-sm text-muted-foreground">Select your preferences and pay securely</p>
                 </div>
 
                 {/* Subject Selection */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Subject</label>
+                  <label className="text-sm font-semibold">Subject</label>
                   <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-                    <SelectTrigger>
+                    <SelectTrigger className="rounded-xl border-border-light">
                       <SelectValue placeholder="Choose a subject" />
                     </SelectTrigger>
-                    <SelectContent className="bg-popover border border-border shadow-lg z-50">
+                    <SelectContent className="bg-popover border border-border-light shadow-lg z-50 rounded-xl">
                       {availableSubjects.length > 0 ? (
                         availableSubjects.map((subject) => (
-                          <SelectItem key={subject.id} value={subject.id} className="bg-popover hover:bg-accent">
+                          <SelectItem key={subject.id} value={subject.id} className="bg-popover hover:bg-accent rounded-lg">
                             <div className="flex justify-between items-center w-full">
                               <span className="font-medium">{subject.code} - {subject.name}</span>
-                              <Badge variant="secondary" className="ml-2 text-xs">
+                              <Badge variant="secondary" className="ml-2 text-xs px-2 py-0.5 rounded-full">
                                 ${subject.hourly_rate}/hr
                               </Badge>
                             </div>
@@ -372,33 +376,33 @@ const handleCalendlyClick = () => {
                 {/* Date and Time Selection */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Duration</label>
+                    <label className="text-sm font-semibold">Duration</label>
                     <Select value={duration} onValueChange={setDuration}>
-                      <SelectTrigger>
+                      <SelectTrigger className="rounded-xl border-border-light">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="30">30 minutes</SelectItem>
-                        <SelectItem value="60">1 hour</SelectItem>
-                        <SelectItem value="90">1.5 hours</SelectItem>
-                        <SelectItem value="120">2 hours</SelectItem>
+                      <SelectContent className="rounded-xl">
+                        <SelectItem value="30" className="rounded-lg">30 minutes</SelectItem>
+                        <SelectItem value="60" className="rounded-lg">1 hour</SelectItem>
+                        <SelectItem value="90" className="rounded-lg">1.5 hours</SelectItem>
+                        <SelectItem value="120" className="rounded-lg">2 hours</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Time Slot</label>
+                    <label className="text-sm font-semibold">Time Slot</label>
                     <Select value={`${selectedDate}_${selectedTime}`} onValueChange={(value) => {
                       const [date, time] = value.split('_');
                       setSelectedDate(date);
                       setSelectedTime(time);
                     }}>
-                      <SelectTrigger>
+                      <SelectTrigger className="rounded-xl border-border-light">
                         <SelectValue placeholder="Select time" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="rounded-xl max-h-48">
                         {availableSlots.slice(0, 15).map((slot) => (
-                          <SelectItem key={`${slot.date}_${slot.time}`} value={`${slot.date}_${slot.time}`}>
+                          <SelectItem key={`${slot.date}_${slot.time}`} value={`${slot.date}_${slot.time}`} className="rounded-lg">
                             {slot.label}
                           </SelectItem>
                         ))}

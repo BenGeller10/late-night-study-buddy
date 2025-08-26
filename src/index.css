@@ -54,6 +54,36 @@
 
     --radius: 0.75rem;
 
+    /* Typography Scale - Consistent sizing */
+    --text-xs: 0.75rem;    /* 12px */
+    --text-sm: 0.875rem;   /* 14px */
+    --text-base: 1rem;     /* 16px */
+    --text-lg: 1.125rem;   /* 18px */
+    --text-xl: 1.25rem;    /* 20px */
+    --text-2xl: 1.5rem;    /* 24px */
+
+    /* Radius Scale - Unified system */
+    --radius-sm: 0.5rem;   /* 8px - small elements */
+    --radius-md: 0.75rem;  /* 12px - default */
+    --radius-lg: 1rem;     /* 16px - cards */
+    --radius-xl: 1.5rem;   /* 24px - modals/sheets */
+    --radius-2xl: 2rem;    /* 32px - large modals */
+    --radius-full: 9999px; /* pills/avatars */
+
+    /* Border System - Consistent opacity */
+    --border-light: hsl(var(--foreground) / 0.1);   /* white/10 */
+    --border-card: hsl(var(--foreground) / 0.05);   /* white/5 */
+    --border-muted: hsl(var(--foreground) / 0.6);   /* white/60 for text */
+
+    /* Focus Ring - Primary color with opacity */
+    --focus-ring: hsl(var(--primary) / 0.7);
+
+    /* Safe Areas - Mobile device support */
+    --safe-top: env(safe-area-inset-top);
+    --safe-bottom: env(safe-area-inset-bottom);
+    --safe-left: env(safe-area-inset-left);
+    --safe-right: env(safe-area-inset-right);
+
     /* Gradients for that premium feel */
   --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
   --gradient-card: linear-gradient(135deg, hsl(var(--card)), hsl(220 25% 14%));
@@ -123,7 +153,25 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    /* Safe areas for mobile devices */
+    padding-bottom: var(--safe-bottom);
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
   }
+
+  /* Global focus styles */
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--focus-ring);
+  }
+
+  /* Typography utilities */
+  .text-xs { font-size: var(--text-xs); }
+  .text-sm { font-size: var(--text-sm); }
+  .text-base { font-size: var(--text-base); }
+  .text-lg { font-size: var(--text-lg); }
+  .text-xl { font-size: var(--text-xl); }
+  .text-2xl { font-size: var(--text-2xl); }
 
   /* Custom scrollbars for dark theme */
   ::-webkit-scrollbar {
@@ -148,7 +196,31 @@
   .glass-card {
     background: hsl(var(--card) / 0.8);
     backdrop-blur: 20px;
-    border: 1px solid hsl(var(--border) / 0.5);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-lg);
+  }
+
+  /* Card elevation system */
+  .card-elevated {
+    background: hsl(var(--card));
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Interactive card states */
+  .card-interactive {
+    transition: var(--transition-smooth);
+    cursor: pointer;
+  }
+
+  .card-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px -8px hsl(var(--primary) / 0.2);
+  }
+
+  .card-interactive:active {
+    transform: translateY(0);
   }
 
   /* Gradient button styles */

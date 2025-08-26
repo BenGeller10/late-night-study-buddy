@@ -75,7 +75,7 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
       isAnimating === 'right' ? 'animate-swipe-right' : 
       isAnimating === 'left' ? 'animate-swipe-left' : 'animate-fade-in-up'
     } ${className || ''}`}>
-      <div className="glass-card rounded-3xl overflow-hidden shadow-card hover:shadow-glow transition-all duration-300">
+      <div className="card-elevated card-interactive hover:shadow-glow transition-all duration-200 rounded-2xl overflow-hidden">
         {/* Profile Image */}
         <div className="relative aspect-[4/3] bg-gradient-card overflow-hidden">
           {!imageLoaded && (
@@ -89,21 +89,29 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
             }`}
             onLoad={() => setImageLoaded(true)}
           />
-          <div className="absolute top-4 right-4 flex gap-2">
+          
+          {/* Overlay gradient for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+          
+          <div className="absolute top-3 right-3 flex gap-2">
             <Button
               variant="outline"
               size="sm"
-              className="btn-smooth text-xs bg-background/80 backdrop-blur-sm"
+              className="text-xs bg-background/90 backdrop-blur-md border-border-light hover:bg-background transition-all duration-200"
               onClick={onViewProfile}
             >
               <Eye className="w-3 h-3 mr-1" />
               Profile
             </Button>
+          </div>
+          
+          {/* Rating badge - better positioning */}
+          <div className="absolute top-3 left-3">
             <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
               <DialogTrigger asChild>
                 <Badge 
                   variant="secondary" 
-                  className="bg-background/80 backdrop-blur-sm animate-fade-in-up cursor-pointer hover:bg-background/90 transition-colors"
+                  className="bg-background/90 backdrop-blur-md border-border-light cursor-pointer hover:bg-background/95 transition-all duration-200 shadow-sm"
                 >
                   ⭐ {tutor.rating} ({tutor.totalSessions})
                 </Badge>
@@ -180,8 +188,8 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
             </Dialog>
           </div>
           {tutor.isFree && (
-            <div className="absolute top-4 left-4">
-              <Badge className="bg-success text-success-foreground">
+            <div className="absolute bottom-3 left-3">
+              <Badge className="bg-success/90 text-success-foreground backdrop-blur-md shadow-sm">
                 Free Help! 🆓
               </Badge>
             </div>
@@ -189,45 +197,51 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
         </div>
 
         {/* Profile Info */}
-        <div className="p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-2xl font-bold">{tutor.name}</h3>
-            <div className="text-right">
+        <div className="p-5 space-y-3">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <h3 className="text-xl font-bold leading-tight">{tutor.name}</h3>
+              <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
+                <span>Next Available</span>
+                <Badge variant="outline" className="text-xs px-2 py-0.5">
+                  Today 2PM
+                </Badge>
+              </div>
+            </div>
+            <div className="text-right flex-shrink-0">
               {tutor.isFree ? (
-                <div className="text-success font-semibold">Free</div>
+                <div className="text-success font-bold text-lg">Free</div>
               ) : (
-                <div className="text-primary font-semibold">${tutor.hourlyRate}/hr</div>
+                <div className="text-primary font-bold text-lg">${tutor.hourlyRate}/hr</div>
               )}
             </div>
           </div>
 
-          {/* Classes */}
-          <div className="space-y-2">
-            <div className="flex flex-wrap gap-2">
-              {tutor.classes.slice(0, 3).map((className, index) => (
-                <Badge
-                  key={index}
-                  variant="outline"
-                  className="text-xs"
-                >
-                  {className}
-                </Badge>
-              ))}
-              {tutor.classes.length > 3 && (
-                <Badge variant="outline" className="text-xs">
-                  +{tutor.classes.length - 3} more
-                </Badge>
-              )}
-            </div>
+          {/* Subjects as clean chips */}
+          <div className="flex flex-wrap gap-1.5">
+            {tutor.classes.slice(0, 3).map((className, index) => (
+              <Badge
+                key={index}
+                variant="outline"
+                className="text-xs px-2.5 py-1 rounded-full border-border-light hover:border-primary/50 transition-colors"
+              >
+                {className}
+              </Badge>
+            ))}
+            {tutor.classes.length > 3 && (
+              <Badge variant="outline" className="text-xs px-2.5 py-1 rounded-full border-border-light">
+                +{tutor.classes.length - 3}
+              </Badge>
+            )}
           </div>
 
           {/* Tutor Style */}
-          <p className="text-muted-foreground text-sm leading-relaxed">
+          <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
             {tutor.tutorStyle}
           </p>
 
-          {/* Action Buttons */}
-          <div className="flex gap-3 pt-2">
+          {/* Action Buttons with better hierarchy */}
+          <div className="flex gap-2.5 pt-2">
             <ChatDialog
               tutor={{
                 id: tutor.id,
@@ -238,9 +252,9 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
               }}
               triggerButton={
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="lg"
-                  className="flex-1 btn-smooth"
+                  className="flex-1 rounded-xl border-border-light hover:border-primary/50"
                 >
                   <MessageCircle className="h-4 w-4 mr-2" />
                   Chat
@@ -258,12 +272,12 @@ const TutorCard = ({ tutor, onSwipeRight, onSwipeLeft, onChat, onBook, onViewPro
               }}
               triggerButton={
                 <Button
-                  variant="campus"
+                  variant="default"
                   size="lg"
-                  className="flex-1 btn-smooth"
+                  className="flex-[2] rounded-xl"
                 >
                   <CreditCard className="h-4 w-4 mr-2" />
-                  Book • ${tutor.hourlyRate}/hr
+                  {tutor.isFree ? 'Book Free' : `Book • $${tutor.hourlyRate}`}
                 </Button>
               }
               onBookingSuccess={handleBookingSuccess}

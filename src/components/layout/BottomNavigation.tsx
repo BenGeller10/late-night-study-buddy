@@ -15,31 +15,32 @@ const BottomNavigation = () => {
       to: "/discover",
       icon: Heart,
       label: "Discover",
-      activeColor: "text-pink-500"
+      activeColor: "text-primary"
     },
     {
       to: "/trends", 
       icon: TrendingUp,
       label: "Trends",
-      activeColor: "text-orange-500"
+      activeColor: "text-accent"
     },
     {
       to: "/chat",
       icon: MessageCircle,
       label: "Chat",
-      activeColor: "text-blue-500"
+      activeColor: "text-blue"
     },
     {
-      to: "/support",
-      icon: HelpCircle,
-      label: "Support",
-      activeColor: "text-green-500"
+      to: "/profile",
+      icon: User,
+      label: "Profile", 
+      activeColor: "text-success"
     }
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-t border-border/30 shadow-2xl">
-      <div className="flex justify-around items-center py-2 px-4 max-w-lg mx-auto">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-t border-border-light shadow-2xl">
+      <div className="flex justify-around items-center px-2 py-1 max-w-lg mx-auto" 
+           style={{ paddingBottom: 'calc(0.25rem + var(--safe-bottom, 0px))' }}>
         {navItems.map(({ to, icon: Icon, label, activeColor }) => {
           const isActive = location.pathname === to;
           
@@ -48,21 +49,21 @@ const BottomNavigation = () => {
               key={to}
               to={to}
               className={cn(
-                "flex flex-col items-center gap-1 p-2 rounded-xl transition-all duration-200",
-                "hover:bg-muted/50 active:scale-95 interactive",
-                isActive && "bg-muted/30 scale-105"
+                "flex flex-col items-center gap-1 p-3 rounded-2xl transition-all duration-200 min-h-[44px] min-w-[44px] flex-1 max-w-[80px]",
+                "hover:bg-muted/50 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70",
+                isActive && "bg-primary/10 scale-105 shadow-sm"
               )}
             >
               <Icon 
                 className={cn(
-                  "w-6 h-6 transition-all duration-200",
+                  "w-5 h-5 transition-all duration-200",
                   isActive ? `${activeColor} scale-110` : "text-muted-foreground"
                 )}
               />
               <span 
                 className={cn(
-                  "text-xs font-medium transition-colors duration-200",
-                  isActive ? "text-foreground" : "text-muted-foreground"
+                  "text-xs font-medium transition-colors duration-200 leading-none",
+                  isActive ? activeColor : "text-muted-foreground"
                 )}
               >
                 {label}
@@ -71,9 +72,6 @@ const BottomNavigation = () => {
           );
         })}
       </div>
-      
-      {/* Safe area for devices with home indicator */}
-      <div className="h-safe-bottom" />
     </div>
   );
 };
