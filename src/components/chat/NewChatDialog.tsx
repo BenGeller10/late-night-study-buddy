@@ -14,10 +14,11 @@ import { useNavigate } from 'react-router-dom';
 import EnhancedUserSearch from '@/components/users/EnhancedUserSearch';
 
 interface NewChatDialogProps {
-  onConversationCreated: (participantId: string) => void;
+  onConversationCreated?: (participantId: string) => void;
+  triggerButton?: React.ReactNode;
 }
 
-const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
+const NewChatDialog = ({ onConversationCreated, triggerButton }: NewChatDialogProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
@@ -38,6 +39,7 @@ const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
         .maybeSingle();
 
       if (existingConversation) {
+        onConversationCreated?.(otherUserId);
         toast({
           title: 'Success',
           description: 'Conversation found',
@@ -65,6 +67,7 @@ const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
       });
       
       setIsOpen(false);
+      onConversationCreated?.(otherUserId);
       navigate(`/chat/conversation/${newConversation.id}?otherUserId=${otherUserId}`);
     } catch (error) {
       console.error('Error creating conversation:', error);
@@ -85,10 +88,12 @@ const NewChatDialog = ({ onConversationCreated }: NewChatDialogProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" className="bg-sky-500 hover:bg-sky-600 text-white">
-          <UserPlus className="h-4 w-4 mr-2" />
-          New Chat
-        </Button>
+        {triggerButton ?? (
+          <Button size="sm" className="bg-sky-500 hover:bg-sky-600 text-white">
+            <UserPlus className="h-4 w-4 mr-2" />
+            New Chat
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>

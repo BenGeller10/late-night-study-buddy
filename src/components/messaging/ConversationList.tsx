@@ -17,6 +17,7 @@ import {
   getMockConversationMembers 
 } from '@/services/mockMessagingService';
 import { Conversation } from '@/types/messaging';
+import NewChatDialog from '@/components/chat/NewChatDialog';
 
 interface ConversationListProps {
   onConversationSelect: (conversationId: string) => void;
@@ -138,9 +139,13 @@ export default function ConversationList({ onConversationSelect, onNewChat }: Co
           <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
             Messages
           </h1>
-          <Button onClick={onNewChat} size="sm" className="rounded-full shadow-sm">
-            <Plus className="w-4 h-4" />
-          </Button>
+          <NewChatDialog
+            triggerButton={
+              <Button size="sm" className="rounded-full shadow-sm">
+                <Plus className="w-4 h-4" />
+              </Button>
+            }
+          />
         </div>
         
         <div className="relative">
