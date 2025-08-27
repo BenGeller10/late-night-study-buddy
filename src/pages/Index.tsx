@@ -11,28 +11,40 @@ const Index = () => {
     let mounted = true;
 
     const checkAuthAndRedirect = async () => {
+      console.log('Starting auth check...');
       try {
-        // Check current session
-        const { data: { session } } = await supabase.auth.getSession();
+        // Check current session with timeout
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Auth timeout')), 5000)
+        );
+        
+        const sessionPromise = supabase.auth.getSession();
+        const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise]) as any;
+        
+        console.log('Session check result:', !!session?.user);
         
         if (session?.user && mounted) {
-          // User is authenticated, redirect to home
+          console.log('User authenticated, redirecting to home');
           navigate('/home');
           return;
         }
 
         // Check if user has completed onboarding
         const hasCompletedOnboarding = localStorage.getItem('campus-connect-onboarded');
+        console.log('Onboarding status:', hasCompletedOnboarding);
         
         if (hasCompletedOnboarding === 'true' && mounted) {
-          // Has onboarding but no session, redirect to auth
+          console.log('Has onboarding, redirecting to auth');
           navigate('/auth');
           return;
         }
+
+        console.log('No auth, showing onboarding');
       } catch (error) {
         console.error('Auth check error:', error);
       } finally {
         if (mounted) {
+          console.log('Setting isCheckingAuth to false');
           setIsCheckingAuth(false);
         }
       }
@@ -40,6 +52,7 @@ const Index = () => {
 
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state change:', event, !!session?.user);
       if (event === 'SIGNED_IN' && session && mounted) {
         navigate('/home');
       } else if (event === 'SIGNED_OUT' && mounted) {
@@ -47,10 +60,19 @@ const Index = () => {
       }
     });
 
+    // Add timeout fallback
+    const fallbackTimeout = setTimeout(() => {
+      if (mounted) {
+        console.log('Fallback timeout triggered');
+        setIsCheckingAuth(false);
+      }
+    }, 3000);
+
     checkAuthAndRedirect();
 
     return () => {
       mounted = false;
+      clearTimeout(fallbackTimeout);
       subscription.unsubscribe();
     };
   }, [navigate]);
