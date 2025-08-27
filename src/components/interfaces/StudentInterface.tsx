@@ -5,6 +5,7 @@ import StudentHome from "@/components/home/StudentHome";
 import MySessions from "@/pages/MySessions";
 import Support from "@/pages/Support";
 import Profile from "@/pages/Profile";
+import MockProfile from "@/pages/MockProfile";
 import Chat from "@/pages/Chat";
 import GroupChatInterface from "@/components/chat/GroupChatInterface";
 import MessagingPage from "@/components/chat/MessagingPage";
@@ -81,6 +82,7 @@ const StudentInterface = ({ user, onRoleSwitch }: StudentInterfaceProps) => {
         <Route path="/users" element={<UserDirectory />} />
         <Route path="/support" element={<Support />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/mock-profile" element={<MockProfile />} />
         <Route path="/chat" element={<MessagesPage />} />
         <Route path="/chat/legacy" element={<Chat />} />
         <Route path="/chat/legacy/:tutorId" element={<Chat />} />

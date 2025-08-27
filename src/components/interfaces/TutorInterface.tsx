@@ -7,6 +7,7 @@ import Bookings from "@/pages/Bookings";
 import SetAvailability from "@/pages/SetAvailability";
 import Support from "@/pages/Support";
 import Profile from "@/pages/Profile";
+import MockProfile from "@/pages/MockProfile";
 import Chat from "@/pages/Chat";
 import GroupChatInterface from "@/components/chat/GroupChatInterface";
 import MessagingPage from "@/components/chat/MessagingPage";
@@ -88,6 +89,7 @@ const TutorInterface = ({ user, onRoleSwitch }: TutorInterfaceProps) => {
         <Route path="/set-availability" element={<SetAvailability />} />
         <Route path="/support" element={<Support />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/mock-profile" element={<MockProfile />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/chat/:studentId" element={<Chat />} />
         <Route path="/chat/conversation/:conversationId" element={<MessagingPage />} />
