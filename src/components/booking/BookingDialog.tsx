@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -34,6 +35,7 @@ const BookingDialog = ({ tutor, triggerButton, onBookingSuccess }: BookingDialog
   const [showCalendly, setShowCalendly] = useState(false);
   const [showBookingForm, setShowBookingForm] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState<string>('');
+  const [customSubject, setCustomSubject] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [duration, setDuration] = useState<string>('60');
@@ -145,7 +147,7 @@ const handleCalendlyClick = () => {
   }, [tutor?.id, tutor.subjects, selectedSubject]);
 
   const createSession = async () => {
-    if (!selectedDate || !selectedTime || !selectedSubject) {
+    if (!selectedDate || !selectedTime || (!selectedSubject && !customSubject)) {
       toast({
         title: "Missing Information",
         description: "Please select a subject, date, and time.",
@@ -162,6 +164,7 @@ const handleCalendlyClick = () => {
 
       const scheduledAt = new Date(`${selectedDate}T${selectedTime}:00`);
       const selectedSubjectData = availableSubjects.find(s => s.id === selectedSubject);
+      const subjectName = customSubject || selectedSubjectData?.name || 'General Tutoring';
       const hourlyRate = selectedSubjectData?.hourly_rate || tutor.hourlyRate || 25;
       const durationMinutes = parseInt(duration);
       const tutorAmount = (hourlyRate * durationMinutes) / 60;
@@ -174,12 +177,13 @@ const handleCalendlyClick = () => {
         .insert({
           student_id: user.id,
           tutor_id: tutor.id,
-          subject_id: selectedSubject,
+          subject_id: selectedSubject || null,
           scheduled_at: scheduledAt.toISOString(),
           duration_minutes: durationMinutes,
           total_amount: totalAmount,
           status: 'pending_payment',
-          location: 'Online'
+          location: 'Online',
+          notes: customSubject ? `Custom subject: ${customSubject}` : null
         })
         .select()
         .single();
@@ -194,7 +198,7 @@ const handleCalendlyClick = () => {
           tutor_amount: tutorAmount,
           platform_fee: platformFee,
           total_amount: totalAmount,
-          subject: selectedSubjectData?.name || 'General Tutoring',
+          subject: subjectName,
           duration_minutes: durationMinutes,
           scheduled_at: scheduledAt.toISOString()
         }
@@ -204,8 +208,8 @@ const handleCalendlyClick = () => {
 
       // Create calendar event for adding to personal calendar
       const calendarEvent: CalendarEvent = {
-        title: `Tutoring Session - ${selectedSubjectData?.name || 'General'}`,
-        description: `Tutoring session with ${tutor.name}\nSubject: ${selectedSubjectData?.name || 'General Tutoring'}\nDuration: ${durationMinutes} minutes\n\nJoin link will be provided via email.`,
+        title: `Tutoring Session - ${subjectName}`,
+        description: `Tutoring session with ${tutor.name}\nSubject: ${subjectName}\nDuration: ${durationMinutes} minutes\n\nJoin link will be provided via email.`,
         start: scheduledAt,
         end: new Date(scheduledAt.getTime() + durationMinutes * 60 * 1000),
         location: 'Online (Zoom link will be provided)'
@@ -362,13 +366,35 @@ const handleCalendlyClick = () => {
                 {/* Subject Selection */}
                 <div className="space-y-2">
                   <label className="text-sm font-semibold">Subject</label>
-                  <Select disabled={availableSubjects.length === 0} value={selectedSubject} onValueChange={setSelectedSubject}>
-                    <SelectTrigger className="rounded-xl border-border-light">
-                      <SelectValue placeholder="Choose a subject" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-popover border border-border-light shadow-lg z-50 rounded-xl">
-                      {availableSubjects.length > 0 ? (
-                        availableSubjects.map((subject) => (
+                  <Input
+                    placeholder="Type your subject (e.g., Math, Chemistry, English)"
+                    value={customSubject}
+                    onChange={(e) => {
+                      setCustomSubject(e.target.value);
+                      setSelectedSubject('');
+                    }}
+                    className="rounded-xl border-border-light"
+                  />
+                  
+                  {availableSubjects.length > 0 && (
+                    <div className="text-xs text-muted-foreground">
+                      Or select from {tutor.name}'s subjects:
+                    </div>
+                  )}
+                  
+                  {availableSubjects.length > 0 && (
+                    <Select 
+                      value={selectedSubject} 
+                      onValueChange={(value) => {
+                        setSelectedSubject(value);
+                        setCustomSubject('');
+                      }}
+                    >
+                      <SelectTrigger className="rounded-xl border-border-light">
+                        <SelectValue placeholder="Choose from tutor's subjects" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover border border-border-light shadow-lg z-50 rounded-xl">
+                        {availableSubjects.map((subject) => (
                           <SelectItem key={subject.id} value={subject.id} className="bg-popover hover:bg-accent rounded-lg">
                             <div className="flex justify-between items-center w-full">
                               <span className="font-medium">{subject.code} - {subject.name}</span>
@@ -377,14 +403,10 @@ const handleCalendlyClick = () => {
                               </Badge>
                             </div>
                           </SelectItem>
-                        ))
-                      ) : (
-                        <SelectItem value="no_subjects" disabled className="text-muted-foreground">
-                          No subjects available for this tutor
-                        </SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
 
                 {/* Date and Time Selection */}
@@ -426,7 +448,7 @@ const handleCalendlyClick = () => {
                 </div>
 
                 {/* Price Summary */}
-                {selectedSubject && (
+                {(selectedSubject || customSubject) && (
                   <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 shadow-sm">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
@@ -468,7 +490,7 @@ const handleCalendlyClick = () => {
                   </Button>
                   <Button
                     onClick={createSession}
-                    disabled={!selectedSubject || !selectedDate || !selectedTime || isCreatingSession}
+                    disabled={(!selectedSubject && !customSubject) || !selectedDate || !selectedTime || isCreatingSession}
                     className="flex-[2] rounded-xl"
                   >
                     {isCreatingSession ? (
