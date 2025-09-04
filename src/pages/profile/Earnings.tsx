@@ -152,7 +152,12 @@ const Earnings = ({ user, onBack }: EarningsProps) => {
     if (!user?.id) return;
 
     try {
-      const { data, error } = await supabase.functions.invoke('check-connect-status');
+      const { data: { session } } = await supabase.auth.getSession();
+      const { data, error } = await supabase.functions.invoke('check-connect-status', {
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+      });
       
       if (error) throw error;
       setConnectStatus(data);
@@ -164,7 +169,12 @@ const Earnings = ({ user, onBack }: EarningsProps) => {
   const handleSetupAccount = async () => {
     try {
       setPayoutLoading(true);
-      const { data, error } = await supabase.functions.invoke('create-connect-account');
+      const { data: { session } } = await supabase.auth.getSession();
+      const { data, error } = await supabase.functions.invoke('create-connect-account', {
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+      });
       
       if (error) throw error;
       
@@ -209,8 +219,12 @@ const Earnings = ({ user, onBack }: EarningsProps) => {
 
     try {
       setPayoutLoading(true);
+      const { data: { session } } = await supabase.auth.getSession();
       const { data, error } = await supabase.functions.invoke('request-payout', {
-        body: { amount }
+        body: { amount },
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+        },
       });
       
       if (error) throw error;
