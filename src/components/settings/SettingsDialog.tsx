@@ -37,6 +37,8 @@ import {
   Mail,
   MapPin,
   BookOpen,
+  Search,
+  X,
 } from "lucide-react";
 
 interface SettingsDialogProps {
@@ -60,6 +62,10 @@ const SettingsDialog = ({ user, onUserUpdate, isOpen: externalIsOpen, onOpenChan
   const [campus, setCampus] = useState(user?.campus || "");
   const [gradYear, setGradYear] = useState(user?.year || "");
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || "");
+
+  // Search states
+  const [showMajorSearch, setShowMajorSearch] = useState(false);
+  const [majorSearchTerm, setMajorSearchTerm] = useState("");
 
   // Notification preferences
   const [emailNotifications, setEmailNotifications] = useState(true);
@@ -169,6 +175,27 @@ const SettingsDialog = ({ user, onUserUpdate, isOpen: externalIsOpen, onOpenChan
     "Other"
   ];
 
+  const majorOptions = [
+    "Accounting", "Acting", "Aerospace Engineering", "African American Studies", "American Studies",
+    "Anthropology", "Applied Mathematics", "Architecture", "Art Education", "Art History", "Audio Arts",
+    "Biochemistry", "Bioengineering", "Biology", "Broadcast and Digital Journalism", "Business Administration",
+    "Chemical Engineering", "Chemistry", "Child and Family Studies", "Civil Engineering",
+    "Communication and Rhetorical Studies", "Computer Art", "Computer Engineering", "Computer Science",
+    "Economics", "Electrical Engineering", "Elementary Education", "English", "Entrepreneurship",
+    "Environmental Engineering", "Exercise Science", "Fashion Design", "Film", "Finance", "French",
+    "Geography", "Geology", "Graphic Design", "Health and Exercise Science", "History", "Industrial Design",
+    "Information Management", "International Relations", "Italian", "Journalism", "Latin American Studies",
+    "Management", "Marketing", "Mathematics", "Mechanical Engineering", "Music", "Music Education",
+    "Nursing", "Nutrition", "Philosophy", "Photography", "Physics", "Political Science", "Psychology",
+    "Public Health", "Public Relations", "Religion", "Social Work", "Sociology", "Spanish",
+    "Sport Management", "Supply Chain Management", "Theatre", "Writing", "Other"
+  ];
+
+  // Filter majors based on search term
+  const filteredMajors = majorOptions.filter(majorOption =>
+    majorOption.toLowerCase().includes(majorSearchTerm.toLowerCase())
+  );
+
   const gradYearOptions = Array.from({length: 10}, (_, i) => (new Date().getFullYear() + i).toString());
 
   return (
@@ -265,83 +292,71 @@ const SettingsDialog = ({ user, onUserUpdate, isOpen: externalIsOpen, onOpenChan
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="major">Major</Label>
-                      <Select value={major} onValueChange={setMajor}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select your major" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Accounting">Accounting</SelectItem>
-                          <SelectItem value="Acting">Acting</SelectItem>
-                          <SelectItem value="Aerospace Engineering">Aerospace Engineering</SelectItem>
-                          <SelectItem value="African American Studies">African American Studies</SelectItem>
-                          <SelectItem value="American Studies">American Studies</SelectItem>
-                          <SelectItem value="Anthropology">Anthropology</SelectItem>
-                          <SelectItem value="Applied Mathematics">Applied Mathematics</SelectItem>
-                          <SelectItem value="Architecture">Architecture</SelectItem>
-                          <SelectItem value="Art Education">Art Education</SelectItem>
-                          <SelectItem value="Art History">Art History</SelectItem>
-                          <SelectItem value="Audio Arts">Audio Arts</SelectItem>
-                          <SelectItem value="Biochemistry">Biochemistry</SelectItem>
-                          <SelectItem value="Bioengineering">Bioengineering</SelectItem>
-                          <SelectItem value="Biology">Biology</SelectItem>
-                          <SelectItem value="Broadcast and Digital Journalism">Broadcast and Digital Journalism</SelectItem>
-                          <SelectItem value="Business Administration">Business Administration</SelectItem>
-                          <SelectItem value="Chemical Engineering">Chemical Engineering</SelectItem>
-                          <SelectItem value="Chemistry">Chemistry</SelectItem>
-                          <SelectItem value="Child and Family Studies">Child and Family Studies</SelectItem>
-                          <SelectItem value="Civil Engineering">Civil Engineering</SelectItem>
-                          <SelectItem value="Communication and Rhetorical Studies">Communication and Rhetorical Studies</SelectItem>
-                          <SelectItem value="Computer Art">Computer Art</SelectItem>
-                          <SelectItem value="Computer Engineering">Computer Engineering</SelectItem>
-                          <SelectItem value="Computer Science">Computer Science</SelectItem>
-                          <SelectItem value="Economics">Economics</SelectItem>
-                          <SelectItem value="Electrical Engineering">Electrical Engineering</SelectItem>
-                          <SelectItem value="Elementary Education">Elementary Education</SelectItem>
-                          <SelectItem value="English">English</SelectItem>
-                          <SelectItem value="Entrepreneurship">Entrepreneurship</SelectItem>
-                          <SelectItem value="Environmental Engineering">Environmental Engineering</SelectItem>
-                          <SelectItem value="Exercise Science">Exercise Science</SelectItem>
-                          <SelectItem value="Fashion Design">Fashion Design</SelectItem>
-                          <SelectItem value="Film">Film</SelectItem>
-                          <SelectItem value="Finance">Finance</SelectItem>
-                          <SelectItem value="French">French</SelectItem>
-                          <SelectItem value="Geography">Geography</SelectItem>
-                          <SelectItem value="Geology">Geology</SelectItem>
-                          <SelectItem value="Graphic Design">Graphic Design</SelectItem>
-                          <SelectItem value="Health and Exercise Science">Health and Exercise Science</SelectItem>
-                          <SelectItem value="History">History</SelectItem>
-                          <SelectItem value="Industrial Design">Industrial Design</SelectItem>
-                          <SelectItem value="Information Management">Information Management</SelectItem>
-                          <SelectItem value="International Relations">International Relations</SelectItem>
-                          <SelectItem value="Italian">Italian</SelectItem>
-                          <SelectItem value="Journalism">Journalism</SelectItem>
-                          <SelectItem value="Latin American Studies">Latin American Studies</SelectItem>
-                          <SelectItem value="Management">Management</SelectItem>
-                          <SelectItem value="Marketing">Marketing</SelectItem>
-                          <SelectItem value="Mathematics">Mathematics</SelectItem>
-                          <SelectItem value="Mechanical Engineering">Mechanical Engineering</SelectItem>
-                          <SelectItem value="Music">Music</SelectItem>
-                          <SelectItem value="Music Education">Music Education</SelectItem>
-                          <SelectItem value="Nursing">Nursing</SelectItem>
-                          <SelectItem value="Nutrition">Nutrition</SelectItem>
-                          <SelectItem value="Philosophy">Philosophy</SelectItem>
-                          <SelectItem value="Photography">Photography</SelectItem>
-                          <SelectItem value="Physics">Physics</SelectItem>
-                          <SelectItem value="Political Science">Political Science</SelectItem>
-                          <SelectItem value="Psychology">Psychology</SelectItem>
-                          <SelectItem value="Public Health">Public Health</SelectItem>
-                          <SelectItem value="Public Relations">Public Relations</SelectItem>
-                          <SelectItem value="Religion">Religion</SelectItem>
-                          <SelectItem value="Social Work">Social Work</SelectItem>
-                          <SelectItem value="Sociology">Sociology</SelectItem>
-                          <SelectItem value="Spanish">Spanish</SelectItem>
-                          <SelectItem value="Sport Management">Sport Management</SelectItem>
-                          <SelectItem value="Supply Chain Management">Supply Chain Management</SelectItem>
-                          <SelectItem value="Theatre">Theatre</SelectItem>
-                          <SelectItem value="Writing">Writing</SelectItem>
-                          <SelectItem value="Other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <div className="relative">
+                        {!showMajorSearch ? (
+                          <div 
+                            className="cursor-pointer"
+                            onClick={() => setShowMajorSearch(true)}
+                          >
+                            <div className="flex items-center justify-between w-full px-3 py-2 border rounded-md bg-background hover:bg-accent transition-colors">
+                              <span className={major ? "text-foreground" : "text-muted-foreground"}>
+                                {major || "Click to search for your major"}
+                              </span>
+                              <Search className="w-4 h-4 text-muted-foreground" />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <div className="relative flex-1">
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                <Input
+                                  placeholder="Search for your major..."
+                                  value={majorSearchTerm}
+                                  onChange={(e) => setMajorSearchTerm(e.target.value)}
+                                  className="pl-9"
+                                  autoFocus
+                                />
+                              </div>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setShowMajorSearch(false);
+                                  setMajorSearchTerm("");
+                                }}
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            </div>
+                            {majorSearchTerm && (
+                              <div className="max-h-48 overflow-y-auto border rounded-md bg-popover shadow-lg z-50 relative">
+                                {filteredMajors.length > 0 ? (
+                                  <div className="p-1">
+                                    {filteredMajors.slice(0, 10).map((majorOption) => (
+                                      <div
+                                        key={majorOption}
+                                        className="px-3 py-2 cursor-pointer hover:bg-accent rounded-sm transition-colors"
+                                        onClick={() => {
+                                          setMajor(majorOption);
+                                          setShowMajorSearch(false);
+                                          setMajorSearchTerm("");
+                                        }}
+                                      >
+                                        {majorOption}
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <div className="p-3 text-sm text-muted-foreground text-center">
+                                    No majors found matching "{majorSearchTerm}"
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="campus">Campus</Label>
