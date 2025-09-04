@@ -489,20 +489,46 @@ const handleCalendlyClick = () => {
                     Back
                   </Button>
                   <Button
-                    onClick={createSession}
+                    onClick={async () => {
+                      console.log('Confirm Booking button clicked');
+                      console.log('Form data:', { selectedSubject, customSubject, selectedDate, selectedTime, duration });
+                      
+                      // Show immediate feedback
+                      toast({
+                        title: "Processing Booking...",
+                        description: "Please wait while we create your session.",
+                      });
+                      
+                      await createSession();
+                    }}
                     disabled={(!selectedSubject && !customSubject) || !selectedDate || !selectedTime || isCreatingSession}
-                    className="flex-[2] rounded-xl"
+                    className="flex-[2] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200"
                   >
                     {isCreatingSession ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin mr-2" />
-                        Creating...
+                        Creating Session...
                       </>
                     ) : (
-                      'Confirm Booking'
+                      <>
+                        <CreditCard className="w-4 h-4 mr-2" />
+                        Confirm Booking
+                      </>
                     )}
                   </Button>
                 </div>
+                
+                {/* Form validation helper */}
+                {(!selectedSubject && !customSubject) && (
+                  <div className="text-sm text-muted-foreground bg-amber-50 border border-amber-200 rounded-lg p-3">
+                    ⚠️ Please select or enter a subject to continue
+                  </div>
+                )}
+                {(!selectedDate || !selectedTime) && (selectedSubject || customSubject) && (
+                  <div className="text-sm text-muted-foreground bg-amber-50 border border-amber-200 rounded-lg p-3">
+                    ⚠️ Please select a date and time to continue
+                  </div>
+                )}
               </div>
             </>
           ) : (
