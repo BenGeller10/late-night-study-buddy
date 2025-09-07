@@ -5,30 +5,36 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-semibold ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/70 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-gradient-primary text-primary-foreground hover:shadow-glow hover:-translate-y-0.5 active:translate-y-0 rounded-xl",
-        blue: "bg-blue text-blue-foreground hover:bg-blue-glow hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 rounded-xl",
+        default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:shadow-lg rounded-xl",
+          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
-          "border border-border-light bg-transparent hover:bg-card hover:border-accent rounded-xl",
+          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:shadow-lg rounded-xl",
-        ghost: "hover:bg-card hover:shadow-md rounded-xl",
-        link: "text-primary underline-offset-4 hover:underline hover:text-primary-glow",
+          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        link: "text-primary underline-offset-4 hover:underline",
+        // Futuristic variants
+        cyber: "btn-cyber text-white font-semibold shadow-cyber border-0 relative overflow-hidden",
+        glass: "btn-glass text-foreground font-medium shadow-glass hover:shadow-glow",
+        gradient: "bg-gradient-primary text-primary-foreground font-semibold shadow-glow hover:shadow-cyber hover:scale-[1.02] transition-all duration-300",
+        glow: "bg-gradient-cyber text-white font-semibold shadow-cyber hover:shadow-glow hover:scale-105 transition-all duration-300 border border-primary/30",
+        neon: "bg-transparent border-2 border-accent text-accent font-semibold hover:bg-accent hover:text-accent-foreground hover:shadow-[0_0_30px_var(--accent)] transition-all duration-300",
+        hologram: "bg-gradient-hologram text-white font-medium shadow-depth hover:bg-gradient-cyber border border-cyan/30 hover:border-cyan/60 transition-all duration-500",
+        // Legacy variants for compatibility
         campus: "bg-gradient-accent text-accent-foreground hover:shadow-glow hover:-translate-y-0.5 active:translate-y-0 rounded-xl",
-        success: "bg-success text-success-foreground hover:shadow-lg hover:-translate-y-0.5 rounded-xl",
-        swipe: "bg-card/80 backdrop-blur-sm border border-border-light/50 text-card-foreground hover:bg-card hover:border-accent/50 hover:shadow-md rounded-xl"
+        blue: "bg-blue text-blue-foreground hover:bg-blue-glow hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 rounded-xl",
       },
       size: {
-        default: "h-11 px-6 py-3",
-        sm: "h-9 px-4 text-xs rounded-lg",
-        lg: "h-12 px-8 text-base rounded-xl",
-        xl: "h-14 px-10 text-lg rounded-2xl",
-        icon: "h-11 w-11",
+        default: "h-9 px-4 py-2",
+        sm: "h-8 rounded-md px-3 text-xs",
+        lg: "h-10 rounded-md px-8",
+        xl: "h-12 rounded-lg px-10 text-base",
+        icon: "h-9 w-9",
       },
     },
     defaultVariants: {
