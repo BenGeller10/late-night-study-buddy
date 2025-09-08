@@ -22,6 +22,8 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState("signin");
   const [error, setError] = useState("");
+  const [signInAttempts, setSignInAttempts] = useState(0);
+  const [isRateLimited, setIsRateLimited] = useState(false);
 
   // Form states
   const [email, setEmail] = useState("");
@@ -76,6 +78,57 @@ const Auth = () => {
     return () => subscription.unsubscribe();
   }, [navigate, location.state]);
 
+  // Security utilities
+  const sanitizeInput = (input: string): string => {
+    return input.trim().replace(/[<>]/g, '');
+  };
+
+  const validatePassword = (password: string): { isValid: boolean; message: string } => {
+    if (password.length < 8) {
+      return { isValid: false, message: "Password must be at least 8 characters long" };
+    }
+    if (!/(?=.*[a-z])/.test(password)) {
+      return { isValid: false, message: "Password must contain at least one lowercase letter" };
+    }
+    if (!/(?=.*[A-Z])/.test(password)) {
+      return { isValid: false, message: "Password must contain at least one uppercase letter" };
+    }
+    if (!/(?=.*\d)/.test(password)) {
+      return { isValid: false, message: "Password must contain at least one number" };
+    }
+    if (!/(?=.*[@$!%*?&])/.test(password)) {
+      return { isValid: false, message: "Password must contain at least one special character (@$!%*?&)" };
+    }
+    return { isValid: true, message: "" };
+  };
+
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const checkRateLimit = (): boolean => {
+    const now = Date.now();
+    const lastAttempt = localStorage.getItem('lastSignInAttempt');
+    const attempts = parseInt(localStorage.getItem('signInAttempts') || '0');
+    
+    if (lastAttempt && now - parseInt(lastAttempt) < 60000) { // 1 minute
+      if (attempts >= 5) {
+        setIsRateLimited(true);
+        setTimeout(() => {
+          setIsRateLimited(false);
+          localStorage.removeItem('signInAttempts');
+          localStorage.removeItem('lastSignInAttempt');
+        }, 60000);
+        return false;
+      }
+    } else {
+      localStorage.removeItem('signInAttempts');
+      localStorage.removeItem('lastSignInAttempt');
+    }
+    return true;
+  };
+
   const cleanupAuthState = () => {
     // Remove all Supabase auth keys from localStorage
     Object.keys(localStorage).forEach((key) => {
@@ -96,6 +149,32 @@ const Auth = () => {
     setIsLoading(true);
     setError("");
 
+    // Security validations
+    if (!checkRateLimit()) {
+      setError('Too many failed attempts. Please wait 1 minute before trying again.');
+      setIsLoading(false);
+      return;
+    }
+
+    if (isRateLimited) {
+      setError('Account temporarily locked. Please wait 1 minute before trying again.');
+      setIsLoading(false);
+      return;
+    }
+
+    const sanitizedEmail = sanitizeInput(email);
+    if (!validateEmail(sanitizedEmail)) {
+      setError('Please enter a valid email address.');
+      setIsLoading(false);
+      return;
+    }
+
+    if (!password) {
+      setError('Password is required.');
+      setIsLoading(false);
+      return;
+    }
+
     try {
       // Clean up existing state
       cleanupAuthState();
@@ -108,20 +187,25 @@ const Auth = () => {
       }
 
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
+        email: sanitizedEmail,
         password,
       });
 
       if (error) {
-        if (error.message.includes('Invalid login credentials')) {
-          setError('Invalid email or password. Please check your credentials and try again.');
-        } else if (error.message.includes('Email not confirmed')) {
-          setError('Please check your email and click the confirmation link before signing in.');
-        } else {
-          setError(error.message);
-        }
+        // Track failed attempts
+        const attempts = parseInt(localStorage.getItem('signInAttempts') || '0') + 1;
+        localStorage.setItem('signInAttempts', attempts.toString());
+        localStorage.setItem('lastSignInAttempt', Date.now().toString());
+        
+        // Generic error message to prevent account enumeration
+        setError('Invalid email or password. Please check your credentials and try again.');
+        setIsLoading(false);
         return;
       }
+
+      // Clear rate limit data on successful login
+      localStorage.removeItem('signInAttempts');
+      localStorage.removeItem('lastSignInAttempt');
 
       if (data.user) {
         toast({
@@ -147,15 +231,32 @@ const Auth = () => {
     setIsLoading(true);
     setError("");
 
-    // Validation
-    if (password !== confirmPassword) {
-      setError("Passwords don't match");
+    // Security validations
+    const sanitizedEmail = sanitizeInput(email);
+    const sanitizedFullName = sanitizeInput(fullName);
+    const sanitizedVenmoHandle = sanitizeInput(venmoHandle);
+
+    if (!validateEmail(sanitizedEmail)) {
+      setError("Please enter a valid email address");
       setIsLoading(false);
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long");
+    if (!sanitizedFullName || sanitizedFullName.length < 2) {
+      setError("Full name must be at least 2 characters long");
+      setIsLoading(false);
+      return;
+    }
+
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      setError(passwordValidation.message);
+      setIsLoading(false);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords don't match");
       setIsLoading(false);
       return;
     }
@@ -166,7 +267,7 @@ const Auth = () => {
       return;
     }
 
-    if (isTutor && !venmoHandle.trim()) {
+    if (isTutor && !sanitizedVenmoHandle.trim()) {
       setError("Venmo handle is required for tutors");
       setIsLoading(false);
       return;
@@ -182,29 +283,37 @@ const Auth = () => {
       // Clean up existing state
       cleanupAuthState();
 
-      const redirectUrl = `${window.location.origin}/home`;
+      // Validate and sanitize redirect URL
+      const allowedDomain = window.location.origin;
+      const redirectUrl = `${allowedDomain}/home`;
 
       const { data, error } = await supabase.auth.signUp({
-        email: email.trim(),
+        email: sanitizedEmail,
         password,
         options: {
           emailRedirectTo: redirectUrl,
           data: {
-            full_name: fullName.trim(),
+            full_name: sanitizedFullName,
             avatar_url: profileImage,
             is_tutor: isTutor,
             schedule_data: scheduleData,
-            bio: tutorData?.bio || "",
-            experience: tutorData?.experience || "",
+            bio: sanitizeInput(tutorData?.bio || ""),
+            experience: sanitizeInput(tutorData?.experience || ""),
+            venmo_handle: isTutor ? sanitizedVenmoHandle : null
           }
         }
       });
 
       if (error) {
-        if (error.message.includes('User already registered')) {
+        // Generic error handling to prevent information leakage
+        if (error.message.includes('User already registered') || error.message.includes('already been registered')) {
           setError('An account with this email already exists. Try signing in instead.');
+        } else if (error.message.includes('password')) {
+          setError('Password does not meet security requirements. Please choose a stronger password.');
+        } else if (error.message.includes('email')) {
+          setError('Please enter a valid email address.');
         } else {
-          setError(error.message);
+          setError('Unable to create account. Please try again or contact support.');
         }
         return;
       }
@@ -394,17 +503,23 @@ const Auth = () => {
                           onChange={(e) => setPassword(e.target.value)}
                           className="w-full pl-12 pr-12 py-4 bg-input/50 backdrop-blur-sm border border-border/50 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
                           required
-                          disabled={isLoading}
+                          disabled={isLoading || isRateLimited}
+                          autoComplete="current-password"
                         />
                         <button
                           type="button"
                           className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                           onClick={() => setShowPassword(!showPassword)}
-                          disabled={isLoading}
+                          disabled={isLoading || isRateLimited}
                         >
                           {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                         </button>
                       </div>
+                      {isRateLimited && (
+                        <p className="text-xs text-destructive mt-2">
+                          Account temporarily locked due to multiple failed attempts
+                        </p>
+                      )}
                     </div>
 
                     <Button
