@@ -398,14 +398,14 @@ const Auth = () => {
       <div className="min-h-screen bg-pattern-auth bg-background relative overflow-hidden">
         {/* Animated background elements */}
         <div className="absolute inset-0">
-          <div className="absolute top-[10%] left-[8%] w-64 h-64 bg-gradient-cyber opacity-8 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-[15%] right-[12%] w-80 h-80 bg-gradient-hologram opacity-6 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-[45%] left-[25%] w-48 h-48 bg-gradient-accent opacity-10 rounded-full blur-2xl animate-pulse delay-500"></div>
-          <div className="absolute top-[25%] right-[20%] w-56 h-56 bg-gradient-cyber opacity-7 rounded-full blur-3xl animate-pulse delay-700"></div>
-          <div className="absolute bottom-[35%] left-[15%] w-40 h-40 bg-gradient-hologram opacity-9 rounded-full blur-2xl animate-pulse delay-300"></div>
-          <div className="absolute top-[70%] right-[35%] w-72 h-72 bg-gradient-accent opacity-6 rounded-full blur-3xl animate-pulse delay-1200"></div>
-          <div className="absolute bottom-[60%] right-[5%] w-32 h-32 bg-gradient-cyber opacity-12 rounded-full blur-xl animate-pulse delay-900"></div>
-          <div className="absolute top-[35%] left-[5%] w-44 h-44 bg-gradient-hologram opacity-8 rounded-full blur-2xl animate-pulse delay-600"></div>
+          <div className="absolute top-[10%] left-[8%] w-64 h-64 bg-gradient-cyber opacity-8 rounded-full blur-3xl animate-pulse animate-float"></div>
+          <div className="absolute bottom-[15%] right-[12%] w-80 h-80 bg-gradient-hologram opacity-6 rounded-full blur-3xl animate-pulse animate-float-delayed delay-1000"></div>
+          <div className="absolute top-[45%] left-[25%] w-48 h-48 bg-gradient-accent opacity-10 rounded-full blur-2xl animate-pulse animate-drift delay-500"></div>
+          <div className="absolute top-[25%] right-[20%] w-56 h-56 bg-gradient-cyber opacity-7 rounded-full blur-3xl animate-pulse animate-float delay-700"></div>
+          <div className="absolute bottom-[35%] left-[15%] w-40 h-40 bg-gradient-hologram opacity-9 rounded-full blur-2xl animate-pulse animate-drift-slow delay-300"></div>
+          <div className="absolute top-[70%] right-[35%] w-72 h-72 bg-gradient-accent opacity-6 rounded-full blur-3xl animate-pulse animate-float-delayed delay-1200"></div>
+          <div className="absolute bottom-[60%] right-[5%] w-32 h-32 bg-gradient-cyber opacity-12 rounded-full blur-xl animate-pulse animate-drift delay-900"></div>
+          <div className="absolute top-[35%] left-[5%] w-44 h-44 bg-gradient-hologram opacity-8 rounded-full blur-2xl animate-pulse animate-float delay-600"></div>
         </div>
         
         <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
