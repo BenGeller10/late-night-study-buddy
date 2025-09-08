@@ -597,20 +597,42 @@ const Auth = () => {
 
                     {/* Role Selection */}
                     <div className="space-y-4">
-                      <label className="text-sm font-medium text-foreground">I want to...</label>
-                      <div className="flex items-center justify-center gap-4 p-4 glass-subtle rounded-xl border border-border/30">
-                        <span className={`text-sm font-medium transition-colors ${!isTutor ? 'text-primary' : 'text-muted-foreground'}`}>
-                          🧠 Find Tutors
-                        </span>
-                        <Switch
-                          checked={isTutor}
-                          onCheckedChange={setIsTutor}
-                          disabled={isLoading}
-                          className="data-[state=checked]:bg-gradient-cyber"
-                        />
-                        <span className={`text-sm font-medium transition-colors ${isTutor ? 'text-primary' : 'text-muted-foreground'}`}>
-                          📚 Become a Tutor
-                        </span>
+                      <label className="text-sm font-medium text-foreground">Choose your role</label>
+                      <div className="glass-elevated p-6 rounded-2xl">
+                        <div className="grid grid-cols-2 gap-1 p-1 bg-muted/20 backdrop-blur-sm rounded-xl">
+                          <button
+                            type="button"
+                            onClick={() => setIsTutor(false)}
+                            disabled={isLoading}
+                            className={`py-4 px-6 rounded-lg transition-all duration-300 ${
+                              !isTutor
+                                ? "bg-gradient-cyber text-white shadow-glow scale-105"
+                                : "hover:bg-muted/30 text-muted-foreground"
+                            }`}
+                          >
+                            <div className="flex flex-col items-center gap-2">
+                              <span className="text-2xl">🧠</span>
+                              <span className="font-semibold">Student</span>
+                              <span className="text-xs opacity-80">Find tutors</span>
+                            </div>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setIsTutor(true)}
+                            disabled={isLoading}
+                            className={`py-4 px-6 rounded-lg transition-all duration-300 ${
+                              isTutor
+                                ? "bg-gradient-cyber text-white shadow-glow scale-105"
+                                : "hover:bg-muted/30 text-muted-foreground"
+                            }`}
+                          >
+                            <div className="flex flex-col items-center gap-2">
+                              <span className="text-2xl">📚</span>
+                              <span className="font-semibold">Tutor</span>
+                              <span className="text-xs opacity-80">Teach students</span>
+                            </div>
+                          </button>
+                        </div>
                       </div>
                     </div>
 
