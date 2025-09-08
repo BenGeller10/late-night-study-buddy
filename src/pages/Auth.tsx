@@ -32,7 +32,6 @@ const Auth = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [profileImage, setProfileImage] = useState("");
   const [isTutor, setIsTutor] = useState(false);
-  const [venmoHandle, setVenmoHandle] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [scheduleData, setScheduleData] = useState("");
   const [tutorData, setTutorData] = useState<any>(null);
@@ -70,7 +69,6 @@ const Auth = () => {
       
       // Pre-fill tutor-specific data
       if (state.tutorData) {
-        setVenmoHandle(state.tutorData.venmoHandle || "");
         setProfileImage("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNGNEY0RjUiLz48L3N2Zz4K"); // Placeholder
       }
     }
@@ -234,7 +232,6 @@ const Auth = () => {
     // Security validations
     const sanitizedEmail = sanitizeInput(email);
     const sanitizedFullName = sanitizeInput(fullName);
-    const sanitizedVenmoHandle = sanitizeInput(venmoHandle);
 
     if (!validateEmail(sanitizedEmail)) {
       setError("Please enter a valid email address");
@@ -267,12 +264,6 @@ const Auth = () => {
       return;
     }
 
-    if (isTutor && !sanitizedVenmoHandle.trim()) {
-      setError("Venmo handle is required for tutors");
-      setIsLoading(false);
-      return;
-    }
-
     if (!agreedToTerms) {
       setError("You must agree to the Terms of Service to continue");
       setIsLoading(false);
@@ -298,8 +289,7 @@ const Auth = () => {
             is_tutor: isTutor,
             schedule_data: scheduleData,
             bio: sanitizeInput(tutorData?.bio || ""),
-            experience: sanitizeInput(tutorData?.experience || ""),
-            venmo_handle: isTutor ? sanitizedVenmoHandle : null
+            experience: sanitizeInput(tutorData?.experience || "")
           }
         }
       });
@@ -383,7 +373,6 @@ const Auth = () => {
     setConfirmPassword("");
     setProfileImage("");
     setIsTutor(false);
-    setVenmoHandle("");
     setAgreedToTerms(false);
     setError("");
   };
@@ -680,26 +669,6 @@ const Auth = () => {
                         </div>
                       </div>
                     </div>
-
-                    {/* Venmo Handle for Tutors */}
-                    {isTutor && (
-                      <div className="space-y-3 animate-fade-in-up">
-                        <label htmlFor="venmo-handle" className="text-sm font-medium text-foreground">Venmo Handle *</label>
-                        <div className="relative">
-                          <DollarSign className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
-                          <input
-                            id="venmo-handle"
-                            type="text"
-                            placeholder="@your-venmo-username"
-                            value={venmoHandle}
-                            onChange={(e) => setVenmoHandle(e.target.value)}
-                            className="w-full pl-12 pr-4 py-4 bg-input/50 backdrop-blur-sm border border-border/50 rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
-                            required={isTutor}
-                            disabled={isLoading}
-                          />
-                        </div>
-                      </div>
-                    )}
 
                     {/* Terms Agreement */}
                     <div className="flex items-center space-x-3 p-4 glass-subtle rounded-xl">
